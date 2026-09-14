@@ -305,7 +305,6 @@
                     </div>
                     <div class="available-vouchers" id="availableVouchersContainer">
                         <span style="font-size: 10px; color: var(--text-gray);">Kho ưu đãi:</span>
-                        <!-- Các mã đã lưu ở trang thành viên sẽ hiển thị tự động tại đây -->
                     </div>
                 </div>
                 <div id="discountNotice" class="discount-text">Đã áp dụng mã giảm giá thành công!</div>
@@ -347,8 +346,8 @@
         const movieId = urlParams.get('movieId') || urlParams.get('movie') || 'furiosa';
         const date = urlParams.get('date') || '07-09-2026';
         
-        // Hỗ trợ đồng thời các param 'cinema', 'showtime' hoặc 'time' từ trang chi tiết phim truyền sang
-        const cinema = decodeURIComponent(urlParams.get('cinema') || 'CGV Vincom Center Bà Triệu');
+        // Hỗ trợ đồng thời các param 'cinema', 'showtime' hoặc 'time' từ trang chi tiết/chọn suất chiếu truyền sang
+        const cinema = decodeURIComponent(urlParams.get('cinema') || 'CINEBOOK Vincom Center Đồng Khởi');
         const time = decodeURIComponent(urlParams.get('showtime') || urlParams.get('time') || '09:00');
 
         const displayMovieName = movieTitles[movieId] || 'Furiosa: A Mad Max Saga';
@@ -358,7 +357,7 @@
         document.getElementById('txtDate').innerText = date;
         document.getElementById('txtTime').innerText = time;
 
-        // Khóa LocalStorage được phân rã tường minh theo Phim, Ngày, Rạp và Suất chiếu[cite: 2]
+        // Khóa LocalStorage được phân rã tường minh theo Phim, Ngày, Rạp và Suất chiếu
         const showtimeKey = `cinebook_seats_${movieId}_${date}_${encodeURIComponent(cinema)}_${time}`;
         let bookedSeats = JSON.parse(localStorage.getItem(showtimeKey)) || [];
 
@@ -369,12 +368,12 @@
         const seatPrice = 75000;
         let selectedSeats = [];
         
-        // Bảng quy định mức giảm giá tương ứng với từng mã (Hệ thống có thể mở rộng tùy ý)
+        // Bảng quy định mức giảm giá tương ứng với từng mã
         const voucherRules = {
-            'CINE20': 20, // Giảm 20%
-            'CINE50': 50, // Giảm 50%
-            'VC_QK29': 30, // Giảm 30%
-            'FREESHIP': 10 // Giảm 10%
+            'CINE20': 20,
+            'CINE50': 50,
+            'VC_QK29': 30,
+            'FREESHIP': 10
         };
 
         let appliedDiscountPercent = 0;
@@ -383,9 +382,6 @@
         // Tải các mã giảm giá mà người dùng đã lưu từ Kho lưu trữ ưu đãi ở trang thành viên
         function renderSavedVouchers() {
             const container = document.getElementById('availableVouchersContainer');
-            
-            // Lấy danh sách mã từ localStorage (Key đồng bộ với trang thành viên: 'cinebook_saved_vouchers')
-            // Nếu chưa có, gán mảng mặc định vài mã mẫu để kiểm thử giao diện
             let savedVouchers = JSON.parse(localStorage.getItem('cinebook_saved_vouchers')) || ['CINE50', 'VC_QK29'];
 
             if (savedVouchers.length === 0) {
@@ -394,7 +390,7 @@
             }
 
             savedVouchers.forEach(code => {
-                const percent = voucherRules[code] || 15; // Mặc định 15% nếu mã chưa khai báo rule rõ ràng
+                const percent = voucherRules[code] || 15;
                 const tag = document.createElement('span');
                 tag.classList.add('voucher-tag');
                 tag.innerText = `${code} (-${percent}%)`;
@@ -459,7 +455,6 @@
                 return;
             }
 
-            // Kiểm tra mã có hợp lệ không
             const percent = voucherRules[codeInput];
             if (percent !== undefined) {
                 appliedDiscountPercent = percent;
@@ -518,6 +513,7 @@
             document.getElementById('paymentModal').style.display = 'flex';
         }
 
+        // ĐÃ CẬP NHẬT: Gửi đúng thông tin tên rạp (cinema) về API Spring Boot
         function confirmAndReload() {
             if (selectedSeats.length === 0) {
                 alert('Vui lòng chọn ít nhất một ghế trước khi hoàn tất!');
@@ -527,17 +523,17 @@
             const rawTotal = selectedSeats.length * seatPrice;
             const finalTotal = rawTotal - (rawTotal * appliedDiscountPercent / 100);
 
+            // Đóng gói JSON chuẩn khớp với class BookingRequest trong Java Controller
             const payload = {
                 movieTitle: displayMovieName,
-                cinema: cinema,
+                cinema: cinema,  // Lấy tên rạp chiếu từ URL
                 date: date,
                 time: time,
                 seats: selectedSeats,
-                totalPrice: finalTotal,
-                voucherCode: appliedVoucherCode || null
+                totalPrice: finalTotal
             };
 
-            // Gửi yêu cầu AJAX về Backend Java để lưu vé và giao dịch vào CSDL
+            // Gửi yêu cầu AJAX về Backend Java (/api/book-tickets)
             fetch('/api/book-tickets', {
                 method: 'POST',
                 headers: {
@@ -547,11 +543,11 @@
             })
             .then(response => {
                 if (response.ok) {
-                    // Lưu trạng thái ghế vào localStorage để khóa ghế đã đặt trên giao diện
+                    // Lưu trạng thái ghế vào localStorage để khóa ghế trên sơ đồ
                     bookedSeats.push(...selectedSeats);
                     localStorage.setItem(showtimeKey, JSON.stringify(bookedSeats));
                     
-                    // Chuyển hướng sang trang thành viên để xem lịch sử đặt vé & giao dịch
+                    // Chuyển hướng sang trang thành viên để xem Lịch sử đặt vé
                     window.location.href = '/thanh-vien';
                 } else if (response.status === 401) {
                     alert('Phiên đăng nhập đã hết hạn hoặc bạn chưa đăng nhập. Vui lòng đăng nhập lại!');

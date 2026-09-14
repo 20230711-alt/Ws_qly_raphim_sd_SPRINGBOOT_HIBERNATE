@@ -84,7 +84,11 @@ public class TrangWebController {
         if (user != null) { model.addAttribute("user", user); }
         return "thanh-toan";
     }
-
+    @GetMapping("/chon-suat-chieu")
+    public String chonSuatChieuPage(@RequestParam(name = "movieId", required = false, defaultValue = "P01") String movieId, Model model) {
+        model.addAttribute("movieId", movieId);
+        return "chon-suat-chieu";
+    }
     @GetMapping("/khuyen-mai")
     public String khuyenMai(HttpSession session, Model model) {
         User user = (User) session.getAttribute("loggedInUser");

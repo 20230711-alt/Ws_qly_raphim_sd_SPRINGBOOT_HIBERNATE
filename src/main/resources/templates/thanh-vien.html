@@ -402,20 +402,25 @@
         /* FAVORITE MOVIES */
         .fav-movies-row {
             display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 10px;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
         }
 
         .fav-movie-item {
             display: flex;
             flex-direction: column;
             gap: 6px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 8px;
+            position: relative;
         }
 
         .fav-poster {
             position: relative;
-            height: 140px;
-            border-radius: 8px;
+            height: 160px;
+            border-radius: 6px;
             overflow: hidden;
         }
 
@@ -429,24 +434,33 @@
             position: absolute;
             top: 6px;
             right: 6px;
-            color: var(--pink-accent);
-            background: rgba(0,0,0,0.5);
-            padding: 4px;
+            color: #fff;
+            background: rgba(255, 42, 95, 0.85);
+            width: 26px;
+            height: 26px;
             border-radius: 50%;
-            font-size: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            cursor: pointer;
+            z-index: 2;
         }
 
         .fav-title {
-            font-size: 11px;
+            font-size: 12px;
             font-weight: 700;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+            color: #fff;
         }
 
         .fav-rating {
-            font-size: 10px;
+            font-size: 11px;
             color: #FACC15;
+            display: flex;
+            justify-content: space-between;
         }
 
         /* VOUCHERS LIST */
@@ -731,13 +745,12 @@
             to { transform: translateX(0); opacity: 1; }
         }
 
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes scaleUp { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
     </style>
 </head>
 <body>
 
-    <!-- THẺ ẨN ĐỂ LƯU EMAIL/ID CỦA USER ĐANG ĐĂNG NHẬP (DÙNG CHO JS PHÂN TÁCH ẢNH RIÊNG) -->
+    <!-- THẺ ẨN ĐỂ LƯU EMAIL CỦA USER ĐĂNG NHẬP -->
     <input type="hidden" id="currentLoggedUserKey" th:value="${user != null ? user.email : 'default_user'}" />
 
     <!-- TOAST NOTIFICATION -->
@@ -753,9 +766,7 @@
                 <span><i class="fa-solid fa-clapperboard" style="color: var(--pink-accent); margin-right: 8px;"></i> Danh sách phim đã xem</span>
                 <button class="custom-modal-close" onclick="closeWatchedModal()"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <div class="watched-movies-list" id="watchedMoviesListContainer">
-                <!-- Danh sách sẽ được chèn động bằng JS -->
-            </div>
+            <div class="watched-movies-list" id="watchedMoviesListContainer"></div>
             <button class="btn-submit" style="width: 100%; margin-top: 5px;" onclick="closeWatchedModal()">Đóng</button>
         </div>
     </div>
@@ -774,13 +785,8 @@
         </nav>
 
         <div class="header-right">
-            <div class="user-greeting-box">
-                <span class="user-greeting" th:text="'Xin chào, ' + (${user != null ? user.fullName : 'Thành viên'})">Xin chào, Long Trần</span>
-                <a th:href="@{/dang-nhap}" class="btn-logout-header" onclick="return confirm('Bạn có chắc chắn muốn đăng xuất không?');">
-                    <i class="fa-solid fa-right-from-bracket"></i> Đăng xuất
-                </a>
             </div>
-            <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=100" alt="User" class="user-avatar-sm" id="headerUserAvatar">
+            
         </div>
     </header>
 
@@ -808,7 +814,6 @@
                     <li class="sidebar-item" id="menu-tickets" onclick="switchTab('tab-tickets', this)">
                         <a href="#"><i class="fa-solid fa-ticket"></i> Lịch sử đặt vé</a>
                     </li>
-                   
                     <li class="sidebar-item" id="menu-favorites" onclick="switchTab('tab-favorites', this)">
                         <a href="#"><i class="fa-solid fa-heart"></i> Danh sách yêu thích</a>
                     </li>
@@ -856,27 +861,23 @@
                         </div>
                     </div>
 
-                    <!-- THỐNG KÊ 4 Ô VỚI TƯƠNG TÁC ĐẦY ĐỦ -->
+                    <!-- THỐNG KÊ 4 Ô -->
                     <div class="stats-grid">
-                        <!-- Ô ĐIỂM TÍCH LŨY -> Bấm đổi quà ngay chuyển tới Tab kho ưu đãi -->
                         <div class="stat-card">
                             <div class="stat-header-flex"><span>Điểm tích lũy</span><i class="fa-solid fa-star"></i></div>
                             <div class="stat-value"><span id="statPointsValue">2.750</span> <span style="font-size: 13px; font-weight: normal;">điểm</span></div>
                             <a href="#" class="stat-footer-link" onclick="switchTab('tab-vouchers', document.getElementById('menu-vouchers')); showToast('Đã chuyển đến kho ưu đãi để đổi quà!', '#10B981'); return false;">Đổi quà ngay <i class="fa-solid fa-angle-right"></i></a>
                         </div>
-                        <!-- Ô TỔNG SỐ VÉ ĐÃ ĐẶT -> Bấm xem lịch sử chuyển tới Tab vé -->
                         <div class="stat-card">
                             <div class="stat-header-flex"><span>Tổng số vé đã đặt</span><i class="fa-solid fa-ticket"></i></div>
                             <div class="stat-value"><span id="statTicketsCount">0</span> <span style="font-size: 13px; font-weight: normal;">vé</span></div>
                             <a href="#" class="stat-footer-link" onclick="switchTab('tab-tickets', document.getElementById('menu-tickets')); return false;">Xem lịch sử <i class="fa-solid fa-angle-right"></i></a>
                         </div>
-                        <!-- Ô PHIM ĐÃ XEM -> Bấm xem chi tiết mở Popup danh sách phim đã xem -->
                         <div class="stat-card">
                             <div class="stat-header-flex"><span>Phim đã xem</span><i class="fa-solid fa-clapperboard"></i></div>
                             <div class="stat-value"><span id="statMoviesCount">0</span> <span style="font-size: 13px; font-weight: normal;">phim</span></div>
                             <a href="#" class="stat-footer-link" onclick="openWatchedModal(); return false;">Xem chi tiết <i class="fa-solid fa-angle-right"></i></a>
                         </div>
-                        <!-- Ô ƯU ĐÃI CỦA BẠN -> Bấm xem kho ưu đãi chuyển tới Tab 4 -->
                         <div class="stat-card">
                             <div class="stat-header-flex"><span>Ưu đãi của bạn</span><i class="fa-solid fa-gift"></i></div>
                             <div class="stat-value" th:text="${userVouchers != null ? userVouchers.size() : 3}">3</div>
@@ -891,6 +892,7 @@
                                 <h3>Phim yêu thích</h3>
                                 <a href="#" onclick="switchTab('tab-favorites', document.getElementById('menu-favorites')); return false;">Xem tất cả ></a>
                             </div>
+                            <!-- Nơi đổ danh sách phim thả tim của Tab Tổng quan -->
                             <div class="fav-movies-row" id="overviewFavoritesRow"></div>
                         </div>
 
@@ -915,7 +917,7 @@
                     </div>
                 </div>
 
-                <!-- TAB 2: CẬP NHẬT THÔNG TIN TÀI KHOẢN -->
+                <!-- TAB 2: CẬP NHẬT THÔNG TIN -->
                 <div id="tab-profile" class="form-section">
                     <div class="section-card">
                         <div class="card-header-flex" style="margin-bottom: 20px;">
@@ -949,7 +951,6 @@
 				        <div class="card-header-flex" style="margin-bottom: 20px;">
 				            <h3>Đổi mật khẩu tài khoản</h3>
 				        </div>
-				        <!-- Sử dụng form submit thông thường để tương thích với cơ chế Redirect và RedirectAttributes của Spring Boot -->
 				        <form class="styled-form" action="/doi-mat-khau" method="POST">
 				            <div class="form-group">
 				                <label>Mật khẩu hiện tại</label>
@@ -968,7 +969,7 @@
 				    </div>
 				</div>
 				
-                <!-- TAB 4: KHO LƯU TRỮ ƯU ĐÃI -->
+                <!-- TAB 4: KHO ƯU ĐÃI -->
                 <div id="tab-vouchers" class="form-section">
                     <div class="section-card">
                         <div class="card-header-flex" style="margin-bottom: 20px;">
@@ -1015,6 +1016,7 @@
                                     <tr>
                                         <th>Mã vé</th>
                                         <th>Tên phim</th>
+                                        <th>Tên rạp</th>
                                         <th>Suất chiếu</th>
                                         <th>Ghế</th>
                                         <th>Tổng tiền</th>
@@ -1024,16 +1026,19 @@
                                 </thead>
                                 <tbody>
                                     <tr th:if="${tickets == null or tickets.empty}">
-                                        <td colspan="7" style="text-align: center; color: var(--text-gray);">Bạn chưa có vé nào.</td>
+                                        <td colspan="8" style="text-align: center; color: var(--text-gray);">Bạn chưa có vé nào.</td>
                                     </tr>
                                     <tr class="ticket-row" th:each="ticket : ${tickets}">
                                         <td style="font-weight: bold; color: var(--pink-accent);" th:text="'#CB-' + ${ticket.id}">#CB-8921</td>
                                         <td class="ticket-movie-name" th:text="${ticket.movieTitle}">Interstellar</td>
+                                        <td style="color: #60A5FA; font-weight: 600;" th:text="${ticket.cinemaName != null ? ticket.cinemaName : 'CINEBOOK Đồng Khởi'}">CINEBOOK Đồng Khởi</td>
                                         <td th:text="${ticket.showTime}">19:30 - 05/09/2026</td>
                                         <td th:text="${ticket.seats}">F12, F13</td>
                                         <td class="ticket-price" th:text="${ticket.totalPrice}">180000</td>
                                         <td th:text="${#temporals.format(ticket.bookingDate, 'dd-MM-yyyy HH:mm')}">05/09/2026 18:15</td>
-                                        <td><span class="status-badge status-success">Thành công</span></td>
+										<td style="white-space: nowrap;">
+										    <span class="status-badge status-success">Thành công</span>
+										</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -1041,13 +1046,13 @@
                     </div>
                 </div>
 
-
                 <!-- TAB 7: DANH SÁCH YÊU THÍCH -->
                 <div id="tab-favorites" class="form-section">
                     <div class="section-card">
                         <div class="card-header-flex" style="margin-bottom: 20px;">
                             <h3>Danh sách phim yêu thích</h3>
                         </div>
+                        <!-- Nơi đổ đầy đủ danh sách phim thả tim của Tab Danh sách yêu thích -->
                         <div class="fav-movies-row" id="favoritesTabGrid" style="grid-template-columns: repeat(4, 1fr);"></div>
                     </div>
                 </div>
@@ -1096,20 +1101,6 @@
         </div>
     </div>
 
-    <!-- Dữ liệu mẫu ẩn chứa thông tin toàn bộ phim -->
-    <div id="masterMovieDatabase" style="display: none;">
-        <div class="movie-master-data" data-id="interstellar" data-title="Interstellar" data-rating="★ 8.6" data-img="https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=300"></div>
-        <div class="movie-master-data" data-id="inception" data-title="Inception" data-rating="★ 8.8" data-img="https://images.unsplash.com/photo-1626814026160-2237a95fc5a0?q=80&w=300"></div>
-        <div class="movie-master-data" data-id="the-dark-knight" data-title="The Dark Knight" data-rating="★ 9.0" data-img="https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=300"></div>
-        <div class="movie-master-data" data-id="spirited-away" data-title="Spirited Away" data-rating="★ 8.7" data-img="https://images.unsplash.com/photo-1534447677768-be436bb09401?q=80&w=300"></div>
-        <div class="movie-master-data" data-id="parasite" data-title="Parasite" data-rating="★ 8.6" data-img="https://images.unsplash.com/photo-1485846234645-a62644f84728?q=80&w=300"></div>
-        <div class="movie-master-data" data-id="furiosa" data-title="Furiosa: A Mad Max Saga" data-rating="★ 8.5" data-img="https://image.tmdb.org/t/p/original/iADOJ8Zymht2JPMoy3R7xceZprc.jpg"></div>
-        <div class="movie-master-data" data-id="godzilla-kong" data-title="Godzilla x Kong" data-rating="★ 8.2" data-img="https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/a58a7719-0dcf-4e0b-b7bb-d2b725dbbb8e/dgmztse-c5a1ca5c-d154-40de-9a5f-a58193198725.png/v1/fill/w_1280,h_1897,q_80,strp/godzilla_x_kong_the_new_empire_poster_4k_by_andrewvm_dgmztse-fullview.jpg"></div>
-        <div class="movie-master-data" data-id="dune-2" data-title="Dune: Phần hai" data-rating="★ 8.9" data-img="https://static1.srcdn.com/wordpress/wp-content/uploads/2024/01/dune-part-2-poster-showing-timothee-chalamet-as-paul-atreides-and-zendaya-as-chani-holding-daggers.jpeg"></div>
-        <div class="movie-master-data" data-id="mai" data-title="Mai" data-rating="★ 8.4" data-img="https://dep.com.vn/wp-content/uploads/2024/02/Special-Poster-2-MAI.jpg"></div>
-        <div class="movie-master-data" data-id="quy-cau" data-title="Quỷ Cẩu" data-rating="★ 7.8" data-img="https://images2.thanhnien.vn/528068263637045248/2023/11/20/edit-teaser-poster-17004959248601312622703.png"></div>
-    </div>
-
     <!-- SCRIPTS -->
     <script>
         function switchTab(tabId, element) {
@@ -1127,7 +1118,7 @@
 
         function submitFormAjax(event, formElement, type) {
             event.preventDefault();
-            const url = type === 'profile' ? '/cap-nhat-thong-tin' : '/doi-mat-khual';
+            const url = type === 'profile' ? '/cap-nhat-thong-tin' : '/doi-mat-khau';
             const formData = new URLSearchParams(new FormData(formElement));
 
             fetch(url, { method: 'POST', body: formData })
@@ -1151,7 +1142,6 @@
             setTimeout(() => { toast.style.display = 'none'; }, 3500);
         }
 
-        // Điều khiển Popup danh sách phim đã xem
         function openWatchedModal() {
             const listContainer = document.getElementById('watchedMoviesListContainer');
             listContainer.innerHTML = '';
@@ -1178,12 +1168,10 @@
 
         document.addEventListener("DOMContentLoaded", function() {
             const FAVORITES_KEY = 'cinebook_favorite_movies';
-            
-            // Lấy khóa định danh riêng cho tài khoản đang đăng nhập (dựa vào email từ thẻ ẩn Thymeleaf)
             const userEmailKey = document.getElementById('currentLoggedUserKey') ? document.getElementById('currentLoggedUserKey').value : 'default_user';
             const AVATAR_KEY = 'cinebook_user_avatar_' + userEmailKey;
 
-            // 1. Đồng bộ và tính toán số lượng vé & điểm tích lũy từ bảng lịch sử đặt vé
+            // 1. Thống kê vé và điểm tích lũy
             const ticketRows = document.querySelectorAll('.ticket-row');
             let totalTickets = ticketRows.length;
             let totalSpentMoney = 0;
@@ -1201,21 +1189,15 @@
                 }
             });
 
-            // Quy đổi điểm tích lũy: Cứ mỗi 10.000đ tiền vé = 1 điểm tích lũy
             let earnedPointsFromTickets = Math.floor(totalSpentMoney / 10000);
-
-            // Cập nhật lên giao diện các ô thống kê tổng quan
             const statTicketsEl = document.getElementById('statTicketsCount');
             const statMoviesEl = document.getElementById('statMoviesCount');
             const statPointsEl = document.getElementById('statPointsValue');
 
             if (statTicketsEl) statTicketsEl.innerText = totalTickets;
             if (statMoviesEl) statMoviesEl.innerText = uniqueMovies.size;
-            if (statPointsEl) {
-                statPointsEl.innerText = earnedPointsFromTickets.toLocaleString('en-US');
-            }
+            if (statPointsEl) statPointsEl.innerText = earnedPointsFromTickets.toLocaleString('en-US');
 
-            // Cập nhật thanh tiến trình lên hạng (Mốc lên hạng Vàng là 4000 điểm)
             const maxRankPoints = 4000;
             let percent = Math.min(Math.round((earnedPointsFromTickets / maxRankPoints) * 100), 100);
             const progressBarFill = document.getElementById('rankProgressBarFill');
@@ -1233,7 +1215,7 @@
                 }
             }
 
-            // 2. Khôi phục avatar riêng của tài khoản hiện tại từ localStorage
+            // 2. Avatar
             const savedAvatar = localStorage.getItem(AVATAR_KEY);
             if (savedAvatar) {
                 const mainAvatar = document.getElementById('mainProfileAvatar');
@@ -1268,80 +1250,87 @@
             function updateAvatarImages(imgUrl) {
                 document.getElementById('mainProfileAvatar').src = imgUrl;
                 document.getElementById('headerUserAvatar').src = imgUrl;
-                localStorage.setItem(AVATAR_KEY, imgUrl); // Lưu riêng theo tài khoản đăng nhập
+                localStorage.setItem(AVATAR_KEY, imgUrl);
                 showToast('Cập nhật ảnh đại diện thành công!', '#10B981');
             }
 
-            // 3. Quản lý danh sách phim yêu thích qua localStorage
+            // ==========================================
+            // 3. TẢI VÀ ĐỒNG BỘ PHIM YÊU THÍCH TỪ API MYSQL
+            // ==========================================
             function getFavorites() {
                 try { return JSON.parse(localStorage.getItem(FAVORITES_KEY)) || []; } catch(e) { return []; }
             }
             function saveFavorites(favs) { localStorage.setItem(FAVORITES_KEY, JSON.stringify(favs)); }
 
-            function renderFavorites() {
-                const favs = getFavorites();
-                const masterElements = document.querySelectorAll('.movie-master-data');
-                let movieMap = {};
-                masterElements.forEach(el => {
-                    movieMap[el.getAttribute('data-id')] = {
-                        id: el.getAttribute('data-id'),
-                        title: el.getAttribute('data-title'),
-                        rating: el.getAttribute('data-rating'),
-                        img: el.getAttribute('data-img')
-                    };
-                });
-
+            async function renderFavorites() {
+                const favIds = getFavorites();
                 const overviewRow = document.getElementById('overviewFavoritesRow');
-                if (overviewRow) {
-                    overviewRow.innerHTML = '';
-                    if (favs.length === 0) {
-                        overviewRow.innerHTML = '<div style="grid-column: span 5; color: var(--text-gray); font-size: 12px; text-align: center; padding: 20px;">Chưa có phim yêu thích nào.</div>';
-                    } else {
-                        favs.forEach(movieId => {
-                            let movie = movieMap[movieId];
-                            if (movie) {
-                                let item = document.createElement('div');
-                                item.className = 'fav-movie-item';
-                                item.innerHTML = `
-                                    <div class="fav-poster">
-                                        <img src="${movie.img}" alt="${movie.title}">
-                                        <i class="fa-solid fa-heart fav-heart" data-id="${movie.id}" style="cursor: pointer;" title="Bỏ yêu thích"></i>
-                                    </div>
-                                    <span class="fav-title">${movie.title}</span>
-                                    <span class="fav-rating">${movie.rating}</span>
-                                `;
-                                overviewRow.appendChild(item);
-                            }
-                        });
-                    }
+                const favoritesTab = document.getElementById('favoritesTabGrid');
+
+                if (favIds.length === 0) {
+                    const emptyMsg = '<div style="grid-column: 1 / -1; color: var(--text-gray); font-size: 12px; text-align: center; padding: 25px;"><i class="fa-regular fa-heart" style="font-size: 24px; color: var(--pink-accent); display: block; margin-bottom: 6px;"></i>Chưa có phim yêu thích nào.</div>';
+                    if (overviewRow) overviewRow.innerHTML = emptyMsg;
+                    if (favoritesTab) favoritesTab.innerHTML = emptyMsg;
+                    return;
                 }
 
-                const favoritesTab = document.getElementById('favoritesTabGrid');
-                if (favoritesTab) {
-                    favoritesTab.innerHTML = '';
-                    if (favs.length === 0) {
-                        favoritesTab.innerHTML = '<div style="grid-column: span 4; color: var(--text-gray); font-size: 13px; text-align: center; padding: 40px;">Danh sách yêu thích đang trống.</div>';
-                    } else {
-                        favs.forEach(movieId => {
-                            let movie = movieMap[movieId];
-                            if (movie) {
-                                let item = document.createElement('div');
-                                item.className = 'fav-movie-item';
-                                item.innerHTML = `
+                try {
+                    // Gọi API MySQL lấy danh sách phim thật
+                    const res = await fetch('/api/movies');
+                    if (!res.ok) return;
+                    const allMovies = await res.json();
+
+                    // Lọc ra các phim người dùng đã bấm tim
+                    const favMovies = allMovies.filter(m => favIds.includes(m.id));
+
+                    // Render vào Tab Tổng quan (Hiển thị tối đa 4 phim)
+                    if (overviewRow) {
+                        const overviewMovies = favMovies.slice(0, 4);
+                        overviewRow.innerHTML = overviewMovies.map(movie => {
+                            let poster = movie.posterUrl || movie.poster_url || 'https://via.placeholder.com/150x200?text=No+Poster';
+                            return `
+                                <div class="fav-movie-item">
+                                    <div class="fav-poster">
+                                        <img src="${poster}" alt="${movie.title}" onerror="this.src='https://via.placeholder.com/150x200?text=Error'">
+                                        <i class="fa-solid fa-heart fav-heart" data-id="${movie.id}" title="Bỏ yêu thích"></i>
+                                    </div>
+                                    <span class="fav-title">${movie.title}</span>
+                                    <div class="fav-rating">
+                                        <span>${movie.genre || 'Phim rạp'}</span>
+                                        <span>${movie.rating || 8.0} ★</span>
+                                    </div>
+                                    <a href="/chi-tiet-phim?movieId=${movie.id}" style="display: block; text-align: center; background: var(--pink-accent); color: #fff; padding: 5px 0; border-radius: 6px; font-size: 11px; font-weight: 700; text-decoration: none; margin-top: 4px;">Đặt vé</a>
+                                </div>
+                            `;
+                        }).join('');
+                    }
+
+                    // Render vào Tab Danh sách yêu thích (Hiển thị toàn bộ)
+                    if (favoritesTab) {
+                        favoritesTab.innerHTML = favMovies.map(movie => {
+                            let poster = movie.posterUrl || movie.poster_url || 'https://via.placeholder.com/150x200?text=No+Poster';
+                            return `
+                                <div class="fav-movie-item">
                                     <div class="fav-poster" style="height: 180px;">
-                                        <img src="${movie.img}" alt="${movie.title}">
-                                        <i class="fa-solid fa-heart fav-heart" data-id="${movie.id}" style="cursor: pointer;" title="Bỏ yêu thích"></i>
+                                        <img src="${poster}" alt="${movie.title}" onerror="this.src='https://via.placeholder.com/150x200?text=Error'">
+                                        <i class="fa-solid fa-heart fav-heart" data-id="${movie.id}" title="Bỏ yêu thích"></i>
                                     </div>
                                     <span class="fav-title" style="font-size: 13px;">${movie.title}</span>
-                                    <span class="fav-rating">${movie.rating}</span>
-                                `;
-                                favoritesTab.appendChild(item);
-                            }
-                        });
+                                    <div class="fav-rating">
+                                        <span>${movie.genre || 'Phim rạp'}</span>
+                                        <span>${movie.rating || 8.0} ★</span>
+                                    </div>
+                                    <a href="/chi-tiet-phim?movieId=${movie.id}" style="display: block; text-align: center; background: var(--pink-accent); color: #fff; padding: 6px 0; border-radius: 6px; font-size: 12px; font-weight: 700; text-decoration: none; margin-top: 6px;">Đặt vé ngay</a>
+                                </div>
+                            `;
+                        }).join('');
                     }
+                } catch (err) {
+                    console.error("Lỗi khi tải danh sách phim yêu thích từ API:", err);
                 }
             }
 
+            // Gắn sự kiện click bỏ yêu thích ngay trong trang Thành viên
             document.addEventListener('click', function(e) {
                 if (e.target.classList.contains('fav-heart')) {
                     let movieId = e.target.getAttribute('data-id');
@@ -1362,18 +1351,16 @@
         });
 
         document.addEventListener("DOMContentLoaded", function() {
-            // Kiểm tra xem có thông báo nào được lưu tạm không
             const successMsg = localStorage.getItem("toast_success");
             const errorMsg = localStorage.getItem("toast_error");
 
             if (successMsg) {
                 showToast(successMsg, '#10B981');
-                localStorage.removeItem("toast_success"); // Xóa sau khi hiện xong
+                localStorage.removeItem("toast_success");
             }
-            
             if (errorMsg) {
                 showToast(errorMsg, '#EF4444');
-                localStorage.removeItem("toast_error"); // Xóa sau khi hiện xong
+                localStorage.removeItem("toast_error");
             }
         });
     </script>

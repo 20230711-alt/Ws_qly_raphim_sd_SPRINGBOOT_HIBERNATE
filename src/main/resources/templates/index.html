@@ -165,7 +165,7 @@
             padding: 0 30px;
         }
 
-        /* KHUNG CHỨA SLIDER - HIỆU ỨNG TRƯỢT NGANG */
+        /* KHUNG CHỨA SLIDER */
         .hero-slider-container {
             position: relative;
             width: 100%;
@@ -338,7 +338,6 @@
             z-index: 2;
         }
 
-        /* NÚT YÊU THÍCH TRÊN POSTER PHIM */
         .btn-favorite {
             position: absolute;
             top: 8px;
@@ -444,7 +443,6 @@
         .footer-col ul li { margin-bottom: 8px; }
         .footer-col ul li a { color: #b3b392; text-decoration: none; }
 
-        /* Styles cho Popup Tìm kiếm và Gợi ý ngay dưới ô nhập */
         #searchModal {
             display: none;
             position: fixed;
@@ -504,7 +502,6 @@
             color: var(--text-gray);
         }
 
-        /* Giao diện khu vực Phim yêu thích trong trang thành viên hoặc khi bấm vào mục yêu thích */
         #favoritesSection {
             display: none;
             margin-top: 20px;
@@ -523,308 +520,115 @@
 
     <!-- NAVBAR HEADER -->
     <header>
-        <a th:href="@{/index}" class="logo"><i class="fa-solid fa-film"></i> CDD<span>BOOK</span></a>
+        <a th:href="@{/}" class="logo"><i class="fa-solid fa-film"></i> CDD<span>BOOK</span></a>
 
         <nav>
             <ul>
                 <li><a th:href="@{/}" class="nav-item active" id="navHome"><i class="fa-solid fa-house"></i> Trang chủ</a></li>
                 <li><a th:href="@{/khuyen-mai}" class="nav-item"><i class="fa-solid fa-gift"></i> Khuyến mãi</a></li>
                 <li><a th:href="@{/phim}" class="nav-item"><i class="fa-solid fa-clapperboard"></i> Phim</a></li>
-                <!-- Thêm nút Phim yêu thích trên menu -->
 
                 <li class="auth-only"><a th:href="@{/thanh-vien}" class="nav-item"><i class="fa-solid fa-id-card"></i><span>Thành viên</span></a></li>
             </ul>
         </nav>
 
         <div class="header-right">
-            <!-- Icon Tìm kiếm -->
             <i class="fa-solid fa-magnifying-glass" id="searchIcon" title="Tìm kiếm phim"></i>
 
             <a th:href="@{/dang-nhap}" class="btn-auth-action guest-only"><i class="fa-solid fa-user"></i> Đăng nhập</a>
 
             <span class="user-name auth-only" th:text="${user != null} ? 'Xin chào, ' + ${user.fullName} : 'Đại Vương'">Đại Vương</span>
 
-            <a th:href="@{/dang-nhap}" class="btn-auth-action auth-only" style="background: rgba(255, 42, 95, 0.2); border: 1px solid var(--pink-accent);"><i class="fa-solid fa-right-from-bracket"></i> Đăng xuất</a>
+            <a th:href="@{/logout}" class="btn-auth-action auth-only" style="background: rgba(255, 42, 95, 0.2); border: 1px solid var(--pink-accent);"><i class="fa-solid fa-right-from-bracket"></i> Đăng xuất</a>
         </div>
     </header>
 
     <!-- TRANG CHỦ CONTENT -->
     <div class="container" id="mainContainer">
-        <div class="hero-slider-container">
-            <!-- Slider Track chứa toàn bộ các slide để trượt ngang -->
-            <div class="slider-track">
-                <!-- Slide 1: Furiosa -->
-                <div class="slide" style="background-image: url('https://image.tmdb.org/t/p/original/iADOJ8Zymht2JPMoy3R7xceZprc.jpg');">
-                    <div class="slide-content">
-                        <span class="slide-tag"><i class="fa-solid fa-fire"></i> Bom tấn chiếu rạp</span>
-                        <h1 class="slide-title">Furiosa: A Mad Max Saga</h1>
-                        <p class="slide-desc">Khám phá nguồn gốc của chiến binh Furiosa trong hành trình sinh tồn nghẹt thở.</p>
-                        <div class="slide-btns">
-                            <a th:href="@{/chi-tiet-phim(movieId='furiosa')}" class="btn-pink"><i class="fa-solid fa-ticket"></i> Đặt vé ngay</a>
-                        </div>
-                    </div>
-                </div>
+		<!-- BANNER SLIDER NỀN HD SẮC NÉT & ĐỒNG BỘ MÃ PHIM (P01 -> P05) -->
+		        <div class="hero-slider-container">
+		            <div class="slider-track">
+						<!-- Slide 1: Furiosa (P01) -->
+						<div class="slide" style="background-image: url('https://image.tmdb.org/t/p/original/wNAW38JeM2Glm2Lpp3BkODVvL8A.jpg');">
+						    <div class="slide-content">
+						        <span class="slide-tag"><i class="fa-solid fa-fire"></i> Bom tấn chiếu rạp</span>
+						        <h1 class="slide-title">Furiosa: A Mad Max Saga</h1>
+						        <p class="slide-desc">Khám phá nguồn gốc của chiến binh Furiosa trong hành trình sinh tồn nghẹt thở.</p>
+						        <div class="slide-btns">
+						            <a th:href="@{/chi-tiet-phim(movieId='P01')}" class="btn-pink"><i class="fa-solid fa-ticket"></i> Đặt vé ngay</a>
+						        </div>
+						    </div>
+						</div>
 
-                <!-- Slide 2: Godzilla x Kong -->
-                <div class="slide" style="background-image: url('https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/a58a7719-0dcf-4e0b-b7bb-d2b725dbbb8e/dgmztse-c5a1ca5c-d154-40de-9a5f-a58193198725.png/v1/fill/w_1280,h_1897,q_80,strp/godzilla_x_kong_the_new_empire_poster_4k_by_andrewvm_dgmztse-fullview.jpg?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7ImhlaWdodCI6Ijw9MTg5NyIsInBhdGgiOiJcL2ZcL2E1OGE3NzE5LTBkY2YtNGUwYi1iN2JiLWQyYjcyNWRiYmI4ZVwvZGdtenRzZS1jNWExY2E1Yy1kMTU0LTQwZGUtOWE1Zi1hNTgxOTMxOTg3MjUucG5nIiwid2lkdGgiOiI8PTEyODAifV1dLCJhdWQiOlsidXJuOnNlcnZpY2U6aW1hZ2Uub3BlcmF0aW9ucyJdfQ.UkFVAFZ5INkUyrpq0ezIrBKvMSyb80K2l2TCn0mC7sE');">
-                    <div class="slide-content">
-                        <span class="slide-tag"><i class="fa-solid fa-fire"></i> Bom tấn chiếu rạp</span>
-                        <h1 class="slide-title">Godzilla x Kong</h1>
-                        <p class="slide-desc">Cuộc đại chiến huyền thoại giữa hai chúa tể thế giới quái vật.</p>
-                        <div class="slide-btns">
-                            <a th:href="@{/chi-tiet-phim(movieId='godzilla-kong')}" class="btn-pink"><i class="fa-solid fa-ticket"></i> Đặt vé ngay</a>
-                        </div>
-                    </div>
-                </div>
+		                <!-- Slide 2: Godzilla x Kong (P02) -->
+		                <div class="slide" style="background-image: url('https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/a58a7719-0dcf-4e0b-b7bb-d2b725dbbb8e/dgmztse-c5a1ca5c-d154-40de-9a5f-a58193198725.png/v1/fill/w_1280,h_1897,q_80,strp/godzilla_x_kong_the_new_empire_poster_4k_by_andrewvm_dgmztse-fullview.jpg?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7ImhlaWdodCI6Ijw9MTg5NyIsInBhdGgiOiJcL2ZcL2E1OGE3NzE5LTBkY2YtNGUwYi1iN2JiLWQyYjcyNWRiYmI4ZVwvZGdtenRzZS1jNWExY2E1Yy1kMTU0LTQwZGUtOWE1Zi1hNTgxOTMxOTg3MjUucG5nIiwid2lkdGgiOiI8PTEyODAifV1dLCJhdWQiOlsidXJuOnNlcnZpY2U6aW1hZ2Uub3BlcmF0aW9ucyJdfQ.UkFVAFZ5INkUyrpq0ezIrBKvMSyb80K2l2TCn0mC7sE');">
+		                    <div class="slide-content">
+		                        <span class="slide-tag"><i class="fa-solid fa-fire"></i> Bom tấn chiếu rạp</span>
+		                        <h1 class="slide-title">Godzilla x Kong</h1>
+		                        <p class="slide-desc">Cuộc đại chiến huyền thoại giữa hai chúa tể thế giới quái vật.</p>
+		                        <div class="slide-btns">
+		                            <a th:href="@{/chi-tiet-phim(movieId='P02')}" class="btn-pink"><i class="fa-solid fa-ticket"></i> Đặt vé ngay</a>
+		                        </div>
+		                    </div>
+		                </div>
 
-                <!-- Slide 3: Dune 2 -->
-                <div class="slide" style="background-image: url('https://static1.srcdn.com/wordpress/wp-content/uploads/2024/01/dune-part-2-poster-showing-timothee-chalamet-as-paul-atreides-and-zendaya-as-chani-holding-daggers.jpeg');">
-                    <div class="slide-content">
-                        <span class="slide-tag"><i class="fa-solid fa-fire"></i> Bom tấn chiếu rạp</span>
-                        <h1 class="slide-title">Dune: Phần hai</h1>
-                        <p class="slide-desc">Hành trình báo thù và định mệnh của Paul Atreides trên hành tinh cát.</p>
-                        <div class="slide-btns">
-                            <a th:href="@{/chi-tiet-phim(movieId='dune-2')}" class="btn-pink"><i class="fa-solid fa-ticket"></i> Đặt vé ngay</a>
-                        </div>
-                    </div>
-                </div>
+		                <!-- Slide 3: Dune 2 (P03) -->
+		                <div class="slide" style="background-image: url('https://static1.srcdn.com/wordpress/wp-content/uploads/2024/01/dune-part-2-poster-showing-timothee-chalamet-as-paul-atreides-and-zendaya-as-chani-holding-daggers.jpeg');">
+		                    <div class="slide-content">
+		                        <span class="slide-tag"><i class="fa-solid fa-fire"></i> Bom tấn chiếu rạp</span>
+		                        <h1 class="slide-title">Dune: Phần hai</h1>
+		                        <p class="slide-desc">Hành trình báo thù và định mệnh của Paul Atreides trên hành tinh cát.</p>
+		                        <div class="slide-btns">
+		                            <a th:href="@{/chi-tiet-phim(movieId='P03')}" class="btn-pink"><i class="fa-solid fa-ticket"></i> Đặt vé ngay</a>
+		                        </div>
+		                    </div>
+		                </div>
 
-                <!-- Slide 4: Mai -->
-                <div class="slide" style="background-image: url('https://dep.com.vn/wp-content/uploads/2024/02/Special-Poster-2-MAI.jpg');">
-                    <div class="slide-content">
-                        <span class="slide-tag"><i class="fa-solid fa-fire"></i> Bom tấn chiếu rạp</span>
-                        <h1 class="slide-title">Mai</h1>
-                        <p class="slide-desc">Câu chuyện đầy cảm xúc về cuộc đời và tình yêu của người phụ nữ tên Mai.</p>
-                        <div class="slide-btns">
-                            <a th:href="@{/chi-tiet-phim(movieId='mai')}" class="btn-pink"><i class="fa-solid fa-ticket"></i> Đặt vé ngay</a>
-                        </div>
-                    </div>
-                </div>
+		                <!-- Slide 4: Mai (P04) -->
+		                <div class="slide" style="background-image: url('https://dep.com.vn/wp-content/uploads/2024/02/Special-Poster-2-MAI.jpg');">
+		                    <div class="slide-content">
+		                        <span class="slide-tag"><i class="fa-solid fa-fire"></i> Bom tấn chiếu rạp</span>
+		                        <h1 class="slide-title">Mai</h1>
+		                        <p class="slide-desc">Câu chuyện đầy cảm xúc về cuộc đời và tình yêu của người phụ nữ tên Mai.</p>
+		                        <div class="slide-btns">
+		                            <a th:href="@{/chi-tiet-phim(movieId='P04')}" class="btn-pink"><i class="fa-solid fa-ticket"></i> Đặt vé ngay</a>
+		                        </div>
+		                    </div>
+		                </div>
 
-                <!-- Slide 5: Quỷ Cẩu -->
-                <div class="slide" style="background-image: url('https://images2.thanhnien.vn/528068263637045248/2023/11/20/edit-teaser-poster-17004959248601312622703.png');">
-                    <div class="slide-content">
-                        <span class="slide-tag"><i class="fa-solid fa-fire"></i> Bom tấn chiếu rạp</span>
-                        <h1 class="slide-title">Quỷ Cẩu</h1>
-                        <p class="slide-desc">Bộ phim kinh dị tâm linh mang đậm văn hóa truyền thống Việt Nam.</p>
-                        <div class="slide-btns">
-                            <a th:href="@{/chi-tiet-phim(movieId='quy-cau')}" class="btn-pink"><i class="fa-solid fa-ticket"></i> Đặt vé ngay</a>
-                        </div>
-                    </div>
-                </div>
+		                <!-- Slide 5: Quỷ Cẩu (P05) -->
+		                <div class="slide" style="background-image: url('https://images2.thanhnien.vn/528068263637045248/2023/11/20/edit-teaser-poster-17004959248601312622703.png');">
+		                    <div class="slide-content">
+		                        <span class="slide-tag"><i class="fa-solid fa-fire"></i> Bom tấn chiếu rạp</span>
+		                        <h1 class="slide-title">Quỷ Cẩu</h1>
+		                        <p class="slide-desc">Bộ phim kinh dị tâm linh mang đậm văn hóa truyền thống Việt Nam.</p>
+		                        <div class="slide-btns">
+		                            <a th:href="@{/chi-tiet-phim(movieId='P05')}" class="btn-pink"><i class="fa-solid fa-ticket"></i> Đặt vé ngay</a>
+		                        </div>
+		                    </div>
+		                </div>
+		            </div>
+		        </div>
 
-                <!-- Slide 6: Kung Fu Panda 4 -->
-                <div class="slide" style="background-image: url('https://i.pinimg.com/736x/75/eb/1d/75eb1d3c965ddac7771f22ee43525ee3.jpg');">
-                    <div class="slide-content">
-                        <span class="slide-tag"><i class="fa-solid fa-fire"></i> Bom tấn chiếu rạp</span>
-                        <h1 class="slide-title">Kung Fu Panda 4</h1>
-                        <p class="slide-desc">Thần Long Đại Hiệp Po bước vào hành trình thử thách mới đầy hài hước.</p>
-                        <div class="slide-btns">
-                            <a th:href="@{/chi-tiet-phim(movieId='kung-fu-panda-4')}" class="btn-pink"><i class="fa-solid fa-ticket"></i> Đặt vé ngay</a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Slide 7: Doraemon -->
-                <div class="slide" style="background-image: url('https://images2.thanhnien.vn/528068263637045248/2024/5/5/phim-doraemon-nobita-va-ban-giao-huong-dia-caucgv-1714919139675623733840.jpg');">
-                    <div class="slide-content">
-                        <span class="slide-tag"><i class="fa-solid fa-fire"></i> Bom tấn chiếu rạp</span>
-                        <h1 class="slide-title">Doraemon: Bản Giao Hưởng Địa Cầu</h1>
-                        <p class="slide-desc">Hành trình âm nhạc kỳ diệu giải cứu thế giới của nhóm Nobita và Doraemon.</p>
-                        <div class="slide-btns">
-                            <a th:href="@{/chi-tiet-phim(movieId='doraemon')}" class="btn-pink"><i class="fa-solid fa-ticket"></i> Đặt vé ngay</a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Slide 8: Conan -->
-                <div class="slide" style="background-image: url('https://m.media-amazon.com/images/M/MV5BNTI4YThmYzItODc5YS00ZWYxLWFlYzAtZjZhNGFiNGUwZDM1XkEyXkFqcGdeQXVyMTEzMTI1Mjk3._V1_.jpg');">
-                    <div class="slide-content">
-                        <span class="slide-tag"><i class="fa-solid fa-fire"></i> Bom tấn chiếu rạp</span>
-                        <h1 class="slide-title">Thám tử Lừng danh Conan: Ngôi Sao 1 Triệu Đô</h1>
-                        <p class="slide-desc">Cuộc đối đầu kịch tính xoay quanh thanh kiếm báu tại Hakodate.</p>
-                        <div class="slide-btns">
-                            <a th:href="@{/chi-tiet-phim(movieId='conan')}" class="btn-pink"><i class="fa-solid fa-ticket"></i> Đặt vé ngay</a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- SLIDE THÊM MỚI 1: Spider-Man -->
-                <div class="slide" style="background-image: url('https://image.tmdb.org/t/p/original/8Vt6mWEReuy4Of61Lnj5Xj704m8.jpg');">
-                    <div class="slide-content">
-                        <span class="slide-tag"><i class="fa-solid fa-fire"></i> Bom tấn chiếu rạp</span>
-                        <h1 class="slide-title">Spider-Man: Across the Spider-Verse</h1>
-                        <p class="slide-desc">Du hành qua các vũ trụ song song trong cuộc phiêu lưu mãn nhãn của Miles Morales.</p>
-                        <div class="slide-btns">
-                            <a th:href="@{/chi-tiet-phim(movieId='spider-man')}" class="btn-pink"><i class="fa-solid fa-ticket"></i> Đặt vé ngay</a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- SLIDE THÊM MỚI 2: Interstellar -->
-                <div class="slide" style="background-image: url('https://image.tmdb.org/t/p/original/rAiYTfKGqDCRIIqo664sY9XZIvQ.jpg');">
-                    <div class="slide-content">
-                        <span class="slide-tag"><i class="fa-solid fa-fire"></i> Bom tấn chiếu rạp</span>
-                        <h1 class="slide-title">Interstellar</h1>
-                        <p class="slide-desc">Hành trình vượt không gian và thời gian để tìm kiếm ngôi nhà mới cho nhân loại.</p>
-                        <div class="slide-btns">
-                            <a th:href="@{/chi-tiet-phim(movieId='interstellar')}" class="btn-pink"><i class="fa-solid fa-ticket"></i> Đặt vé ngay</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- KHU VỰC HIỂN THỊ DANH SÁCH PHIM YÊU THÍCH (Mặc định ẩn, bật khi bấm nút Yêu thích trên menu) -->
+        <!-- DANH SÁCH YÊU THÍCH -->
         <div id="favoritesSection">
             <div class="section-header">
                 <h2 class="section-title"><i class="fa-solid fa-heart" style="color: var(--pink-accent);"></i> Danh sách phim yêu thích của bạn</h2>
                 <a href="#" id="backToHomeBtn" class="btn-see-all"><i class="fa-solid fa-arrow-left"></i> Quay lại trang chủ</a>
             </div>
-            <div class="movies-grid" id="favoritesGrid">
-                <!-- Nội dung danh sách yêu thích sẽ được render tự động qua JavaScript -->
-            </div>
+            <div class="movies-grid" id="favoritesGrid"></div>
         </div>
 
-        <!-- KHU VỰC PHIM ĐANG CHIẾU CHÍNH -->
+        <!-- KHU VỰC PHIM ĐANG CHIẾU TẢI ĐỘNG TỪ DATABASE -->
         <div id="homeMoviesSection">
             <div class="section-header">
                 <h2 class="section-title">Phim đang chiếu</h2>
                 <a th:href="@{/phim}" class="btn-see-all">Xem tất cả <i class="fa-solid fa-angle-right"></i></a>
             </div>
 
-            <div class="movies-grid">
-                <div class="movie-card" data-title="Furiosa: A Mad Max Saga" data-id="furiosa" data-genre="Hành động" data-img="https://image.tmdb.org/t/p/original/iADOJ8Zymht2JPMoy3R7xceZprc.jpg">
-                    <div class="movie-poster-box">
-                        <span class="movie-badge badge-imax">IMAX</span>
-                        <button class="btn-favorite" title="Thêm vào yêu thích"><i class="fa-solid fa-heart"></i></button>
-                        <img src="https://image.tmdb.org/t/p/original/iADOJ8Zymht2JPMoy3R7xceZprc.jpg" alt="Furiosa">
-                    </div>
-                    <div class="movie-info">
-                        <h3 class="movie-title">Furiosa: A Mad Max Saga</h3>
-                        <div class="movie-meta"><span>Hành động</span><span class="rating-box">8.5 <i class="fa-solid fa-star"></i></span></div>
-                        <a th:href="@{/chi-tiet-phim(movieId='furiosa')}" class="btn-book-ticket">Đặt vé</a>
-                    </div>
-                </div>
-
-                <div class="movie-card" data-title="Godzilla x Kong" data-id="godzilla-kong" data-genre="Khoa học viễn tưởng" data-img="https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/a58a7719-0dcf-4e0b-b7bb-d2b725dbbb8e/dgmztse-c5a1ca5c-d154-40de-9a5f-a58193198725.png/v1/fill/w_1280,h_1897,q_80,strp/godzilla_x_kong_the_new_empire_poster_4k_by_andrewvm_dgmztse-fullview.jpg?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7ImhlaWdodCI6Ijw9MTg5NyIsInBhdGgiOiJcL2ZcL2E1OGE3NzE5LTBkY2YtNGUwYi1iN2JiLWQyYjcyNWRiYmI4ZVwvZGdtenRzZS1jNWExY2E1Yy1kMTU0LTQwZGUtOWE1Zi1hNTgxOTMxOTg3MjUucG5nIiwid2lkdGgiOiI8PTEyODAifV1dLCJhdWQiOlsidXJuOnNlcnZpY2U6aW1hZ2Uub3BlcmF0aW9ucyJdfQ.UkFVAFZ5INkUyrpq0ezIrBKvMSyb80K2l2TCn0mC7sE">
-                    <div class="movie-poster-box">
-                        <span class="movie-badge badge-2d">2D</span>
-                        <button class="btn-favorite" title="Thêm vào yêu thích"><i class="fa-solid fa-heart"></i></button>
-                        <img src="https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/a58a7719-0dcf-4e0b-b7bb-d2b725dbbb8e/dgmztse-c5a1ca5c-d154-40de-9a5f-a58193198725.png/v1/fill/w_1280,h_1897,q_80,strp/godzilla_x_kong_the_new_empire_poster_4k_by_andrewvm_dgmztse-fullview.jpg?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7ImhlaWdodCI6Ijw9MTg5NyIsInBhdGgiOiJcL2ZcL2E1OGE3NzE5LTBkY2YtNGUwYi1iN2JiLWQyYjcyNWRiYmI4ZVwvZGdtenRzZS1jNWExY2E1Yy1kMTU0LTQwZGUtOWE1Zi1hNTgxOTMxOTg3MjUucG5nIiwid2lkdGgiOiI8PTEyODAifV1dLCJhdWQiOlsidXJuOnNlcnZpY2U6aW1hZ2Uub3BlcmF0aW9ucyJdfQ.UkFVAFZ5INkUyrpq0ezIrBKvMSyb80K2l2TCn0mC7sE" alt="Godzilla x Kong">
-                    </div>
-                    <div class="movie-info">
-                        <h3 class="movie-title">Godzilla x Kong</h3>
-                        <div class="movie-meta"><span>Khoa học viễn tưởng</span><span class="rating-box">7.8 <i class="fa-solid fa-star"></i></span></div>
-                        <a th:href="@{/chi-tiet-phim(movieId='godzilla-kong')}" class="btn-book-ticket">Đặt vé</a>
-                    </div>
-                </div>
-
-                <div class="movie-card" data-title="Dune: Phần hai" data-id="dune-2" data-genre="Khoa học viễn tưởng" data-img="https://static1.srcdn.com/wordpress/wp-content/uploads/2024/01/dune-part-2-poster-showing-timothee-chalamet-as-paul-atreides-and-zendaya-as-chani-holding-daggers.jpeg">
-                    <div class="movie-poster-box">
-                        <span class="movie-badge badge-3d">3D</span>
-                        <button class="btn-favorite" title="Thêm vào yêu thích"><i class="fa-solid fa-heart"></i></button>
-                        <img src="https://static1.srcdn.com/wordpress/wp-content/uploads/2024/01/dune-part-2-poster-showing-timothee-chalamet-as-paul-atreides-and-zendaya-as-chani-holding-daggers.jpeg" alt="Dune">
-                    </div>
-                    <div class="movie-info">
-                        <h3 class="movie-title">Dune: Phần hai</h3>
-                        <div class="movie-meta"><span>Khoa học viễn tưởng</span><span class="rating-box">8.9 <i class="fa-solid fa-star"></i></span></div>
-                        <a th:href="@{/chi-tiet-phim(movieId='dune-2')}" class="btn-book-ticket">Đặt vé</a>
-                    </div>
-                </div>
-
-                <div class="movie-card" data-title="Mai" data-id="mai" data-genre="Tình cảm" data-img="https://dep.com.vn/wp-content/uploads/2024/02/Special-Poster-2-MAI.jpg">
-                    <div class="movie-poster-box">
-                        <span class="movie-badge badge-2d">2D</span>
-                        <button class="btn-favorite" title="Thêm vào yêu thích"><i class="fa-solid fa-heart"></i></button>
-                        <img src="https://dep.com.vn/wp-content/uploads/2024/02/Special-Poster-2-MAI.jpg" alt="Mai">
-                    </div>
-                    <div class="movie-info">
-                        <h3 class="movie-title">Mai</h3>
-                        <div class="movie-meta"><span>Tình cảm</span><span class="rating-box">8.1 <i class="fa-solid fa-star"></i></span></div>
-                        <a th:href="@{/chi-tiet-phim(movieId='mai')}" class="btn-book-ticket">Đặt vé</a>
-                    </div>
-                </div>
-
-                <div class="movie-card" data-title="Quỷ Cẩu" data-id="quy-cau" data-genre="Kinh dị" data-img="https://images2.thanhnien.vn/528068263637045248/2023/11/20/edit-teaser-poster-17004959248601312622703.png">
-                    <div class="movie-poster-box">
-                        <span class="movie-badge badge-2d">2D</span>
-                        <button class="btn-favorite" title="Thêm vào yêu thích"><i class="fa-solid fa-heart"></i></button>
-                        <img src="https://images2.thanhnien.vn/528068263637045248/2023/11/20/edit-teaser-poster-17004959248601312622703.png" alt="Quỷ Cẩu">
-                    </div>
-                    <div class="movie-info">
-                        <h3 class="movie-title">Quỷ Cẩu</h3>
-                        <div class="movie-meta"><span>Kinh dị</span><span class="rating-box">6.5 <i class="fa-solid fa-star"></i></span></div>
-                        <a th:href="@{/chi-tiet-phim(movieId='quy-cau')}" class="btn-book-ticket">Đặt vé</a>
-                    </div>
-                </div>
-
-                <div class="movie-card" data-title="Kung Fu Panda 4" data-id="kung-fu-panda-4" data-genre="Hoạt hình" data-img="https://i.pinimg.com/736x/75/eb/1d/75eb1d3c965ddac7771f22ee43525ee3.jpg">
-                    <div class="movie-poster-box">
-                        <span class="movie-badge badge-2d">2D</span>
-                        <button class="btn-favorite" title="Thêm vào yêu thích"><i class="fa-solid fa-heart"></i></button>
-                        <img src="https://i.pinimg.com/736x/75/eb/1d/75eb1d3c965ddac7771f22ee43525ee3.jpg" alt="Kung Fu Panda 4">
-                    </div>
-                    <div class="movie-info">
-                        <h3 class="movie-title">Kung Fu Panda 4</h3>
-                        <div class="movie-meta"><span>Hoạt hình</span><span class="rating-box">7.6 <i class="fa-solid fa-star"></i></span></div>
-                        <a th:href="@{/chi-tiet-phim(movieId='kung-fu-panda-4')}" class="btn-book-ticket">Đặt vé</a>
-                    </div>
-                </div>
-
-                <div class="movie-card" data-title="Doraemon: Bản Giao Hưởng Địa Cầu" data-id="doraemon" data-genre="Hoạt hình" data-img="https://images2.thanhnien.vn/528068263637045248/2024/5/5/phim-doraemon-nobita-va-ban-giao-huong-dia-caucgv-1714919139675623733840.jpg">
-                    <div class="movie-poster-box">
-                        <span class="movie-badge badge-2d">2D</span>
-                        <button class="btn-favorite" title="Thêm vào yêu thích"><i class="fa-solid fa-heart"></i></button>
-                        <img src="https://images2.thanhnien.vn/528068263637045248/2024/5/5/phim-doraemon-nobita-va-ban-giao-huong-dia-caucgv-1714919139675623733840.jpg" alt="Doraemon">
-                    </div>
-                    <div class="movie-info">
-                        <h3 class="movie-title">Doraemon: Bản Giao Hưởng Địa Cầu</h3>
-                        <div class="movie-meta"><span>Hoạt hình</span><span class="rating-box">8.2 <i class="fa-solid fa-star"></i></span></div>
-                        <a th:href="@{/chi-tiet-phim(movieId='doraemon')}" class="btn-book-ticket">Đặt vé</a>
-                    </div>
-                </div>
-
-                <div class="movie-card" data-title="Thám tử Lừng danh Conan: Ngôi Sao 1 Triệu Đô" data-id="conan" data-genre="Hoạt hình" data-img="https://animevsub.cc/wp-content/uploads/2025/06/01a129f40195c588ebc3d00c225fa33c.jpg">
-                    <div class="movie-poster-box">
-                        <span class="movie-badge badge-imax">IMAX</span>
-                        <button class="btn-favorite" title="Thêm vào yêu thích"><i class="fa-solid fa-heart"></i></button>
-                        <img src="https://animevsub.cc/wp-content/uploads/2025/06/01a129f40195c588ebc3d00c225fa33c.jpg" alt="Conan">
-                    </div>
-                    <div class="movie-info">
-                        <h3 class="movie-title">Thám tử Lừng danh Conan: Ngôi Sao 1 Triệu Đô</h3>
-                        <div class="movie-meta"><span>Hoạt hình</span><span class="rating-box">8.8 <i class="fa-solid fa-star"></i></span></div>
-                        <a th:href="@{/chi-tiet-phim(movieId='conan')}" class="btn-book-ticket">Đặt vé</a>
-                    </div>
-                </div>
-
-                <!-- THẺ PHIM THÊM MỚI 1: Spider-Man -->
-                <div class="movie-card" data-title="Spider-Man: Across the Spider-Verse" data-id="spider-man" data-genre="Hoạt hình" data-img="https://image.tmdb.org/t/p/original/8Vt6mWEReuy4Of61Lnj5Xj704m8.jpg">
-                    <div class="movie-poster-box">
-                        <span class="movie-badge badge-imax">IMAX</span>
-                        <button class="btn-favorite" title="Thêm vào yêu thích"><i class="fa-solid fa-heart"></i></button>
-                        <img src="https://image.tmdb.org/t/p/original/8Vt6mWEReuy4Of61Lnj5Xj704m8.jpg" alt="Spider-Man">
-                    </div>
-                    <div class="movie-info">
-                        <h3 class="movie-title">Spider-Man: Across the Spider-Verse</h3>
-                        <div class="movie-meta"><span>Hoạt hình</span><span class="rating-box">9.0 <i class="fa-solid fa-star"></i></span></div>
-                        <a th:href="@{/chi-tiet-phim(movieId='spider-man-sv')}" class="btn-book-ticket">Đặt vé</a>
-                    </div>
-                </div>
-
-                <!-- THẺ PHIM THÊM MỚI 2: Interstellar -->
-                <div class="movie-card" data-title="Interstellar" data-id="interstellar" data-genre="Khoa học viễn tưởng" data-img="https://image.tmdb.org/t/p/original/rAiYTfKGqDCRIIqo664sY9XZIvQ.jpg">
-                    <div class="movie-poster-box">
-                        <span class="movie-badge badge-imax">IMAX</span>
-                        <button class="btn-favorite" title="Thêm vào yêu thích"><i class="fa-solid fa-heart"></i></button>
-                        <img src="https://image.tmdb.org/t/p/original/rAiYTfKGqDCRIIqo664sY9XZIvQ.jpg" alt="Interstellar">
-                    </div>
-                    <div class="movie-info">
-                        <h3 class="movie-title">Interstellar</h3>
-                        <div class="movie-meta"><span>Khoa học viễn tưởng</span><span class="rating-box">9.3 <i class="fa-solid fa-star"></i></span></div>
-                        <a th:href="@{/chi-tiet-phim(movieId='interstellar')}" class="btn-book-ticket">Đặt vé</a>
-                    </div>
-                </div>
+            <!-- Khung chứa các thẻ phim nạp tự động từ API MySQL -->
+            <div class="movies-grid" id="homeMovieGrid">
+                <!-- Javascript sẽ nạp toàn bộ phim thật từ API vào đây -->
             </div>
         </div>
 
@@ -860,7 +664,6 @@
             
             <input type="text" id="searchInput" placeholder="Nhập tên phim cần tìm..." style="width: 100%; padding: 12px 16px; background: var(--bg-dark); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-light); font-size: 13px; outline: none;">
             
-            <!-- Danh sách gợi ý hiện ngay dưới thanh tìm kiếm -->
             <div id="searchResultsDropdown"></div>
         </div>
     </div>
@@ -893,8 +696,11 @@
         </div>
     </footer>
 
+    <!-- JAVASCRIPT XỬ LÝ -->
     <script>
         let isLoggedIn = [[${user != null}]];
+        let globalMoviesList = []; // Mảng toàn cục lưu danh sách phim phục vụ tính năng tìm kiếm
+
         document.addEventListener("DOMContentLoaded", function() {
             if (isLoggedIn) {
                 document.body.classList.add('is-logged-in');
@@ -913,8 +719,96 @@
                 }, 4000);
             }
 
+			// ==========================================
+			// TẢI TOÀN BỘ PHIM THẬT TỪ DATABASE MYSQL VÀO TRANG CHỦ & BANNER
+			// ==========================================
+			async function loadHomeMovies() {
+			    try {
+			        const res = await fetch('/api/movies');
+			        if (!res.ok) return;
+			        const movies = await res.json();
+			        globalMoviesList = movies; // Lưu mảng dùng cho Search
+
+			        // 1. TỰ ĐỘNG NẠP BANNER SLIDER TỪ DATABASE (Tự khắc phục lỗi đen ảnh Banner)
+			        const sliderTrack = document.querySelector('.slider-track');
+			        if (sliderTrack && movies.length > 0) {
+			            // Lấy 5 phim đầu tiên làm Banner Slide
+			            const bannerMovies = movies.slice(0, 5);
+			            sliderTrack.innerHTML = bannerMovies.map(movie => {
+			                let bgImg = movie.posterUrl || movie.poster_url;
+			                if (!bgImg || bgImg.trim() === '' || bgImg === 'null') {
+			                    bgImg = 'https://image.tmdb.org/t/p/original/iADOJ8Zymht2JAbsMLDAwfljYvB.jpg';
+			                }
+			                return `
+			                    <div class="slide" style="background-image: url('${bgImg}');">
+			                        <div class="slide-content">
+			                            <span class="slide-tag"><i class="fa-solid fa-fire"></i> Bom tấn chiếu rạp</span>
+			                            <h1 class="slide-title">${movie.title}</h1>
+			                            <p class="slide-desc">${movie.description || 'Khám phá bom tấn điện ảnh hấp dẫn nhất tại rạp.'}</p>
+			                            <div class="slide-btns">
+			                                <a href="/chi-tiet-phim?movieId=${movie.id}" class="btn-pink"><i class="fa-solid fa-ticket"></i> Đặt vé ngay</a>
+			                            </div>
+			                        </div>
+			                    </div>
+			                `;
+			            }).join('');
+			        }
+
+			        // 2. RENDER PHIM ĐANG CHIẾU VÀO GRID BÊN DƯỚI (GIỮ NGUYÊN CODE CỦA LINH)
+			        const homeMovieGrid = document.getElementById('homeMovieGrid');
+			        if (!homeMovieGrid) return;
+
+			        homeMovieGrid.innerHTML = '';
+
+			        // Lọc chỉ các phim đang chiếu để hiển thị lên Trang chủ
+			        const showingMovies = movies.filter(m => m.status === 'Đang chiếu');
+
+			        showingMovies.forEach(movie => {
+			            let posterImg = movie.posterUrl || movie.poster_url;
+			            if (!posterImg || posterImg.trim() === '' || posterImg === 'null') {
+			                posterImg = 'https://via.placeholder.com/220x300?text=No+Poster';
+			            }
+
+			            const badgeType = (movie.formatType === 'IMAX 3D' || movie.formatType === 'IMAX') ? 'badge-imax' :
+			                              (movie.formatType === '3D') ? 'badge-3d' : 'badge-2d';
+
+			            const card = document.createElement('div');
+			            card.className = 'movie-card';
+			            card.setAttribute('data-id', movie.id);
+			            card.setAttribute('data-title', movie.title);
+			            card.setAttribute('data-genre', movie.genre || 'Phim rạp');
+			            card.setAttribute('data-img', posterImg);
+
+			            card.innerHTML = `
+			                <div class="movie-poster-box">
+			                    <span class="movie-badge ${badgeType}">${movie.formatType || '2D'}</span>
+			                    <button class="btn-favorite" title="Thêm vào yêu thích"><i class="fa-solid fa-heart"></i></button>
+			                    <img src="${posterImg}" alt="${movie.title}" onerror="this.src='https://via.placeholder.com/220x300?text=Error'">
+			                </div>
+			                <div class="movie-info">
+			                    <h3 class="movie-title">${movie.title}</h3>
+			                    <div class="movie-meta">
+			                        <span>${movie.genre || 'Phim rạp'}</span>
+			                        <span class="rating-box">${movie.rating || 8.0} <i class="fa-solid fa-star"></i></span>
+			                    </div>
+			                    <a href="/chi-tiet-phim?movieId=${movie.id}" class="btn-book-ticket">Đặt vé</a>
+			                </div>
+			            `;
+			            homeMovieGrid.appendChild(card);
+			        });
+
+			        // Cập nhật lại UI trái tim yêu thích sau khi nạp thẻ phim xong
+			        updateFavoriteButtonsUI();
+			    } catch (error) {
+			        console.error("Lỗi khi tải danh sách phim Trang chủ từ MySQL:", error);
+			    }
+			}
+
+			// Gọi hàm tải phim
+			loadHomeMovies();
+
             // ==========================================
-            // XỬ LÝ TÍNH NĂNG YÊU THÍCH PHIM & LOCALSTORAGE
+            // XỬ LÝ PHIM YÊU THÍCH (LOCALSTORAGE)
             // ==========================================
             const FAVORITES_KEY = 'cinebook_favorite_movies';
 
@@ -930,7 +824,6 @@
                 localStorage.setItem(FAVORITES_KEY, JSON.stringify(favs));
             }
 
-            // Đồng bộ trạng thái giao diện nút trái tim trên các thẻ phim
             function updateFavoriteButtonsUI() {
                 const favs = getFavorites();
                 document.querySelectorAll('.movie-card').forEach(card => {
@@ -948,7 +841,6 @@
                 });
             }
 
-            // Gắn sự kiện click cho các nút trái tim
             document.addEventListener('click', function(e) {
                 let btnFav = e.target.closest('.btn-favorite');
                 if (btnFav) {
@@ -968,16 +860,12 @@
                     saveFavorites(favs);
                     updateFavoriteButtonsUI();
 
-                    // Nếu đang ở trang hiển thị danh sách yêu thích thì render lại ngay lập tức
                     if (document.getElementById('favoritesSection').style.display === 'block') {
                         renderFavoritesPage();
                     }
                 }
             });
 
-            updateFavoriteButtonsUI();
-
-            // Xử lý chuyển đổi qua lại giữa Trang chủ và Trang Phim yêu thích
             const navFavorites = document.getElementById('navFavorites');
             const navHome = document.getElementById('navHome');
             const homeMoviesSection = document.getElementById('homeMoviesSection');
@@ -991,7 +879,6 @@
                 if (homeMoviesSection) homeMoviesSection.style.display = 'none';
                 if (favoritesSection) favoritesSection.style.display = 'block';
 
-                // Cập nhật trạng thái active trên navbar
                 document.querySelectorAll('nav a').forEach(a => a.classList.remove('active'));
                 if (navFavorites) navFavorites.classList.add('active');
 
@@ -1026,13 +913,11 @@
                     return;
                 }
 
-                // Lấy thông tin các thẻ phim gốc đang có trên trang để nhân bản vào danh sách yêu thích
-                const allCards = document.querySelectorAll('.movie-card');
+                const allCards = document.querySelectorAll('#homeMovieGrid .movie-card');
                 allCards.forEach(card => {
                     let movieId = card.getAttribute('data-id');
                     if (favs.includes(movieId)) {
                         let clone = card.cloneNode(true);
-                        // Đảm bảo nút yêu thích trong bản clone cũng hoạt động chuẩn xác
                         let btn = clone.querySelector('.btn-favorite');
                         if (btn) btn.classList.add('active');
                         grid.appendChild(clone);
@@ -1040,7 +925,9 @@
                 });
             }
 
-            // Xử lý tương tác nút Tìm kiếm (Mở/Đóng Modal Tìm kiếm)
+            // ==========================================
+            // XỬ LÝ MODAL TÌM KIẾM PHIM
+            // ==========================================
             const searchIcon = document.getElementById('searchIcon');
             const searchModal = document.getElementById('searchModal');
             const closeSearchBtn = document.getElementById('closeSearchBtn');
@@ -1068,7 +955,6 @@
                 });
             }
 
-            // Gợi ý phim xuất hiện ngay dưới thanh tìm kiếm khi người dùng gõ
             if (searchInput && searchResultsDropdown) {
                 searchInput.addEventListener('input', () => {
                     let keyword = searchInput.value.trim().toLowerCase();
@@ -1079,21 +965,7 @@
                         return;
                     }
 
-                    const movieCards = document.querySelectorAll('.movie-card');
-                    let matches = [];
-                    let checkedIds = new Set();
-
-                    movieCards.forEach(card => {
-                        let title = card.getAttribute('data-title');
-                        let id = card.getAttribute('data-id');
-                        let genre = card.getAttribute('data-genre');
-                        let img = card.getAttribute('data-img');
-
-                        if (title && title.toLowerCase().includes(keyword) && !checkedIds.has(id)) {
-                            checkedIds.add(id);
-                            matches.push({ title, id, genre, img });
-                        }
-                    });
+                    let matches = globalMoviesList.filter(m => m.title && m.title.toLowerCase().includes(keyword));
 
                     if (matches.length > 0) {
                         searchResultsDropdown.style.display = 'flex';
@@ -1102,10 +974,10 @@
                             item.href = `/chi-tiet-phim?movieId=${movie.id}`;
                             item.className = 'search-result-item';
                             item.innerHTML = `
-                                <img src="${movie.img}" alt="${movie.title}">
+                                <img src="${movie.posterUrl || movie.poster_url || 'https://via.placeholder.com/35x50'}" alt="${movie.title}">
                                 <div class="search-result-info">
                                     <h5>${movie.title}</h5>
-                                    <p>Thể loại: ${movie.genre}</p>
+                                    <p>Thể loại: ${movie.genre || 'Phim rạp'}</p>
                                 </div>
                             `;
                             searchResultsDropdown.appendChild(item);
@@ -1119,27 +991,6 @@
                         noResult.style.textAlign = 'center';
                         noResult.textContent = 'Không tìm thấy bộ phim phù hợp.';
                         searchResultsDropdown.appendChild(noResult);
-                    }
-                });
-            }
-
-            // Xử lý tương tác Hộp thoại Thông báo
-            const notificationBtn = document.getElementById('notificationBtn');
-            const notificationDropdown = document.getElementById('notificationDropdown');
-
-            if (notificationBtn && notificationDropdown) {
-                notificationBtn.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    if (notificationDropdown.style.display === 'block') {
-                        notificationDropdown.style.display = 'none';
-                    } else {
-                        notificationDropdown.style.display = 'block';
-                    }
-                });
-
-                document.addEventListener('click', (e) => {
-                    if (!notificationBtn.contains(e.target)) {
-                        notificationDropdown.style.display = 'none';
                     }
                 });
             }

@@ -115,6 +115,7 @@
                     <p id="movieDescription">Đang tải mô tả nội dung phim...</p>
                 </div>
 
+                <!-- NÚT CHỌN SUẤT CHIẾU & ĐẶT VÉ -->
                 <div class="actions">
                     <a id="btnBookSeat" href="#" class="btn-book"><i class="fa-solid fa-ticket"></i> Chọn Suất Chiếu & Đặt Vé</a>
                 </div>
@@ -163,13 +164,15 @@
                 document.getElementById('movieRating').textContent = (movie.rating || 8.0) + ' ★';
                 document.getElementById('movieCast').textContent = movie.cast || 'Đang cập nhật';
                 document.getElementById('movieDescription').textContent = movie.description || 'Chưa có mô tả.';
-                document.getElementById('btnBookSeat').href = `/chon-ghe?movieId=${movie.id}`;
+                
+                // ĐÃ SỬA: Gán đúng đường dẫn chuyển sang trang Chọn suất chiếu & Chọn rạp
+                document.getElementById('btnBookSeat').href = `/chon-suat-chieu?movieId=${movie.id}`;
 
                 // 2. Hiển thị Poster
                 const posterImg = document.getElementById('moviePoster');
                 posterImg.src = movie.posterUrl || movie.poster_url || 'https://via.placeholder.com/300x420?text=No+Poster';
 
-                // 3. Render Video Trailer (Dùng thẻ HTML5 <video> loại bỏ hoàn toàn iframe lỗi 400)
+                // 3. Render Video Trailer
                 const videoContainer = document.getElementById('videoContainer');
                 const trailerUrl = movie.trailerUrl || movie.trailer_url;
 

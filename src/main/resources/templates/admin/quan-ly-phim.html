@@ -175,8 +175,14 @@
 
         .btn-action:hover { opacity: 0.9; }
 
-        /* --- TABLE STYLE --- */
-        table { width: 100%; border-collapse: collapse; text-align: left; font-size: 13px; }
+        /* --- TABLE STYLE & CẮT KHÔNG CHO NÚT XUỐNG DÒNG --- */
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            text-align: left; 
+            font-size: 13px; 
+            table-layout: auto;
+        }
         th { color: var(--text-gray); font-weight: 600; padding: 12px 16px; border-bottom: 1px solid var(--border-color); text-transform: uppercase; font-size: 11px; }
         td { padding: 14px 16px; border-bottom: 1px solid rgba(255,255,255,0.03); vertical-align: middle; color: #d1d5db; }
         tr:hover td { background-color: rgba(255,255,255,0.01); }
@@ -199,9 +205,33 @@
         .badge.success { background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); }
         .badge.pending { background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3); }
 
-        .btn-sm { padding: 6px 12px; font-size: 11px; border-radius: 6px; border: none; cursor: pointer; font-weight: 600; transition: opacity 0.2s; }
+        /* ÉP NẮM NGANG CHO NÚT SỬA VÀ XÓA */
+        .action-group {
+            display: flex !important;
+            flex-direction: row !important;
+            align-items: center !important;
+            gap: 6px !important;
+            white-space: nowrap !important;
+            width: max-content;
+        }
+
+        .btn-sm { 
+            padding: 6px 12px; 
+            font-size: 11px; 
+            border-radius: 6px; 
+            border: none; 
+            cursor: pointer; 
+            font-weight: 600; 
+            transition: opacity 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            margin: 0 !important;
+            white-space: nowrap;
+        }
         .btn-edit { background: rgba(59, 130, 246, 0.2); color: #3b82f6; border: 1px solid rgba(59, 130, 246, 0.3); }
-        .btn-del { background: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); margin-left: 6px; }
+        .btn-del { background: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); }
 
         /* --- MODAL DIALOG --- */
         .modal-overlay {
@@ -314,7 +344,7 @@
                             <th>Thể Loại</th>
                             <th>Thời Lượng</th>
                             <th>Trạng Thái</th>
-                            <th>Thao Tác</th>
+                            <th style="width: 150px; text-align: center;">Thao Tác</th>
                         </tr>
                     </thead>
                     <tbody id="movieTableBody">
@@ -428,34 +458,47 @@
         async function loadAdminMovies() {
             try {
                 const res = await fetch('/api/movies');
+                if (!res.ok) throw new Error("Không thể kết nối API /api/movies");
+                
                 const movies = await res.json();
                 const tbody = document.getElementById('movieTableBody');
 
                 if (!tbody) return;
 
+                // Nếu Cơ sở dữ liệu trống
                 if (movies.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding: 20px; color: var(--text-gray);">Chưa có phim nào trong cơ sở dữ liệu.</td></tr>`;
+                    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding: 20px; color: var(--text-gray);">Chưa có phim nào trong cơ sở dữ liệu MySQL.</td></tr>`;
                     return;
                 }
 
+                // Render toàn bộ dữ liệu phim thật lên bảng Admin
                 tbody.innerHTML = movies.map(m => {
-                    const badgeClass = m.status === 'Đang chiếu' ? 'success' : 'pending';
-                    const poster = m.posterUrl || m.poster_url || 'https://via.placeholder.com/36x48?text=No+Img';
+                    const badgeClass = (m.status === 'Đang chiếu') ? 'success' : 'pending';
+                    
+                    let poster = m.posterUrl || m.poster_url;
+                    if (!poster || poster.trim() === '' || poster === 'null') {
+                        poster = 'https://via.placeholder.com/36x48?text=No+Img';
+                    }
+
                     return `
                         <tr>
                             <td><b>${m.id}</b></td>
                             <td>
-                                <div class="movie-thumb-cell">
-                                    <img src="${poster}" alt="${m.title}" onerror="this.src='https://via.placeholder.com/36x48?text=Error'">
+                                <div class="movie-thumb-cell" style="display:flex; align-items:center; gap:12px;">
+                                    <img src="${poster}" alt="${m.title}" style="width:36px; height:48px; border-radius:4px; object-fit:cover; background:#1a202c;" onerror="this.src='https://via.placeholder.com/36x48?text=Error'">
                                     <span><b>${m.title}</b></span>
                                 </div>
                             </td>
                             <td>${m.genre || '---'}</td>
                             <td>${m.duration ? m.duration + ' phút' : '---'}</td>
                             <td><span class="badge ${badgeClass}">${m.status || 'Đang chiếu'}</span></td>
-                            <td>
-                                <button class="btn-sm btn-edit" onclick="editMovie('${m.id}')">Sửa</button>
-                                <button class="btn-sm btn-del" onclick="deleteMovie('${m.id}')">Xóa</button>
+                            
+                            <!-- CỘT THAO TÁC ÉP THẲNG HÀNG NGANG -->
+                            <td style="white-space: nowrap; width: 150px;">
+                                <div class="action-group">
+                                    <button class="btn-sm btn-edit" onclick="editMovie('${m.id}')"><i class="fa-solid fa-pen-to-square"></i> Sửa</button>
+                                    <button class="btn-sm btn-del" onclick="deleteMovie('${m.id}')"><i class="fa-solid fa-trash"></i> Xóa</button>
+                                </div>
                             </td>
                         </tr>
                     `;
@@ -479,17 +522,16 @@
         }
 
         // Xem trước Video Trailer khi chọn file
-		function previewTrailer(input) {
-		    if (input.files && input.files[0]) {
-		        const file = input.files[0];
-		        const video = document.getElementById('trailerPreviewVideo');
-		        
-		        // Tạo URL tạm thời để phát video xem trước từ máy tính
-		        const objectUrl = URL.createObjectURL(file);
-		        video.src = objectUrl;
-		        video.style.display = 'block';
-		    }
-		}
+        function previewTrailer(input) {
+            if (input.files && input.files[0]) {
+                const file = input.files[0];
+                const video = document.getElementById('trailerPreviewVideo');
+                
+                const objectUrl = URL.createObjectURL(file);
+                video.src = objectUrl;
+                video.style.display = 'block';
+            }
+        }
 
         // Điều khiển Modal
         function openMovieModal() {
@@ -508,122 +550,122 @@
         }
 
         // Gửi Form Thêm/Sửa Phim (Bao gồm Upload cả Ảnh Poster và Video Trailer)
-		document.getElementById('addMovieForm').addEventListener('submit', async (e) => {
-		    e.preventDefault();
+        document.getElementById('addMovieForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
 
-		    let finalPosterUrl = document.getElementById('m_posterUrl').value;
-		    let finalTrailerUrl = document.getElementById('m_trailerUrl').value;
+            let finalPosterUrl = document.getElementById('m_posterUrl').value;
+            let finalTrailerUrl = document.getElementById('m_trailerUrl').value;
 
-		    const posterFileInput = document.getElementById('m_posterFile');
-		    const trailerFileInput = document.getElementById('m_trailerFile');
+            const posterFileInput = document.getElementById('m_posterFile');
+            const trailerFileInput = document.getElementById('m_trailerFile');
 
-		    // 1. Upload Poster nếu có chọn tệp mới
-		    if (posterFileInput.files.length > 0) {
-		        const formData = new FormData();
-		        formData.append('file', posterFileInput.files[0]);
-		        try {
-		            const uploadRes = await fetch('/api/movies/upload', { method: 'POST', body: formData });
-		            if (uploadRes.ok) {
-		                const data = await uploadRes.json();
-		                finalPosterUrl = data.url;
-		                document.getElementById('m_posterUrl').value = data.url; // Cập nhật ngay vào thẻ ẩn
-		            }
-		        } catch (err) { console.error("Lỗi Upload Poster:", err); }
-		    }
+            // 1. Upload Poster nếu có chọn tệp mới
+            if (posterFileInput.files.length > 0) {
+                const formData = new FormData();
+                formData.append('file', posterFileInput.files[0]);
+                try {
+                    const uploadRes = await fetch('/api/movies/upload', { method: 'POST', body: formData });
+                    if (uploadRes.ok) {
+                        const data = await uploadRes.json();
+                        finalPosterUrl = data.url;
+                        document.getElementById('m_posterUrl').value = data.url;
+                    }
+                } catch (err) { console.error("Lỗi Upload Poster:", err); }
+            }
 
-		    // 2. Upload Video Trailer nếu có chọn tệp mới
-		    if (trailerFileInput.files.length > 0) {
-		        const formData = new FormData();
-		        formData.append('file', trailerFileInput.files[0]);
-		        try {
-		            const uploadRes = await fetch('/api/movies/upload', { method: 'POST', body: formData });
-		            if (uploadRes.ok) {
-		                const data = await uploadRes.json();
-		                finalTrailerUrl = data.url; // URL dạng /uploads/17260000_2.mp4
-		                document.getElementById('m_trailerUrl').value = data.url; // Cập nhật ngay vào thẻ ẩn
-		            }
-		        } catch (err) { console.error("Lỗi Upload Trailer:", err); }
-		    }
+            // 2. Upload Video Trailer nếu có chọn tệp mới
+            if (trailerFileInput.files.length > 0) {
+                const formData = new FormData();
+                formData.append('file', trailerFileInput.files[0]);
+                try {
+                    const uploadRes = await fetch('/api/movies/upload', { method: 'POST', body: formData });
+                    if (uploadRes.ok) {
+                        const data = await uploadRes.json();
+                        finalTrailerUrl = data.url;
+                        document.getElementById('m_trailerUrl').value = data.url;
+                    }
+                } catch (err) { console.error("Lỗi Upload Trailer:", err); }
+            }
 
-		    // 3. Đóng gói dữ liệu gửi lưu MySQL Database
-		    const movieData = {
-		        id: document.getElementById('m_id').value,
-		        title: document.getElementById('m_title').value,
-		        genre: document.getElementById('m_genre').value,
-		        duration: parseInt(document.getElementById('m_duration').value) || 0,
-		        status: document.getElementById('m_status').value,
-		        formatType: document.getElementById('m_formatType').value,
-		        releaseDate: document.getElementById('m_releaseDate').value || null,
-		        rating: parseFloat(document.getElementById('m_rating').value) || 8.0,
-		        director: document.getElementById('m_director').value,
-		        country: document.getElementById('m_country').value,
-		        cast: document.getElementById('m_cast').value,
-		        posterUrl: finalPosterUrl,
-		        trailerUrl: finalTrailerUrl, // Đảm bảo luôn lấy URL chuẩn vừa upload
-		        description: document.getElementById('m_description').value
-		    };
+            // 3. Đóng gói dữ liệu gửi lưu MySQL Database
+            const movieData = {
+                id: document.getElementById('m_id').value,
+                title: document.getElementById('m_title').value,
+                genre: document.getElementById('m_genre').value,
+                duration: parseInt(document.getElementById('m_duration').value) || 0,
+                status: document.getElementById('m_status').value,
+                formatType: document.getElementById('m_formatType').value,
+                releaseDate: document.getElementById('m_releaseDate').value || null,
+                rating: parseFloat(document.getElementById('m_rating').value) || 8.0,
+                director: document.getElementById('m_director').value,
+                country: document.getElementById('m_country').value,
+                cast: document.getElementById('m_cast').value,
+                posterUrl: finalPosterUrl,
+                trailerUrl: finalTrailerUrl,
+                description: document.getElementById('m_description').value
+            };
 
-		    const res = await fetch('/api/movies', {
-		        method: 'POST',
-		        headers: { 'Content-Type': 'application/json' },
-		        body: JSON.stringify(movieData)
-		    });
+            const res = await fetch('/api/movies', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(movieData)
+            });
 
-		    if (res.ok) {
-		        alert("Đã lưu phim và Video Trailer thành công!");
-		        closeMovieModal();
-		        loadAdminMovies();
-		    } else {
-		        alert("Có lỗi xảy ra khi lưu dữ liệu phim!");
-		    }
-		});
+            if (res.ok) {
+                alert("Đã lưu phim và Video Trailer thành công!");
+                closeMovieModal();
+                loadAdminMovies();
+            } else {
+                alert("Có lỗi xảy ra khi lưu dữ liệu phim!");
+            }
+        });
 
         // Nạp dữ liệu cũ lên Form khi bấm nút Sửa
-		async function editMovie(id) {
-		    const res = await fetch(`/api/movies/${id}`);
-		    if (!res.ok) return alert("Không tìm thấy thông tin phim!");
-		    
-		    const movie = await res.json();
-		    document.getElementById('m_id').value = movie.id;
-		    document.getElementById('m_id').readOnly = true;
-		    document.getElementById('m_title').value = movie.title || '';
-		    document.getElementById('m_genre').value = movie.genre || '';
-		    document.getElementById('m_duration').value = movie.duration || '';
-		    document.getElementById('m_status').value = movie.status || 'Đang chiếu';
-		    document.getElementById('m_formatType').value = movie.formatType || '2D';
-		    document.getElementById('m_releaseDate').value = movie.releaseDate || '';
-		    document.getElementById('m_rating').value = movie.rating || '';
-		    document.getElementById('m_director').value = movie.director || '';
-		    document.getElementById('m_country').value = movie.country || '';
-		    document.getElementById('m_cast').value = movie.cast || '';
-		    document.getElementById('m_description').value = movie.description || '';
+        async function editMovie(id) {
+            const res = await fetch(`/api/movies/${id}`);
+            if (!res.ok) return alert("Không tìm thấy thông tin phim!");
+            
+            const movie = await res.json();
+            document.getElementById('m_id').value = movie.id;
+            document.getElementById('m_id').readOnly = true;
+            document.getElementById('m_title').value = movie.title || '';
+            document.getElementById('m_genre').value = movie.genre || '';
+            document.getElementById('m_duration').value = movie.duration || '';
+            document.getElementById('m_status').value = movie.status || 'Đang chiếu';
+            document.getElementById('m_formatType').value = movie.formatType || '2D';
+            document.getElementById('m_releaseDate').value = movie.releaseDate || '';
+            document.getElementById('m_rating').value = movie.rating || '';
+            document.getElementById('m_director').value = movie.director || '';
+            document.getElementById('m_country').value = movie.country || '';
+            document.getElementById('m_cast').value = movie.cast || '';
+            document.getElementById('m_description').value = movie.description || '';
 
-		    // Nạp Poster cũ
-		    const posterUrl = movie.posterUrl || movie.poster_url || '';
-		    document.getElementById('m_posterUrl').value = posterUrl;
-		    const img = document.getElementById('posterPreviewImg');
-		    if (posterUrl) {
-		        img.src = posterUrl;
-		        img.style.display = 'block';
-		    } else {
-		        img.style.display = 'none';
-		    }
+            // Nạp Poster cũ
+            const posterUrl = movie.posterUrl || movie.poster_url || '';
+            document.getElementById('m_posterUrl').value = posterUrl;
+            const img = document.getElementById('posterPreviewImg');
+            if (posterUrl) {
+                img.src = posterUrl;
+                img.style.display = 'block';
+            } else {
+                img.style.display = 'none';
+            }
 
-		    // NẠP VIDEO TRAILER CỦ (Xử lý đúng cả thuộc tính posterUrl/trailerUrl)
-		    const trailerUrl = movie.trailerUrl || movie.trailer_url || '';
-		    document.getElementById('m_trailerUrl').value = trailerUrl;
-		    const video = document.getElementById('trailerPreviewVideo');
-		    if (trailerUrl && trailerUrl.trim() !== '' && trailerUrl !== 'null') {
-		        video.src = trailerUrl;
-		        video.style.display = 'block';
-		    } else {
-		        video.src = '';
-		        video.style.display = 'none';
-		    }
+            // Nạp Video Trailer cũ
+            const trailerUrl = movie.trailerUrl || movie.trailer_url || '';
+            document.getElementById('m_trailerUrl').value = trailerUrl;
+            const video = document.getElementById('trailerPreviewVideo');
+            if (trailerUrl && trailerUrl.trim() !== '' && trailerUrl !== 'null') {
+                video.src = trailerUrl;
+                video.style.display = 'block';
+            } else {
+                video.src = '';
+                video.style.display = 'none';
+            }
 
-		    document.getElementById('modalTitle').innerText = 'Chỉnh Sửa Phim';
-		    document.getElementById('movieModal').style.display = 'flex';
-		}
+            document.getElementById('modalTitle').innerText = 'Chỉnh Sửa Phim';
+            document.getElementById('movieModal').style.display = 'flex';
+        }
 
         // Xóa phim
         async function deleteMovie(id) {

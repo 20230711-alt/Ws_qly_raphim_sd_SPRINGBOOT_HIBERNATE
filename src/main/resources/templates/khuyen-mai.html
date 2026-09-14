@@ -571,29 +571,6 @@
                     <div class="search-results-list" id="searchResultsList"></div>
                 </div>
             </div>
-
-            <a href="/login" th:href="@{/login}" class="btn-auth-action guest-only">
-                <i class="fa-solid fa-user"></i> Đăng nhập
-            </a>
-
-            <div class="notification-icon auth-only" id="notificationBtn" title="Thông báo">
-             
-  
-                <div class="notification-dropdown" id="notificationDropdown">
-                    <h4>Thông báo mới</h4>
-                    <div class="notif-item"><strong>Hạng thẻ:</strong> Bạn vừa được nâng cấp lên hạng Bạc!</div>
-                    <div class="notif-item"><strong>Ưu đãi:</strong> Nhận ngay mã giảm giá 50% bắp nước.</div>
-                    <div class="notif-item"><strong>Hệ thống:</strong> Lịch chiếu phim cuối tuần đã được cập nhật.</div>
-                </div>
-            </div>
-
-            <span class="user-name auth-only"
-                  th:text="${user != null} ? 'Xin chào, ' + ${user.fullName} : 'Đại Vương'">Đại Vương</span>
-
-            <a th:href="@{/dang-nhap}" href="/logout" class="btn-auth-action auth-only"
-               style="background: rgba(255, 42, 95, 0.2); border: 1px solid var(--pink-accent);">
-                <i class="fa-solid fa-right-from-bracket"></i> Đăng xuất
-            </a>
         </div>
     </header>
 

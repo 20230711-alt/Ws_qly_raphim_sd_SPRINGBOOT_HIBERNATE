@@ -470,18 +470,6 @@
                     <div class="search-results-list" id="searchResultsList"></div>
                 </div>
             </div>
-
-            <a href="/login" th:href="@{/login}" class="btn-auth-action guest-only">
-                <i class="fa-solid fa-user"></i> Đăng nhập
-            </a>
-
-            <span class="user-name auth-only"
-                  th:text="${user != null} ? 'Xin chào, ' + ${user.fullName} : 'Đại Vương'">Đại Vương</span>
-
-            <a th:href="@{/dang-nhap}" href="/logout" class="btn-auth-action auth-only"
-               style="background: rgba(255, 42, 95, 0.2); border: 1px solid var(--pink-accent);">
-                <i class="fa-solid fa-right-from-bracket"></i> Đăng xuất
-            </a>
         </div>
     </header>
     
@@ -753,85 +741,96 @@
             { id: "interstellar", title: "Interstellar", genre: "Khoa học viễn tưởng", image: "https://image.tmdb.org/t/p/original/rAiYTfKGqDCRIIqo664sY9XZIvQ.jpg" }
         ];
 
-        // GỌI API ĐỘNG LẤY PHIM MỚI TỪ ADMIN VÀ RENDER NỐI TIẾP VÀO GIAO DIỆN
-        async function fetchDynamicMoviesFromAdmin() {
-            try {
-                const res = await fetch('/api/movies');
-                if (!res.ok) return;
-                const moviesFromDb = await res.json();
+		// GỌI API ĐỘNG LẤY TOÀN BỘ PHIM THẬT TỪ DATABASE VÀ RENDER NỐI TIẾP
+		async function fetchDynamicMoviesFromAdmin() {
+		    try {
+		        const res = await fetch('/api/movies');
+		        if (!res.ok) return;
+		        const moviesFromDb = await res.json();
 
-                const nowShowingGrid = document.getElementById('nowShowingGrid');
-                const upcomingGrid = document.getElementById('upcomingGrid');
+		        const nowShowingGrid = document.getElementById('nowShowingGrid');
+		        const upcomingGrid = document.getElementById('upcomingGrid');
 
-                // Lấy danh sách mã phim mock hiện tại để tránh hiển thị trùng lặp
-                const existingIds = Array.from(document.querySelectorAll('.movie-card')).map(card => card.getAttribute('data-id'));
+		        if (!nowShowingGrid || !upcomingGrid) return;
 
-                moviesFromDb.forEach(movie => {
-                    // Nếu phim đã có sẵn trong mock data thì bỏ qua
-                    if (existingIds.includes(movie.id)) return;
+		        // 1. XÓA SẠCH DỮ LIỆU MOCK CŨ TRONG CÁC GRID (Để tránh xung đột ID chữ thường như 'furiosa')
+		        nowShowingGrid.innerHTML = '';
+		        upcomingGrid.innerHTML = '';
 
-                    // Thêm vào mảng tìm kiếm
-                    sampleMovies.push({
-                        id: movie.id,
-                        title: movie.title,
-                        genre: movie.genre || 'Phim rạp',
-                        image: movie.posterUrl || 'https://via.placeholder.com/220x300?text=No+Poster'
-                    });
+		        // Reset lại mảng sampleMovies cho tính năng Tìm kiếm
+		        if (typeof sampleMovies !== 'undefined') {
+		            sampleMovies = [];
+		        }
 
-                    // Định dạng Badge 2D / 3D / IMAX
-                    const badgeType = movie.formatType === 'IMAX 3D' || movie.formatType === 'IMAX' ? 'badge-imax' :
-                                      movie.formatType === '3D' ? 'badge-3d' : 'badge-2d';
+		        moviesFromDb.forEach(movie => {
+		            // Lấy đường dẫn poster (hỗ trợ cả posterUrl và poster_url)
+		            let posterImg = movie.posterUrl || movie.poster_url;
+		            if (!posterImg || posterImg.trim() === '' || posterImg === 'null') {
+		                posterImg = 'https://via.placeholder.com/220x300?text=No+Poster';
+		            }
 
-                    const posterImg = movie.posterUrl || 'https://via.placeholder.com/220x300?text=No+Poster';
+		            // Thêm vào mảng tìm kiếm nếu có dùng ô Search
+		            if (typeof sampleMovies !== 'undefined') {
+		                sampleMovies.push({
+		                    id: movie.id,
+		                    title: movie.title,
+		                    genre: movie.genre || 'Phim rạp',
+		                    image: posterImg
+		                });
+		            }
 
-                    if (movie.status === 'Sắp chiếu') {
-                        // Tạo Card phim Sắp chiếu
-                        const card = document.createElement('div');
-                        card.className = 'movie-card';
-                        card.setAttribute('data-id', movie.id);
-                        card.setAttribute('data-title', movie.title);
-                        card.innerHTML = `
-                            <div class="movie-poster-box">
-                                <span class="movie-badge badge-coming">Sắp chiếu</span>
-                                <img src="${posterImg}" alt="${movie.title}">
-                            </div>
-                            <div class="movie-info">
-                                <h3 class="movie-title">${movie.title}</h3>
-                                <div class="movie-meta">
-                                    <span>${movie.genre || 'Phim rạp'}</span>
-                                    <span class="rating-box">${movie.releaseDate || 'Sắp ra mắt'}</span>
-                                </div>
-                                <span class="btn-coming-soon">Sắp ra mắt</span>
-                            </div>
-                        `;
-                        upcomingGrid.appendChild(card);
-                    } else {
-                        // Tạo Card phim Đang chiếu
-                        const card = document.createElement('div');
-                        card.className = 'movie-card';
-                        card.setAttribute('data-id', movie.id);
-                        card.setAttribute('data-title', movie.title);
-                        card.innerHTML = `
-                            <div class="movie-poster-box">
-                                <span class="movie-badge ${badgeType}">${movie.formatType || '2D'}</span>
-                                <img src="${posterImg}" alt="${movie.title}">
-                            </div>
-                            <div class="movie-info">
-                                <h3 class="movie-title">${movie.title}</h3>
-                                <div class="movie-meta">
-                                    <span>${movie.genre || 'Phim rạp'}</span>
-                                    <span class="rating-box">${movie.rating || 8.0} <i class="fa-solid fa-star"></i></span>
-                                </div>
-                                <a href="/chi-tiet-phim?movieId=${movie.id}" class="btn-book-ticket">Đặt vé</a>
-                            </div>
-                        `;
-                        nowShowingGrid.appendChild(card);
-                    }
-                });
-            } catch (error) {
-                console.error("Lỗi khi kết nối lấy danh sách phim động từ Server:", error);
-            }
-        }
+		            // Định dạng Badge 2D / 3D / IMAX
+		            const badgeType = (movie.formatType === 'IMAX 3D' || movie.formatType === 'IMAX') ? 'badge-imax' :
+		                              (movie.formatType === '3D') ? 'badge-3d' : 'badge-2d';
+
+		            if (movie.status === 'Sắp chiếu') {
+		                // Tạo Card phim Sắp chiếu
+		                const card = document.createElement('div');
+		                card.className = 'movie-card';
+		                card.setAttribute('data-id', movie.id);
+		                card.setAttribute('data-title', movie.title);
+		                card.innerHTML = `
+		                    <div class="movie-poster-box">
+		                        <span class="movie-badge badge-coming">Sắp chiếu</span>
+		                        <img src="${posterImg}" alt="${movie.title}" onerror="this.src='https://via.placeholder.com/220x300?text=Error'">
+		                    </div>
+		                    <div class="movie-info">
+		                        <h3 class="movie-title">${movie.title}</h3>
+		                        <div class="movie-meta">
+		                            <span>${movie.genre || 'Phim rạp'}</span>
+		                            <span class="rating-box">${movie.releaseDate || 'Sắp ra mắt'}</span>
+		                        </div>
+		                        <span class="btn-coming-soon">Sắp ra mắt</span>
+		                    </div>
+		                `;
+		                upcomingGrid.appendChild(card);
+		            } else {
+		                // Tạo Card phim Đang chiếu (TRUYỀN ĐÚNG movie.id VÀO LINK ĐẶT VÉ)
+		                const card = document.createElement('div');
+		                card.className = 'movie-card';
+		                card.setAttribute('data-id', movie.id);
+		                card.setAttribute('data-title', movie.title);
+		                card.innerHTML = `
+		                    <div class="movie-poster-box">
+		                        <span class="movie-badge ${badgeType}">${movie.formatType || '2D'}</span>
+		                        <img src="${posterImg}" alt="${movie.title}" onerror="this.src='https://via.placeholder.com/220x300?text=Error'">
+		                    </div>
+		                    <div class="movie-info">
+		                        <h3 class="movie-title">${movie.title}</h3>
+		                        <div class="movie-meta">
+		                            <span>${movie.genre || 'Phim rạp'}</span>
+		                            <span class="rating-box">${movie.rating || 8.0} <i class="fa-solid fa-star"></i></span>
+		                        </div>
+		                        <a href="/chi-tiet-phim?movieId=${movie.id}" class="btn-book-ticket">Đặt vé</a>
+		                    </div>
+		                `;
+		                nowShowingGrid.appendChild(card);
+		            }
+		        });
+		    } catch (error) {
+		        console.error("Lỗi khi kết nối lấy danh sách phim động từ Server:", error);
+		    }
+		}
 
         // ĐIỀU KHIỂN KHUNG TÌM KIẾM
         const searchBtn = document.getElementById('searchBtn');

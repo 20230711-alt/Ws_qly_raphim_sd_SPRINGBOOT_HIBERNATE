@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "tickets")
 public class Ticket {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -16,9 +17,13 @@ public class Ticket {
     private String seats;
     private Double totalPrice;
     private LocalDateTime bookingDate;
-    private String cinema;
 
-    // Getters and Setters
+    // Tên rạp chiếu (Khớp với th:text="${ticket.cinemaName}" ở file thanh-vien.html)
+    @Column(name = "cinema_name")
+    private String cinemaName;
+
+    // --- GETTERS AND SETTERS ---
+
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
@@ -40,6 +45,6 @@ public class Ticket {
     public LocalDateTime getBookingDate() { return bookingDate; }
     public void setBookingDate(LocalDateTime bookingDate) { this.bookingDate = bookingDate; }
 
-    public String getCinema() { return cinema; }
-    public void setCinema(String cinema) { this.cinema = cinema; }
+    public String getCinemaName() { return cinemaName; }
+    public void setCinemaName(String cinemaName) { this.cinemaName = cinemaName; }
 }

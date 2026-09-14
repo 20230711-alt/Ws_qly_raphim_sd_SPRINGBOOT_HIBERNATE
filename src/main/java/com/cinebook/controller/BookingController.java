@@ -34,7 +34,7 @@ public class BookingController {
 
             String seatsStr = request.getSeats() != null ? String.join(", ", request.getSeats()) : "";
 
-            // Lưu thông tin vé
+            // Lưu thông tin vé (Đã đổi thành setCinemaName)
             Ticket ticket = new Ticket();
             ticket.setUserId(user.getId());
             ticket.setMovieTitle(request.getMovieTitle());
@@ -42,7 +42,10 @@ public class BookingController {
             ticket.setSeats(seatsStr);
             ticket.setTotalPrice(request.getTotalPrice());
             ticket.setBookingDate(LocalDateTime.now());
-            ticket.setCinema(request.getCinema());
+            
+            // ĐÃ SỬA: Gán tên rạp vào trường cinemaName
+            ticket.setCinemaName(request.getCinema());
+            
             ticketRepository.save(ticket);
 
             // Lưu thông tin giao dịch
@@ -58,7 +61,6 @@ public class BookingController {
             return ResponseEntity.ok("Đặt vé thành công");
             
         } catch (Exception e) {
-            // IN LỖI CHI TIẾT RA CONSOLE ĐỂ XEM NÓ ĐANG SAI Ở ĐÂU
             e.printStackTrace();
             return ResponseEntity.status(500).body("Lỗi Server: " + e.getMessage());
         }
