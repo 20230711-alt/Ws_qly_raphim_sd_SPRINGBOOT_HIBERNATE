@@ -1,0 +1,1381 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CINEBOOK - Trang Thành Viên</title>
+
+    <!-- Font Awesome Icons 6.4.0 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --bg-dark: #07090E;
+            --card-bg: #10141E;
+            --pink-accent: #FF2A5F;
+            --pink-hover: #FF4D79;
+            --text-light: #FFFFFF;
+            --text-gray: #8E96A7;
+            --border-color: rgba(255, 255, 255, 0.07);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            overflow-x: hidden;
+        }
+
+        /* HEADER */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 60px;
+            background: rgba(7, 9, 14, 0.85);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--text-light);
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            gap: 8px;
+        }
+
+        .logo i, .logo span {
+            color: var(--pink-accent);
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 28px;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: var(--text-gray);
+            font-size: 12px;
+            font-weight: 500;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.2s ease;
+        }
+
+        nav a i { font-size: 15px; }
+        nav a:hover, nav a.nav-item.active { color: var(--text-light); }
+        nav a.nav-item.active i { color: var(--pink-accent); }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 22px;
+        }
+
+        .user-avatar-sm {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .user-greeting-box {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-greeting {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-light);
+        }
+
+        .btn-logout-header {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255, 42, 95, 0.08);
+            border: 1px solid var(--pink-accent);
+            color: var(--text-light);
+            padding: 6px 12px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 11px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .btn-logout-header i {
+            color: var(--pink-accent);
+            font-size: 11px;
+        }
+
+        .btn-logout-header:hover {
+            background: var(--pink-accent);
+            color: white;
+        }
+
+        .btn-logout-header:hover i {
+            color: white;
+        }
+
+        /* MAIN LAYOUT */
+        .member-container {
+            max-width: 1400px;
+            margin: 30px auto;
+            padding: 0 30px;
+        }
+
+        .breadcrumb {
+            font-size: 12px;
+            color: var(--text-gray);
+            margin-bottom: 15px;
+        }
+
+        .breadcrumb span {
+            color: var(--text-light);
+        }
+
+        .page-title {
+            font-size: 24px;
+            font-weight: 800;
+            margin-bottom: 25px;
+        }
+
+        .member-layout {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            gap: 25px;
+        }
+
+        /* SIDEBAR MENU */
+        .member-sidebar {
+            background: var(--card-bg);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            padding: 15px;
+            height: fit-content;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .sidebar-item a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 15px;
+            color: var(--text-gray);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .sidebar-item a:hover, .sidebar-item.active a {
+            background: rgba(255, 42, 95, 0.15);
+            color: var(--pink-accent);
+        }
+
+        .sidebar-item.active a {
+            background: linear-gradient(135deg, rgba(255, 42, 95, 0.2) 0%, rgba(229, 9, 20, 0.2) 100%);
+        }
+
+        /* CONTENT AREA */
+        .member-content {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        /* PROFILE BANNER CARD */
+        .profile-banner {
+            background: var(--card-bg);
+            border-radius: 14px;
+            border: 1px solid var(--border-color);
+            padding: 25px 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .profile-info-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .profile-user-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .profile-avatar-wrap {
+            position: relative;
+            width: 75px;
+            height: 75px;
+            cursor: pointer;
+        }
+
+        .profile-avatar-wrap img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .edit-avatar-btn {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            background: var(--pink-accent);
+            color: white;
+            border: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .profile-details h2 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .rank-badge {
+            background: #2D3748;
+            color: #E2E8F0;
+            font-size: 10px;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        .profile-meta-text {
+            font-size: 12px;
+            color: var(--text-gray);
+        }
+
+        .profile-rank-progress {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            min-width: 320px;
+        }
+
+        .progress-bar-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            color: var(--text-gray);
+        }
+
+        .progress-track {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            width: 68%;
+            height: 100%;
+            background: linear-gradient(90deg, #FF2A5F, #FFA07A);
+            border-radius: 3px;
+        }
+
+        .crown-icon {
+            color: #FACC15;
+            font-size: 28px;
+        }
+
+        /* STATS GRID */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .stat-header-flex {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: var(--text-gray);
+            font-size: 12px;
+        }
+
+        .stat-header-flex i {
+            color: var(--pink-accent);
+            font-size: 16px;
+        }
+
+        .stat-value {
+            font-size: 22px;
+            font-weight: 800;
+        }
+
+        .stat-footer-link {
+            font-size: 11px;
+            color: var(--pink-accent);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            margin-top: auto;
+            cursor: pointer;
+        }
+
+        /* LOWER SECTION GRIDS */
+        .lower-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+        }
+
+        .section-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .card-header-flex {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .card-header-flex h3 {
+            font-size: 15px;
+            font-weight: 700;
+        }
+
+        .card-header-flex a {
+            font-size: 12px;
+            color: var(--pink-accent);
+            text-decoration: none;
+        }
+
+        /* FAVORITE MOVIES */
+        .fav-movies-row {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+        }
+
+        .fav-movie-item {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .fav-poster {
+            position: relative;
+            height: 140px;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .fav-poster img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .fav-heart {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            color: var(--pink-accent);
+            background: rgba(0,0,0,0.5);
+            padding: 4px;
+            border-radius: 50%;
+            font-size: 10px;
+        }
+
+        .fav-title {
+            font-size: 11px;
+            font-weight: 700;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .fav-rating {
+            font-size: 10px;
+            color: #FACC15;
+        }
+
+        /* VOUCHERS LIST */
+        .voucher-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .voucher-item {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .voucher-info h4 {
+            font-size: 12px;
+            font-weight: 700;
+            margin-bottom: 3px;
+        }
+
+        .voucher-info p {
+            font-size: 10px;
+            color: var(--text-gray);
+        }
+
+        .btn-use-voucher {
+            background: var(--pink-accent);
+            color: white;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        /* TABS CHO CÁC CHỨC NĂNG */
+        .form-section {
+            display: none;
+        }
+
+        .form-section.active-tab {
+            display: block;
+        }
+
+        .styled-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            max-width: 600px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-group label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-gray);
+        }
+
+        .form-group input {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            padding: 10px 14px;
+            border-radius: 8px;
+            color: white;
+            font-size: 13px;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--pink-accent);
+        }
+
+        .btn-submit {
+            background: linear-gradient(135deg, #FF2A5F 0%, #E50914 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 13px;
+            cursor: pointer;
+            width: fit-content;
+        }
+
+        /* TABLES & LISTS */
+        .custom-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            text-align: left;
+        }
+
+        .custom-table th, .custom-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .custom-table th {
+            color: var(--text-gray);
+            font-weight: 600;
+            font-size: 12px;
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .status-badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .status-success { background: rgba(16, 185, 129, 0.15); color: #10B981; }
+        .status-pending { background: rgba(245, 158, 11, 0.15); color: #F59E0B; }
+
+        .list-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .notification-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 15px;
+            display: flex;
+            gap: 15px;
+            align-items: flex-start;
+        }
+
+        .notification-icon-box {
+            background: rgba(255, 42, 95, 0.15);
+            color: var(--pink-accent);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .notification-content h4 {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .notification-content p {
+            font-size: 12px;
+            color: var(--text-gray);
+            line-height: 1.4;
+        }
+
+        .notification-time {
+            font-size: 10px;
+            color: var(--pink-accent);
+            margin-top: 6px;
+            display: inline-block;
+        }
+
+        .review-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .review-movie-name {
+            font-weight: 700;
+            font-size: 14px;
+            color: var(--text-light);
+        }
+
+        .review-stars {
+            color: #FACC15;
+            font-size: 12px;
+        }
+
+        .review-text {
+            font-size: 12px;
+            color: var(--text-gray);
+        }
+
+        /* MODAL POPUP */
+        .custom-modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+        .custom-modal-box {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            width: 450px;
+            max-width: 90%;
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            animation: scaleUp 0.25s ease;
+        }
+        .custom-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 16px;
+            font-weight: 700;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+        }
+        .custom-modal-close {
+            background: none; border: none; color: var(--text-gray); font-size: 16px; cursor: pointer;
+        }
+        .custom-modal-close:hover { color: var(--pink-accent); }
+        .watched-movies-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 250px;
+            overflow-y: auto;
+        }
+        .watched-movie-row {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 10px 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border: 1px solid var(--border-color);
+        }
+        .watched-movie-row i { color: var(--pink-accent); }
+
+        /* TOAST NOTIFICATION */
+        #toast-notification {
+            position: fixed;
+            top: 80px;
+            right: 30px;
+            background: #10B981;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            gap: 10px;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes scaleUp { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+    </style>
+</head>
+<body>
+
+    <!-- THẺ ẨN ĐỂ LƯU EMAIL/ID CỦA USER ĐANG ĐĂNG NHẬP (DÙNG CHO JS PHÂN TÁCH ẢNH RIÊNG) -->
+    <input type="hidden" id="currentLoggedUserKey" th:value="${user != null ? user.email : 'default_user'}" />
+
+    <!-- TOAST NOTIFICATION -->
+    <div id="toast-notification">
+        <i class="fa-solid fa-circle-check" style="font-size: 16px;"></i>
+        <span id="toast-text">Thành công!</span>
+    </div>
+
+    <!-- MODAL XEM CHI TIẾT PHIM ĐÃ XEM -->
+    <div class="custom-modal-overlay" id="watchedMoviesModal">
+        <div class="custom-modal-box">
+            <div class="custom-modal-header">
+                <span><i class="fa-solid fa-clapperboard" style="color: var(--pink-accent); margin-right: 8px;"></i> Danh sách phim đã xem</span>
+                <button class="custom-modal-close" onclick="closeWatchedModal()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="watched-movies-list" id="watchedMoviesListContainer">
+                <!-- Danh sách sẽ được chèn động bằng JS -->
+            </div>
+            <button class="btn-submit" style="width: 100%; margin-top: 5px;" onclick="closeWatchedModal()">Đóng</button>
+        </div>
+    </div>
+
+    <!-- NAVBAR HEADER -->
+    <header>
+        <a th:href="@{/}" class="logo"><i class="fa-solid fa-film"></i> CDD<span>BOOK</span></a>
+        
+        <nav>
+            <ul>
+                <li><a th:href="@{/}" class="nav-item"><i class="fa-solid fa-house"></i> Trang chủ</a></li>
+                <li><a th:href="@{/khuyen-mai}" class="nav-item"><i class="fa-solid fa-gift"></i> Khuyến mãi</a></li>
+                <li><a th:href="@{/phim}" class="nav-item"><i class="fa-solid fa-clapperboard"></i> Phim</a></li>
+                <li class="auth-only"><a th:href="@{/thanh-vien}" class="nav-item active"><i class="fa-solid fa-id-card"></i><span>Thành viên</span></a></li>
+            </ul>
+        </nav>
+
+        <div class="header-right">
+            <div class="user-greeting-box">
+                <span class="user-greeting" th:text="'Xin chào, ' + (${user != null ? user.fullName : 'Thành viên'})">Xin chào, Long Trần</span>
+                <a th:href="@{/dang-nhap}" class="btn-logout-header" onclick="return confirm('Bạn có chắc chắn muốn đăng xuất không?');">
+                    <i class="fa-solid fa-right-from-bracket"></i> Đăng xuất
+                </a>
+            </div>
+            <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=100" alt="User" class="user-avatar-sm" id="headerUserAvatar">
+        </div>
+    </header>
+
+    <!-- MAIN CONTAINER -->
+    <div class="member-container">
+        <div class="breadcrumb">Trang chủ > <span>Thành viên</span></div>
+        <h1 class="page-title">Thành viên</h1>
+
+        <div class="member-layout">
+            <!-- SIDEBAR -->
+            <div class="member-sidebar">
+                <ul class="sidebar-menu">
+                    <li class="sidebar-item active" id="menu-overview" onclick="switchTab('tab-overview', this)">
+                        <a href="#"><i class="fa-solid fa-house-chimney"></i> Tổng quan</a>
+                    </li>
+                    <li class="sidebar-item" id="menu-profile" onclick="switchTab('tab-profile', this)">
+                        <a href="#"><i class="fa-solid fa-user-pen"></i> Thông tin tài khoản</a>
+                    </li>
+                    <li class="sidebar-item" id="menu-password" onclick="switchTab('tab-password', this)">
+                        <a href="#"><i class="fa-solid fa-key"></i> Đổi mật khẩu</a>
+                    </li>
+                    <li class="sidebar-item" id="menu-vouchers" onclick="switchTab('tab-vouchers', this)">
+                        <a href="#"><i class="fa-solid fa-box-archive"></i> Kho lưu trữ ưu đãi</a>
+                    </li>
+                    <li class="sidebar-item" id="menu-tickets" onclick="switchTab('tab-tickets', this)">
+                        <a href="#"><i class="fa-solid fa-ticket"></i> Lịch sử đặt vé</a>
+                    </li>
+                   
+                    <li class="sidebar-item" id="menu-favorites" onclick="switchTab('tab-favorites', this)">
+                        <a href="#"><i class="fa-solid fa-heart"></i> Danh sách yêu thích</a>
+                    </li>
+                    <li class="sidebar-item" id="menu-reviews" onclick="switchTab('tab-reviews', this)">
+                        <a href="#"><i class="fa-solid fa-comments"></i> Bình luận của tôi</a>
+                    </li>
+                    <li class="sidebar-item" id="menu-notifications" onclick="switchTab('tab-notifications', this)">
+                        <a href="#"><i class="fa-solid fa-bell"></i> Thông báo</a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- CONTENT -->
+            <div class="member-content">
+
+                <!-- TAB 1: TỔNG QUAN -->
+                <div id="tab-overview" class="form-section active-tab">
+                    <div class="profile-banner">
+                        <div class="profile-info-row">
+                            <div class="profile-user-left">
+                                <div class="profile-avatar-wrap" id="avatarUploadTrigger" title="Nhấn để thay đổi ảnh đại diện">
+                                    <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=100" alt="Avatar" id="mainProfileAvatar">
+                                    <button class="edit-avatar-btn" type="button"><i class="fa-solid fa-pen"></i></button>
+                                </div>
+                                <input type="file" id="avatarFileInput" accept="image/*" style="display: none;">
+                                <div class="profile-details">
+                                    <h2 th:text="${user != null ? user.fullName : 'Tên Thành Viên'}">Long Trần <span class="rank-badge">THÀNH VIÊN BẠC</span></h2>
+                                    <p class="profile-meta-text">
+                                        <span th:text="${user != null ? user.email : 'email@gmail.com'}">longtran@gmail.com</span> &nbsp;|&nbsp; 
+                                        <span th:text="${user != null ? user.phone : '0987654321'}">0987 654 321</span>
+                                    </p>
+                                    <p class="profile-meta-text" style="margin-top: 4px;">Ngày sinh: <span th:text="${user != null ? user.birthday : 'Chưa cập nhật'}">01/01/2000</span></p>
+                                </div>
+                            </div>
+                            <div class="profile-rank-progress">
+                                <div class="progress-bar-info">
+                                    <span id="rankProgressText">Bạn còn 1.250 điểm để lên hạng Vàng</span>
+                                    <span id="rankPointsFraction">2.750 / 4.000 điểm</span>
+                                </div>
+                                <div class="progress-track">
+                                    <div class="progress-fill" id="rankProgressBarFill" style="width: 68%;"></div>
+                                </div>
+                            </div>
+                            <i class="fa-solid fa-crown crown-icon"></i>
+                        </div>
+                    </div>
+
+                    <!-- THỐNG KÊ 4 Ô VỚI TƯƠNG TÁC ĐẦY ĐỦ -->
+                    <div class="stats-grid">
+                        <!-- Ô ĐIỂM TÍCH LŨY -> Bấm đổi quà ngay chuyển tới Tab kho ưu đãi -->
+                        <div class="stat-card">
+                            <div class="stat-header-flex"><span>Điểm tích lũy</span><i class="fa-solid fa-star"></i></div>
+                            <div class="stat-value"><span id="statPointsValue">2.750</span> <span style="font-size: 13px; font-weight: normal;">điểm</span></div>
+                            <a href="#" class="stat-footer-link" onclick="switchTab('tab-vouchers', document.getElementById('menu-vouchers')); showToast('Đã chuyển đến kho ưu đãi để đổi quà!', '#10B981'); return false;">Đổi quà ngay <i class="fa-solid fa-angle-right"></i></a>
+                        </div>
+                        <!-- Ô TỔNG SỐ VÉ ĐÃ ĐẶT -> Bấm xem lịch sử chuyển tới Tab vé -->
+                        <div class="stat-card">
+                            <div class="stat-header-flex"><span>Tổng số vé đã đặt</span><i class="fa-solid fa-ticket"></i></div>
+                            <div class="stat-value"><span id="statTicketsCount">0</span> <span style="font-size: 13px; font-weight: normal;">vé</span></div>
+                            <a href="#" class="stat-footer-link" onclick="switchTab('tab-tickets', document.getElementById('menu-tickets')); return false;">Xem lịch sử <i class="fa-solid fa-angle-right"></i></a>
+                        </div>
+                        <!-- Ô PHIM ĐÃ XEM -> Bấm xem chi tiết mở Popup danh sách phim đã xem -->
+                        <div class="stat-card">
+                            <div class="stat-header-flex"><span>Phim đã xem</span><i class="fa-solid fa-clapperboard"></i></div>
+                            <div class="stat-value"><span id="statMoviesCount">0</span> <span style="font-size: 13px; font-weight: normal;">phim</span></div>
+                            <a href="#" class="stat-footer-link" onclick="openWatchedModal(); return false;">Xem chi tiết <i class="fa-solid fa-angle-right"></i></a>
+                        </div>
+                        <!-- Ô ƯU ĐÃI CỦA BẠN -> Bấm xem kho ưu đãi chuyển tới Tab 4 -->
+                        <div class="stat-card">
+                            <div class="stat-header-flex"><span>Ưu đãi của bạn</span><i class="fa-solid fa-gift"></i></div>
+                            <div class="stat-value" th:text="${userVouchers != null ? userVouchers.size() : 3}">3</div>
+                            <a href="#" class="stat-footer-link" onclick="switchTab('tab-vouchers', document.getElementById('menu-vouchers')); return false;">Xem kho ưu đãi <i class="fa-solid fa-angle-right"></i></a>
+                        </div>
+                    </div>
+
+                    <!-- PHIM YÊU THÍCH & ƯU ĐÃI -->
+                    <div class="lower-grid">
+                        <div class="section-card">
+                            <div class="card-header-flex">
+                                <h3>Phim yêu thích</h3>
+                                <a href="#" onclick="switchTab('tab-favorites', document.getElementById('menu-favorites')); return false;">Xem tất cả ></a>
+                            </div>
+                            <div class="fav-movies-row" id="overviewFavoritesRow"></div>
+                        </div>
+
+                        <div class="section-card">
+                            <div class="card-header-flex">
+                                <h3>Ưu đãi dành cho bạn</h3>
+                                <a href="#" onclick="switchTab('tab-vouchers', document.getElementById('menu-vouchers')); return false;">Xem tất cả ></a>
+                            </div>
+                            <div class="voucher-list">
+                                <div th:if="${userVouchers == null or userVouchers.empty}" style="font-size: 11px; color: var(--text-gray); text-align: center; padding: 10px;">
+                                    Chưa có ưu đãi nào.
+                                </div>
+                                <div class="voucher-item" th:each="v, iterStat : ${userVouchers}" th:if="${iterStat.index < 2}">
+                                    <div class="voucher-info">
+                                        <h4 th:text="${v.title}">Tiêu đề voucher</h4>
+                                        <p th:text="'HSD: ' + ${v.expiryDate}">HSD: 31/08/2026</p>
+                                    </div>
+                                    <button class="btn-use-voucher" th:attr="onclick=|showToast('Đã áp dụng mã: ${v.code}', '#10B981')|">Sử dụng</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB 2: CẬP NHẬT THÔNG TIN TÀI KHOẢN -->
+                <div id="tab-profile" class="form-section">
+                    <div class="section-card">
+                        <div class="card-header-flex" style="margin-bottom: 20px;">
+                            <h3>Cập nhật thông tin tài khoản</h3>
+                        </div>
+                        <form class="styled-form" onsubmit="submitFormAjax(event, this, 'profile')">
+                            <div class="form-group">
+                                <label>Họ và tên</label>
+                                <input type="text" name="fullName" th:value="${user != null ? user.fullName : ''}" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Email liên hệ</label>
+                                <input type="email" name="email" th:value="${user != null ? user.email : ''}" readonly style="opacity: 0.7; cursor: not-allowed;">
+                            </div>
+                            <div class="form-group">
+                                <label>Số điện thoại</label>
+                                <input type="text" name="phone" th:value="${user != null ? user.phone : ''}" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Ngày sinh</label>
+                                <input type="text" name="birthday" th:value="${user != null ? user.birthday : ''}" placeholder="Ví dụ: 12/04/2004">
+                            </div>
+                            <button type="submit" class="btn-submit">Lưu thay đổi</button>
+                        </form>
+                    </div>
+                </div>
+
+				<!-- TAB 3: ĐỔI MẬT KHẨU -->
+				<div id="tab-password" class="form-section">
+				    <div class="section-card">
+				        <div class="card-header-flex" style="margin-bottom: 20px;">
+				            <h3>Đổi mật khẩu tài khoản</h3>
+				        </div>
+				        <!-- Sử dụng form submit thông thường để tương thích với cơ chế Redirect và RedirectAttributes của Spring Boot -->
+				        <form class="styled-form" action="/doi-mat-khau" method="POST">
+				            <div class="form-group">
+				                <label>Mật khẩu hiện tại</label>
+				                <input type="password" name="currentPassword" placeholder="Nhập mật khẩu cũ" required>
+				            </div>
+				            <div class="form-group">
+				                <label>Mật khẩu mới</label>
+				                <input type="password" name="newPassword" placeholder="Nhập mật khẩu mới" required>
+				            </div>
+				            <div class="form-group">
+				                <label>Xác nhận mật khẩu mới</label>
+				                <input type="password" name="confirmPassword" placeholder="Nhập lại mật khẩu mới" required>
+				            </div>
+				            <button type="submit" class="btn-submit">Cập nhật mật khẩu</button>
+				        </form>
+				    </div>
+				</div>
+				
+                <!-- TAB 4: KHO LƯU TRỮ ƯU ĐÃI -->
+                <div id="tab-vouchers" class="form-section">
+                    <div class="section-card">
+                        <div class="card-header-flex" style="margin-bottom: 20px;">
+                            <h3>Kho lưu trữ ưu đãi của bạn</h3>
+                            <span style="font-size: 12px; color: var(--pink-accent); font-weight: 600;" 
+                                  th:text="'Bạn đang có ' + (${userVouchers != null ? userVouchers.size() : 0}) + ' ưu đãi khả dụng'">
+                                Bạn đang có 0 ưu đãi khả dụng
+                            </span>
+                        </div>
+                        <div th:if="${userVouchers == null or userVouchers.empty}" style="text-align: center; padding: 30px; color: var(--text-gray);">
+                            <i class="fa-solid fa-box-open" style="font-size: 36px; margin-bottom: 10px; color: var(--border-color);"></i>
+                            <p>Kho lưu trữ của bạn đang trống. Hãy ghé thăm trang khuyến mãi để lưu các mã ưu đãi hấp dẫn nhé!</p>
+                        </div>
+                        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;">
+                            <div th:each="v : ${userVouchers}" style="background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-color); border-radius: 10px; padding: 15px; display: flex; flex-direction: column; gap: 10px; position: relative; overflow: hidden;">
+                                <div th:if="${v.isHot}" style="position: absolute; top: 0; right: 0; background: var(--pink-accent); color: white; font-size: 9px; font-weight: bold; padding: 3px 10px; border-bottom-left-radius: 8px;">ĐANG HOT</div>
+                                <div style="display: flex; gap: 12px; align-items: center;">
+                                    <div style="background: rgba(255, 42, 95, 0.15); color: var(--pink-accent); width: 45px; height: 45px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0;">
+                                        <i class="fa-solid" th:classappend="${v.iconClass != null ? v.iconClass : 'fa-ticket'}"></i>
+                                    </div>
+                                    <div>
+                                        <h4 style="font-size: 13px; font-weight: 700; margin-bottom: 3px;" th:text="${v.title}">Tiêu đề voucher</h4>
+                                        <p style="font-size: 11px; color: var(--text-gray);" th:text="${v.description}">Mô tả chi tiết voucher</p>
+                                    </div>
+                                </div>
+                                <div style="border-top: 1px dashed var(--border-color); padding-top: 8px; display: flex; justify-content: space-between; align-items: center; font-size: 11px;">
+                                    <span style="color: var(--text-gray);" th:text="'HSD: ' + ${v.expiryDate}">HSD: 31/08/2026</span>
+                                    <button class="btn-use-voucher" th:attr="onclick=|showToast('Đã áp dụng mã: ${v.code}', '#10B981')|">Dùng ngay</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB 5: LỊCH SỬ ĐẶT VÉ -->
+                <div id="tab-tickets" class="form-section">
+                    <div class="section-card">
+                        <div class="card-header-flex" style="margin-bottom: 20px;">
+                            <h3>Lịch sử đặt vé của bạn</h3>
+                        </div>
+                        <div style="overflow-x: auto;">
+                            <table class="custom-table" id="ticketsTable">
+                                <thead>
+                                    <tr>
+                                        <th>Mã vé</th>
+                                        <th>Tên phim</th>
+                                        <th>Suất chiếu</th>
+                                        <th>Ghế</th>
+                                        <th>Tổng tiền</th>
+                                        <th>Ngày đặt</th>
+                                        <th>Trạng thái</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:if="${tickets == null or tickets.empty}">
+                                        <td colspan="7" style="text-align: center; color: var(--text-gray);">Bạn chưa có vé nào.</td>
+                                    </tr>
+                                    <tr class="ticket-row" th:each="ticket : ${tickets}">
+                                        <td style="font-weight: bold; color: var(--pink-accent);" th:text="'#CB-' + ${ticket.id}">#CB-8921</td>
+                                        <td class="ticket-movie-name" th:text="${ticket.movieTitle}">Interstellar</td>
+                                        <td th:text="${ticket.showTime}">19:30 - 05/09/2026</td>
+                                        <td th:text="${ticket.seats}">F12, F13</td>
+                                        <td class="ticket-price" th:text="${ticket.totalPrice}">180000</td>
+                                        <td th:text="${#temporals.format(ticket.bookingDate, 'dd-MM-yyyy HH:mm')}">05/09/2026 18:15</td>
+                                        <td><span class="status-badge status-success">Thành công</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- TAB 7: DANH SÁCH YÊU THÍCH -->
+                <div id="tab-favorites" class="form-section">
+                    <div class="section-card">
+                        <div class="card-header-flex" style="margin-bottom: 20px;">
+                            <h3>Danh sách phim yêu thích</h3>
+                        </div>
+                        <div class="fav-movies-row" id="favoritesTabGrid" style="grid-template-columns: repeat(4, 1fr);"></div>
+                    </div>
+                </div>
+
+                <!-- TAB 8: BÌNH LUẬN CỦA TÔI -->
+                <div id="tab-reviews" class="form-section">
+                    <div class="section-card">
+                        <div class="card-header-flex" style="margin-bottom: 20px;">
+                            <h3>Bình luận và đánh giá của tôi</h3>
+                        </div>
+                        <div class="list-group">
+                            <div class="review-card">
+                                <div class="review-header">
+                                    <span class="review-movie-name">Interstellar (2014)</span>
+                                    <span class="review-stars">★ ★ ★ ★ ★ (5/5)</span>
+                                </div>
+                                <p class="review-text">Phim quá đỉnh, âm thanh và hình ảnh không gian cực kỳ mãn nhãn. Nội dung triết lý sâu sắc!</p>
+                                <span style="font-size: 10px; color: var(--text-gray);">Đã đăng ngày: 05/09/2026</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB 9: THÔNG BÁO -->
+                <div id="tab-notifications" class="form-section">
+                    <div class="section-card">
+                        <div class="card-header-flex" style="margin-bottom: 20px;">
+                            <h3>Hệ thống thông báo & Ưu đãi</h3>
+                        </div>
+                        <div class="list-group">
+                            <div class="notification-card">
+                                <div class="notification-icon-box">
+                                    <i class="fa-solid fa-ticket"></i>
+                                </div>
+                                <div class="notification-content">
+                                    <h4>Đặt vé thành công</h4>
+                                    <p>Bạn đã thanh toán thành công vé xem phim tại hệ thống Cinebook. Chúc bạn xem phim vui vẻ!</p>
+                                    <span class="notification-time">Hôm nay</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Dữ liệu mẫu ẩn chứa thông tin toàn bộ phim -->
+    <div id="masterMovieDatabase" style="display: none;">
+        <div class="movie-master-data" data-id="interstellar" data-title="Interstellar" data-rating="★ 8.6" data-img="https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=300"></div>
+        <div class="movie-master-data" data-id="inception" data-title="Inception" data-rating="★ 8.8" data-img="https://images.unsplash.com/photo-1626814026160-2237a95fc5a0?q=80&w=300"></div>
+        <div class="movie-master-data" data-id="the-dark-knight" data-title="The Dark Knight" data-rating="★ 9.0" data-img="https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=300"></div>
+        <div class="movie-master-data" data-id="spirited-away" data-title="Spirited Away" data-rating="★ 8.7" data-img="https://images.unsplash.com/photo-1534447677768-be436bb09401?q=80&w=300"></div>
+        <div class="movie-master-data" data-id="parasite" data-title="Parasite" data-rating="★ 8.6" data-img="https://images.unsplash.com/photo-1485846234645-a62644f84728?q=80&w=300"></div>
+        <div class="movie-master-data" data-id="furiosa" data-title="Furiosa: A Mad Max Saga" data-rating="★ 8.5" data-img="https://image.tmdb.org/t/p/original/iADOJ8Zymht2JPMoy3R7xceZprc.jpg"></div>
+        <div class="movie-master-data" data-id="godzilla-kong" data-title="Godzilla x Kong" data-rating="★ 8.2" data-img="https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/a58a7719-0dcf-4e0b-b7bb-d2b725dbbb8e/dgmztse-c5a1ca5c-d154-40de-9a5f-a58193198725.png/v1/fill/w_1280,h_1897,q_80,strp/godzilla_x_kong_the_new_empire_poster_4k_by_andrewvm_dgmztse-fullview.jpg"></div>
+        <div class="movie-master-data" data-id="dune-2" data-title="Dune: Phần hai" data-rating="★ 8.9" data-img="https://static1.srcdn.com/wordpress/wp-content/uploads/2024/01/dune-part-2-poster-showing-timothee-chalamet-as-paul-atreides-and-zendaya-as-chani-holding-daggers.jpeg"></div>
+        <div class="movie-master-data" data-id="mai" data-title="Mai" data-rating="★ 8.4" data-img="https://dep.com.vn/wp-content/uploads/2024/02/Special-Poster-2-MAI.jpg"></div>
+        <div class="movie-master-data" data-id="quy-cau" data-title="Quỷ Cẩu" data-rating="★ 7.8" data-img="https://images2.thanhnien.vn/528068263637045248/2023/11/20/edit-teaser-poster-17004959248601312622703.png"></div>
+    </div>
+
+    <!-- SCRIPTS -->
+    <script>
+        function switchTab(tabId, element) {
+            document.querySelectorAll('.form-section').forEach(el => {
+                el.classList.remove('active-tab');
+            });
+            document.querySelectorAll('.sidebar-item').forEach(el => {
+                el.classList.remove('active');
+            });
+            document.getElementById(tabId).classList.add('active-tab');
+            if (element) {
+                element.classList.add('active');
+            }
+        }
+
+        function submitFormAjax(event, formElement, type) {
+            event.preventDefault();
+            const url = type === 'profile' ? '/cap-nhat-thong-tin' : '/doi-mat-khual';
+            const formData = new URLSearchParams(new FormData(formElement));
+
+            fetch(url, { method: 'POST', body: formData })
+            .then(response => {
+                if (response.ok) {
+                    showToast(type === 'profile' ? 'Cập nhật thông tin thành công!' : 'Đổi mật khẩu thành công!', '#10B981');
+                    if (type === 'password') formElement.reset();
+                } else {
+                    showToast('Có lỗi xảy ra, vui lòng thử lại!', '#EF4444');
+                }
+            })
+            .catch(() => showToast('Không thể kết nối đến máy chủ!', '#EF4444'));
+        }
+
+        function showToast(message, bgColor) {
+            const toast = document.getElementById('toast-notification');
+            const toastText = document.getElementById('toast-text');
+            toast.style.background = bgColor;
+            toastText.innerText = message;
+            toast.style.display = 'flex';
+            setTimeout(() => { toast.style.display = 'none'; }, 3500);
+        }
+
+        // Điều khiển Popup danh sách phim đã xem
+        function openWatchedModal() {
+            const listContainer = document.getElementById('watchedMoviesListContainer');
+            listContainer.innerHTML = '';
+            
+            const movieNameEls = document.querySelectorAll('.ticket-movie-name');
+            let uniqueWatched = [...new Set(Array.from(movieNameEls).map(el => el.innerText.trim()))];
+
+            if (uniqueWatched.length === 0 || (uniqueWatched.length === 1 && uniqueWatched[0] === '')) {
+                listContainer.innerHTML = '<div style="text-align: center; color: var(--text-gray); padding: 20px;">Bạn chưa xem bộ phim nào qua hệ thống đặt vé.</div>';
+            } else {
+                uniqueWatched.forEach((movieName, index) => {
+                    let div = document.createElement('div');
+                    div.className = 'watched-movie-row';
+                    div.innerHTML = `<i class="fa-solid fa-film"></i> <span><b>${index + 1}.</b> ${movieName}</span>`;
+                    listContainer.appendChild(div);
+                });
+            }
+            document.getElementById('watchedMoviesModal').style.display = 'flex';
+        }
+
+        function closeWatchedModal() {
+            document.getElementById('watchedMoviesModal').style.display = 'none';
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            const FAVORITES_KEY = 'cinebook_favorite_movies';
+            
+            // Lấy khóa định danh riêng cho tài khoản đang đăng nhập (dựa vào email từ thẻ ẩn Thymeleaf)
+            const userEmailKey = document.getElementById('currentLoggedUserKey') ? document.getElementById('currentLoggedUserKey').value : 'default_user';
+            const AVATAR_KEY = 'cinebook_user_avatar_' + userEmailKey;
+
+            // 1. Đồng bộ và tính toán số lượng vé & điểm tích lũy từ bảng lịch sử đặt vé
+            const ticketRows = document.querySelectorAll('.ticket-row');
+            let totalTickets = ticketRows.length;
+            let totalSpentMoney = 0;
+            let uniqueMovies = new Set();
+
+            ticketRows.forEach(row => {
+                const priceEl = row.querySelector('.ticket-price');
+                const movieNameEl = row.querySelector('.ticket-movie-name');
+                if (priceEl) {
+                    let val = parseFloat(priceEl.innerText.replace(/[^0-9.-]+/g,"")) || 0;
+                    totalSpentMoney += val;
+                }
+                if (movieNameEl) {
+                    uniqueMovies.add(movieNameEl.innerText.trim());
+                }
+            });
+
+            // Quy đổi điểm tích lũy: Cứ mỗi 10.000đ tiền vé = 1 điểm tích lũy
+            let earnedPointsFromTickets = Math.floor(totalSpentMoney / 10000);
+
+            // Cập nhật lên giao diện các ô thống kê tổng quan
+            const statTicketsEl = document.getElementById('statTicketsCount');
+            const statMoviesEl = document.getElementById('statMoviesCount');
+            const statPointsEl = document.getElementById('statPointsValue');
+
+            if (statTicketsEl) statTicketsEl.innerText = totalTickets;
+            if (statMoviesEl) statMoviesEl.innerText = uniqueMovies.size;
+            if (statPointsEl) {
+                statPointsEl.innerText = earnedPointsFromTickets.toLocaleString('en-US');
+            }
+
+            // Cập nhật thanh tiến trình lên hạng (Mốc lên hạng Vàng là 4000 điểm)
+            const maxRankPoints = 4000;
+            let percent = Math.min(Math.round((earnedPointsFromTickets / maxRankPoints) * 100), 100);
+            const progressBarFill = document.getElementById('rankProgressBarFill');
+            const pointsFraction = document.getElementById('rankPointsFraction');
+            const progressText = document.getElementById('rankProgressText');
+
+            if (progressBarFill) progressBarFill.style.width = percent + '%';
+            if (pointsFraction) pointsFraction.innerText = earnedPointsFromTickets.toLocaleString('en-US') + ' / ' + maxRankPoints.toLocaleString('en-US') + ' điểm';
+            if (progressText) {
+                let remaining = maxRankPoints - earnedPointsFromTickets;
+                if (remaining > 0) {
+                    progressText.innerText = 'Bạn còn ' + remaining.toLocaleString('en-US') + ' điểm để lên hạng Vàng';
+                } else {
+                    progressText.innerText = 'Bạn đã đạt hạng thành viên cao nhất!';
+                }
+            }
+
+            // 2. Khôi phục avatar riêng của tài khoản hiện tại từ localStorage
+            const savedAvatar = localStorage.getItem(AVATAR_KEY);
+            if (savedAvatar) {
+                const mainAvatar = document.getElementById('mainProfileAvatar');
+                const headerAvatar = document.getElementById('headerUserAvatar');
+                if (mainAvatar) mainAvatar.src = savedAvatar;
+                if (headerAvatar) headerAvatar.src = savedAvatar;
+            }
+
+            const avatarTrigger = document.getElementById('avatarUploadTrigger');
+            const avatarFileInput = document.getElementById('avatarFileInput');
+
+            if (avatarTrigger && avatarFileInput) {
+                avatarTrigger.addEventListener('click', function() {
+                    let choice = prompt("Chọn cách đổi ảnh đại diện:\n1. Nhập URL hình ảnh mới\n2. Tải ảnh lên từ máy tính (Nhập 'file' hoặc bấm Cancel)", "");
+                    if (choice === 'file' || choice === null) {
+                        avatarFileInput.click();
+                    } else if (choice && choice.trim() !== '') {
+                        updateAvatarImages(choice.trim());
+                    }
+                });
+
+                avatarFileInput.addEventListener('change', function(e) {
+                    const file = e.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = function(event) { updateAvatarImages(event.target.result); };
+                        reader.readAsDataURL(file);
+                    }
+                });
+            }
+
+            function updateAvatarImages(imgUrl) {
+                document.getElementById('mainProfileAvatar').src = imgUrl;
+                document.getElementById('headerUserAvatar').src = imgUrl;
+                localStorage.setItem(AVATAR_KEY, imgUrl); // Lưu riêng theo tài khoản đăng nhập
+                showToast('Cập nhật ảnh đại diện thành công!', '#10B981');
+            }
+
+            // 3. Quản lý danh sách phim yêu thích qua localStorage
+            function getFavorites() {
+                try { return JSON.parse(localStorage.getItem(FAVORITES_KEY)) || []; } catch(e) { return []; }
+            }
+            function saveFavorites(favs) { localStorage.setItem(FAVORITES_KEY, JSON.stringify(favs)); }
+
+            function renderFavorites() {
+                const favs = getFavorites();
+                const masterElements = document.querySelectorAll('.movie-master-data');
+                let movieMap = {};
+                masterElements.forEach(el => {
+                    movieMap[el.getAttribute('data-id')] = {
+                        id: el.getAttribute('data-id'),
+                        title: el.getAttribute('data-title'),
+                        rating: el.getAttribute('data-rating'),
+                        img: el.getAttribute('data-img')
+                    };
+                });
+
+                const overviewRow = document.getElementById('overviewFavoritesRow');
+                if (overviewRow) {
+                    overviewRow.innerHTML = '';
+                    if (favs.length === 0) {
+                        overviewRow.innerHTML = '<div style="grid-column: span 5; color: var(--text-gray); font-size: 12px; text-align: center; padding: 20px;">Chưa có phim yêu thích nào.</div>';
+                    } else {
+                        favs.forEach(movieId => {
+                            let movie = movieMap[movieId];
+                            if (movie) {
+                                let item = document.createElement('div');
+                                item.className = 'fav-movie-item';
+                                item.innerHTML = `
+                                    <div class="fav-poster">
+                                        <img src="${movie.img}" alt="${movie.title}">
+                                        <i class="fa-solid fa-heart fav-heart" data-id="${movie.id}" style="cursor: pointer;" title="Bỏ yêu thích"></i>
+                                    </div>
+                                    <span class="fav-title">${movie.title}</span>
+                                    <span class="fav-rating">${movie.rating}</span>
+                                `;
+                                overviewRow.appendChild(item);
+                            }
+                        });
+                    }
+                }
+
+                const favoritesTab = document.getElementById('favoritesTabGrid');
+                if (favoritesTab) {
+                    favoritesTab.innerHTML = '';
+                    if (favs.length === 0) {
+                        favoritesTab.innerHTML = '<div style="grid-column: span 4; color: var(--text-gray); font-size: 13px; text-align: center; padding: 40px;">Danh sách yêu thích đang trống.</div>';
+                    } else {
+                        favs.forEach(movieId => {
+                            let movie = movieMap[movieId];
+                            if (movie) {
+                                let item = document.createElement('div');
+                                item.className = 'fav-movie-item';
+                                item.innerHTML = `
+                                    <div class="fav-poster" style="height: 180px;">
+                                        <img src="${movie.img}" alt="${movie.title}">
+                                        <i class="fa-solid fa-heart fav-heart" data-id="${movie.id}" style="cursor: pointer;" title="Bỏ yêu thích"></i>
+                                    </div>
+                                    <span class="fav-title" style="font-size: 13px;">${movie.title}</span>
+                                    <span class="fav-rating">${movie.rating}</span>
+                                `;
+                                favoritesTab.appendChild(item);
+                            }
+                        });
+                    }
+                }
+            }
+
+            document.addEventListener('click', function(e) {
+                if (e.target.classList.contains('fav-heart')) {
+                    let movieId = e.target.getAttribute('data-id');
+                    if (movieId) {
+                        let favs = getFavorites();
+                        let index = favs.indexOf(movieId);
+                        if (index > -1) {
+                            favs.splice(index, 1);
+                            saveFavorites(favs);
+                            renderFavorites();
+                            showToast('Đã xóa khỏi danh sách yêu thích!', '#10B981');
+                        }
+                    }
+                }
+            });
+
+            renderFavorites();
+        });
+
+        document.addEventListener("DOMContentLoaded", function() {
+            // Kiểm tra xem có thông báo nào được lưu tạm không
+            const successMsg = localStorage.getItem("toast_success");
+            const errorMsg = localStorage.getItem("toast_error");
+
+            if (successMsg) {
+                showToast(successMsg, '#10B981');
+                localStorage.removeItem("toast_success"); // Xóa sau khi hiện xong
+            }
+            
+            if (errorMsg) {
+                showToast(errorMsg, '#EF4444');
+                localStorage.removeItem("toast_error"); // Xóa sau khi hiện xong
+            }
+        });
+    </script>
+</body>
+</html>

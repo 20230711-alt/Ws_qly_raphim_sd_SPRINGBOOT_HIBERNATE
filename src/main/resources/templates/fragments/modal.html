@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+    <div th:fragment="commonModal" class="modal-overlay" id="commonModal">
+        <div class="modal-box">
+            <h3 id="modalTitle">Tiêu đề Modal</h3>
+            <div class="form-group">
+                <label>Tên dữ liệu / Thông tin chính</label>
+                <input type="text" placeholder="Nhập giá trị...">
+            </div>
+            <div class="form-group">
+                <label>Trạng thái / Mô tả</label>
+                <select>
+                    <option>Hoạt động / Đang áp dụng</option>
+                    <option>Tạm khóa / Sắp chiếu</option>
+                </select>
+            </div>
+            <div class="modal-actions">
+                <button class="btn-close-modal" onclick="closeModal()">Hủy bỏ</button>
+                <button class="btn-action" onclick="alert('Thêm dữ liệu thành công!'); closeModal();">Lưu dữ liệu</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

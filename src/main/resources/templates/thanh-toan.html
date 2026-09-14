@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thanh Toán - CINEBOOK</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-dark: #07090E;
+            --card-bg: #10141E;
+            --pink-accent: #FF2A5F;
+            --text-light: #FFFFFF;
+            --text-gray: #8E96A7;
+            --border-color: rgba(255, 255, 255, 0.07);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: sans-serif; }
+        body { background-color: var(--bg-dark); color: var(--text-light); min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+        .payment-card { background: var(--card-bg); border: 1px solid var(--border-color); padding: 30px; border-radius: 16px; width: 450px; }
+        h2 { font-size: 20px; margin-bottom: 20px; text-align: center; }
+        .info-row { display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 14px; color: var(--text-gray); }
+        .info-row span { color: var(--text-light); font-weight: bold; }
+        .total-row { border-top: 1px solid var(--border-color); margin-top: 15px; padding-top: 15px; font-size: 16px; }
+        .total-row span { color: var(--pink-accent); font-size: 18px; }
+        .btn-group { display: flex; gap: 10px; margin-top: 25px; }
+        .btn-confirm { background-color: var(--pink-accent); color: white; border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; flex: 1; text-align: center; text-decoration: none; }
+        .btn-cancel { background-color: rgba(255,255,255,0.1); color: var(--text-light); border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; flex: 1; text-align: center; text-decoration: none; }
+        .btn-confirm:hover { background-color: #ff4d79; }
+        .btn-cancel:hover { background-color: rgba(255,255,255,0.2); }
+    </style>
+</head>
+<body>
+
+    <div class="payment-card">
+        <h2>Xác Nhận Thanh Toán</h2>
+        
+        <div class="info-row">
+            <p>Phim:</p>
+            <span>Furiosa: A Mad Max Saga</span>
+        </div>
+        <div class="info-row">
+            <p>Ghế đã chọn:</p>
+            <span id="display-seats">Đang tải...</span>
+        </div>
+        <div class="info-row total-row">
+            <p>Tổng tiền thanh toán:</p>
+            <span id="display-price">0 đ</span>
+        </div>
+
+        <!-- Form gửi lệnh thanh toán cuối cùng hoặc hủy -->
+        <form th:action="@{/thanh-toan-thanh-cong}" method="post">
+            <input type="hidden" id="form-seats" name="seats" value="">
+            
+            <div class="btn-group">
+                <!-- Nút Hủy: quay lại trang chọn ghế hoặc trang chủ -->
+                <a th:href="@{/chon-ghe}" class="btn-cancel">Hủy</a>
+                
+                <!-- Nút Thanh toán thành công thật sự -->
+                <button type="submit" class="btn-confirm">Thanh Toán</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // Lấy dữ liệu từ URL do trang chọn ghế truyền sang
+        const urlParams = new URLSearchParams(window.location.search);
+        const seats = urlParams.get('seats') || '';
+        
+        document.getElementById('display-seats').innerText = seats;
+        
+        const seatCount = seats ? seats.split(',').length : 0;
+        const totalPrice = seatCount * 90000;
+        
+        document.getElementById('display-price').innerText = totalPrice.toLocaleString('vi-VN') + ' đ';
+        document.getElementById('form-seats').value = seats;
+    </script>
+</body>
+</html>

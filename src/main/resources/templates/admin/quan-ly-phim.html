@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CineBook - Quản Lý Phim</title>
+    <!-- FontAwesome & Google Fonts -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-main: #0B0E14;
+            --bg-sidebar: #07090E;
+            --bg-card: #121622;
+            --border-color: rgba(255, 255, 255, 0.08);
+            --pink-accent: #FF2A5F;
+            --text-main: #FFFFFF;
+            --text-gray: #8F95B2;
+            --hover-card: #1a2032;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* --- SIDEBAR --- */
+        aside {
+            width: 260px;
+            background-color: var(--bg-sidebar);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 200;
+        }
+
+        .sidebar-brand {
+            padding: 24px 20px;
+            font-size: 20px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #fff;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .sidebar-brand i.fa-film {
+            color: var(--pink-accent);
+            background: rgba(255, 42, 95, 0.15);
+            padding: 8px;
+            border-radius: 8px;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 16px 12px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            color: var(--text-gray);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 500;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .sidebar-menu a:hover, .sidebar-menu li.active a {
+            background-color: var(--pink-accent);
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(255, 42, 95, 0.3);
+        }
+
+        .sidebar-menu a i { width: 18px; text-align: center; font-size: 14px; }
+
+        .admin-user-box {
+            padding: 16px 20px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(0,0,0,0.2);
+        }
+
+        .admin-user-info { display: flex; align-items: center; gap: 10px; }
+        .admin-user-info img { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; border: 1px solid var(--pink-accent); }
+        .admin-user-info .name { font-size: 13px; font-weight: 600; }
+        .admin-user-info .role { font-size: 11px; color: var(--text-gray); }
+
+        /* --- MAIN CONTENT --- */
+        .main-content {
+            margin-left: 260px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            height: 70px;
+            background-color: var(--bg-sidebar);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 30px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-title h2 { font-size: 18px; font-weight: 700; letter-spacing: 0.5px; }
+
+        .content-section {
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .panel {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 24px;
+        }
+
+        .panel-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .panel-header h4 { font-size: 16px; font-weight: 700; }
+
+        .btn-action {
+            background: var(--pink-accent);
+            color: #fff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 4px 12px rgba(255, 42, 95, 0.3);
+            transition: opacity 0.2s;
+        }
+
+        .btn-action:hover { opacity: 0.9; }
+
+        /* --- TABLE STYLE --- */
+        table { width: 100%; border-collapse: collapse; text-align: left; font-size: 13px; }
+        th { color: var(--text-gray); font-weight: 600; padding: 12px 16px; border-bottom: 1px solid var(--border-color); text-transform: uppercase; font-size: 11px; }
+        td { padding: 14px 16px; border-bottom: 1px solid rgba(255,255,255,0.03); vertical-align: middle; color: #d1d5db; }
+        tr:hover td { background-color: rgba(255,255,255,0.01); }
+
+        .movie-thumb-cell {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .movie-thumb-cell img {
+            width: 36px;
+            height: 48px;
+            border-radius: 4px;
+            object-fit: cover;
+            background: #1a202c;
+        }
+
+        .badge { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; display: inline-block; }
+        .badge.success { background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); }
+        .badge.pending { background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3); }
+
+        .btn-sm { padding: 6px 12px; font-size: 11px; border-radius: 6px; border: none; cursor: pointer; font-weight: 600; transition: opacity 0.2s; }
+        .btn-edit { background: rgba(59, 130, 246, 0.2); color: #3b82f6; border: 1px solid rgba(59, 130, 246, 0.3); }
+        .btn-del { background: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); margin-left: 6px; }
+
+        /* --- MODAL DIALOG --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(4px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+
+        .modal-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            width: 100%;
+            max-width: 680px;
+            max-height: 90vh;
+            border-radius: 12px;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            overflow-y: auto;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        }
+
+        .modal-box h3 { font-size: 18px; color: #fff; border-bottom: 1px solid var(--border-color); padding-bottom: 12px; }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 14px;
+        }
+
+        .form-group { display: flex; flex-direction: column; gap: 6px; }
+        .form-group.full-width { grid-column: span 2; }
+        .form-group label { font-size: 11px; color: var(--text-gray); font-weight: 600; }
+        .form-group input, .form-group select, .form-group textarea {
+            background: var(--bg-main);
+            border: 1px solid var(--border-color);
+            padding: 9px 12px;
+            border-radius: 6px;
+            color: #fff;
+            font-size: 12px;
+            outline: none;
+        }
+
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            border-color: var(--pink-accent);
+        }
+
+        .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 10px; }
+        .btn-close-modal { background: transparent; border: 1px solid var(--border-color); color: var(--text-gray); padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 12px; }
+    </style>
+</head>
+<body>
+
+    <!-- SIDEBAR NAVIGATION -->
+    <aside>
+        <div class="sidebar-brand">
+            <i class="fa-solid fa-film"></i>
+            <div>CINE BOOK <small style="display:block; font-size:9px; color:var(--text-gray); letter-spacing:1px;">ADMIN SYSTEM</small></div>
+        </div>
+        <ul class="sidebar-menu">
+            <li><a href="/admin"><i class="fa-solid fa-chart-pie"></i> Dashboard</a></li>
+            <li class="active"><a href="/admin/phim"><i class="fa-solid fa-clapperboard"></i> Quản lý Phim</a></li>
+            <li><a href="/admin/suat-chieu"><i class="fa-solid fa-calendar-days"></i> Quản lý Suất chiếu</a></li>
+            <li><a href="/admin/dat-ve"><i class="fa-solid fa-ticket"></i> Quản lý Đặt vé</a></li>
+            <li><a href="/admin/combo"><i class="fa-solid fa-utensils"></i> Quản lý Combo</a></li>
+            <li><a href="/admin/khuyen-mai"><i class="fa-solid fa-tags"></i> Quản lý Khuyến mãi</a></li>
+            <li><a href="/admin/bao-cao"><i class="fa-solid fa-chart-line"></i> Báo cáo</a></li>
+            <li><a href="/admin/cai-dat"><i class="fa-solid fa-gear"></i> Cài đặt hệ thống</a></li>
+            <li style="margin-top: 20px;"><a href="/dang-nhap" style="color: #ef4444;"><i class="fa-solid fa-right-from-bracket"></i> Đăng xuất</a></li>
+        </ul>
+        <div class="admin-user-box">
+            <div class="admin-user-info">
+                <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=100" alt="Admin">
+                <div>
+                    <div class="name">Admin</div>
+                    <div class="role">Quản trị viên</div>
+                </div>
+            </div>
+            <a href="/dang-nhap" title="Đăng xuất" style="color: #ef4444; font-size: 14px;"><i class="fa-solid fa-right-from-bracket"></i></a>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT AREA -->
+    <div class="main-content">
+        <header>
+            <div class="header-title">
+                <h2>Quản lý Phim</h2>
+            </div>
+        </header>
+
+        <div class="content-section">
+            <div class="panel">
+                <div class="panel-header">
+                    <h4>Danh Sách Phim Chiếu Rạp</h4>
+                    <button class="btn-action" onclick="openMovieModal()"><i class="fa-solid fa-plus"></i> Thêm phim mới</button>
+                </div>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Mã Phim</th>
+                            <th>Tên Phim</th>
+                            <th>Thể Loại</th>
+                            <th>Thời Lượng</th>
+                            <th>Trạng Thái</th>
+                            <th>Thao Tác</th>
+                        </tr>
+                    </thead>
+                    <tbody id="movieTableBody">
+                        <!-- Dữ liệu được tải động từ MySQL -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL POPUP FORM ĐẦY ĐỦ TRƯỜNG DỮ LIỆU & FILE UPLOAD ẢNH + VIDEO -->
+    <div class="modal-overlay" id="movieModal">
+        <div class="modal-box">
+            <h3 id="modalTitle">Thêm Phim Mới</h3>
+            <form id="addMovieForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Mã Phim (*)</label>
+                        <input type="text" id="m_id" placeholder="VD: P01, P02..." required>
+                    </div>
+                    <div class="form-group">
+                        <label>Tên Phim (*)</label>
+                        <input type="text" id="m_title" placeholder="VD: Godzilla x Kong" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Thể Loại</label>
+                        <input type="text" id="m_genre" placeholder="VD: Hành động / Viễn tưởng">
+                    </div>
+                    <div class="form-group">
+                        <label>Thời Lượng (Phút)</label>
+                        <input type="number" id="m_duration" placeholder="VD: 115">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Trạng Thái</label>
+                        <select id="m_status">
+                            <option value="Đang chiếu">Đang chiếu</option>
+                            <option value="Sắp chiếu">Sắp chiếu</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Định Dạng</label>
+                        <select id="m_formatType">
+                            <option value="2D">2D</option>
+                            <option value="3D">3D</option>
+                            <option value="IMAX 3D">IMAX 3D</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Ngày Khởi Chiếu</label>
+                        <input type="date" id="m_releaseDate">
+                    </div>
+                    <div class="form-group">
+                        <label>Đánh Giá (Điểm số)</label>
+                        <input type="number" step="0.1" id="m_rating" placeholder="VD: 8.5">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Đạo Diễn</label>
+                        <input type="text" id="m_director" placeholder="Nhập tên đạo diễn">
+                    </div>
+                    <div class="form-group">
+                        <label>Quốc Gia</label>
+                        <input type="text" id="m_country" placeholder="VD: Mỹ, Việt Nam">
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label>Diễn Viên</label>
+                        <input type="text" id="m_cast" placeholder="VD: Ryan Reynolds, Hugh Jackman">
+                    </div>
+
+                    <!-- UPLOAD FILE ẢNH POSTER -->
+                    <div class="form-group full-width">
+                        <label>Tải Ảnh Poster từ Máy Tính</label>
+                        <input type="file" id="m_posterFile" accept="image/*" onchange="previewPoster(this)" style="padding: 6px;">
+                        <input type="hidden" id="m_posterUrl">
+                        <div style="margin-top: 8px;">
+                            <img id="posterPreviewImg" src="" alt="Xem trước ảnh" style="display:none; width: 70px; height: 95px; border-radius: 6px; object-fit: cover; border: 1px solid var(--border-color);">
+                        </div>
+                    </div>
+
+                    <!-- UPLOAD FILE VIDEO TRAILER -->
+                    <div class="form-group full-width">
+                        <label>Tải Video Trailer từ Máy Tính (.mp4, .webm)</label>
+                        <input type="file" id="m_trailerFile" accept="video/*" onchange="previewTrailer(this)" style="padding: 6px;">
+                        <input type="hidden" id="m_trailerUrl">
+                        <div style="margin-top: 8px;">
+                            <video id="trailerPreviewVideo" controls style="display:none; width: 100%; max-height: 180px; border-radius: 6px; border: 1px solid var(--border-color);"></video>
+                        </div>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label>Tóm Tắt Nội Dung Phim</label>
+                        <textarea id="m_description" rows="3" placeholder="Nhập tóm tắt kịch bản phim..."></textarea>
+                    </div>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn-close-modal" onclick="closeMovieModal()">Hủy bỏ</button>
+                    <button type="submit" class="btn-action">Lưu dữ liệu</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT XỬ LÝ UPLOAD & KẾT NỐI REST API SPRING BOOT -->
+    <script>
+        // Tải danh sách phim từ MySQL Database
+        async function loadAdminMovies() {
+            try {
+                const res = await fetch('/api/movies');
+                const movies = await res.json();
+                const tbody = document.getElementById('movieTableBody');
+
+                if (!tbody) return;
+
+                if (movies.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding: 20px; color: var(--text-gray);">Chưa có phim nào trong cơ sở dữ liệu.</td></tr>`;
+                    return;
+                }
+
+                tbody.innerHTML = movies.map(m => {
+                    const badgeClass = m.status === 'Đang chiếu' ? 'success' : 'pending';
+                    const poster = m.posterUrl || m.poster_url || 'https://via.placeholder.com/36x48?text=No+Img';
+                    return `
+                        <tr>
+                            <td><b>${m.id}</b></td>
+                            <td>
+                                <div class="movie-thumb-cell">
+                                    <img src="${poster}" alt="${m.title}" onerror="this.src='https://via.placeholder.com/36x48?text=Error'">
+                                    <span><b>${m.title}</b></span>
+                                </div>
+                            </td>
+                            <td>${m.genre || '---'}</td>
+                            <td>${m.duration ? m.duration + ' phút' : '---'}</td>
+                            <td><span class="badge ${badgeClass}">${m.status || 'Đang chiếu'}</span></td>
+                            <td>
+                                <button class="btn-sm btn-edit" onclick="editMovie('${m.id}')">Sửa</button>
+                                <button class="btn-sm btn-del" onclick="deleteMovie('${m.id}')">Xóa</button>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            } catch (err) {
+                console.error("Lỗi khi kết nối API tải phim:", err);
+            }
+        }
+
+        // Xem trước ảnh Poster khi chọn file
+        function previewPoster(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = document.getElementById('posterPreviewImg');
+                    img.src = e.target.result;
+                    img.style.display = 'block';
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        // Xem trước Video Trailer khi chọn file
+		function previewTrailer(input) {
+		    if (input.files && input.files[0]) {
+		        const file = input.files[0];
+		        const video = document.getElementById('trailerPreviewVideo');
+		        
+		        // Tạo URL tạm thời để phát video xem trước từ máy tính
+		        const objectUrl = URL.createObjectURL(file);
+		        video.src = objectUrl;
+		        video.style.display = 'block';
+		    }
+		}
+
+        // Điều khiển Modal
+        function openMovieModal() {
+            document.getElementById('addMovieForm').reset();
+            document.getElementById('m_id').readOnly = false;
+            document.getElementById('m_posterUrl').value = '';
+            document.getElementById('m_trailerUrl').value = '';
+            document.getElementById('posterPreviewImg').style.display = 'none';
+            document.getElementById('trailerPreviewVideo').style.display = 'none';
+            document.getElementById('modalTitle').innerText = 'Thêm Phim Mới';
+            document.getElementById('movieModal').style.display = 'flex';
+        }
+
+        function closeMovieModal() {
+            document.getElementById('movieModal').style.display = 'none';
+        }
+
+        // Gửi Form Thêm/Sửa Phim (Bao gồm Upload cả Ảnh Poster và Video Trailer)
+		document.getElementById('addMovieForm').addEventListener('submit', async (e) => {
+		    e.preventDefault();
+
+		    let finalPosterUrl = document.getElementById('m_posterUrl').value;
+		    let finalTrailerUrl = document.getElementById('m_trailerUrl').value;
+
+		    const posterFileInput = document.getElementById('m_posterFile');
+		    const trailerFileInput = document.getElementById('m_trailerFile');
+
+		    // 1. Upload Poster nếu có chọn tệp mới
+		    if (posterFileInput.files.length > 0) {
+		        const formData = new FormData();
+		        formData.append('file', posterFileInput.files[0]);
+		        try {
+		            const uploadRes = await fetch('/api/movies/upload', { method: 'POST', body: formData });
+		            if (uploadRes.ok) {
+		                const data = await uploadRes.json();
+		                finalPosterUrl = data.url;
+		                document.getElementById('m_posterUrl').value = data.url; // Cập nhật ngay vào thẻ ẩn
+		            }
+		        } catch (err) { console.error("Lỗi Upload Poster:", err); }
+		    }
+
+		    // 2. Upload Video Trailer nếu có chọn tệp mới
+		    if (trailerFileInput.files.length > 0) {
+		        const formData = new FormData();
+		        formData.append('file', trailerFileInput.files[0]);
+		        try {
+		            const uploadRes = await fetch('/api/movies/upload', { method: 'POST', body: formData });
+		            if (uploadRes.ok) {
+		                const data = await uploadRes.json();
+		                finalTrailerUrl = data.url; // URL dạng /uploads/17260000_2.mp4
+		                document.getElementById('m_trailerUrl').value = data.url; // Cập nhật ngay vào thẻ ẩn
+		            }
+		        } catch (err) { console.error("Lỗi Upload Trailer:", err); }
+		    }
+
+		    // 3. Đóng gói dữ liệu gửi lưu MySQL Database
+		    const movieData = {
+		        id: document.getElementById('m_id').value,
+		        title: document.getElementById('m_title').value,
+		        genre: document.getElementById('m_genre').value,
+		        duration: parseInt(document.getElementById('m_duration').value) || 0,
+		        status: document.getElementById('m_status').value,
+		        formatType: document.getElementById('m_formatType').value,
+		        releaseDate: document.getElementById('m_releaseDate').value || null,
+		        rating: parseFloat(document.getElementById('m_rating').value) || 8.0,
+		        director: document.getElementById('m_director').value,
+		        country: document.getElementById('m_country').value,
+		        cast: document.getElementById('m_cast').value,
+		        posterUrl: finalPosterUrl,
+		        trailerUrl: finalTrailerUrl, // Đảm bảo luôn lấy URL chuẩn vừa upload
+		        description: document.getElementById('m_description').value
+		    };
+
+		    const res = await fetch('/api/movies', {
+		        method: 'POST',
+		        headers: { 'Content-Type': 'application/json' },
+		        body: JSON.stringify(movieData)
+		    });
+
+		    if (res.ok) {
+		        alert("Đã lưu phim và Video Trailer thành công!");
+		        closeMovieModal();
+		        loadAdminMovies();
+		    } else {
+		        alert("Có lỗi xảy ra khi lưu dữ liệu phim!");
+		    }
+		});
+
+        // Nạp dữ liệu cũ lên Form khi bấm nút Sửa
+		async function editMovie(id) {
+		    const res = await fetch(`/api/movies/${id}`);
+		    if (!res.ok) return alert("Không tìm thấy thông tin phim!");
+		    
+		    const movie = await res.json();
+		    document.getElementById('m_id').value = movie.id;
+		    document.getElementById('m_id').readOnly = true;
+		    document.getElementById('m_title').value = movie.title || '';
+		    document.getElementById('m_genre').value = movie.genre || '';
+		    document.getElementById('m_duration').value = movie.duration || '';
+		    document.getElementById('m_status').value = movie.status || 'Đang chiếu';
+		    document.getElementById('m_formatType').value = movie.formatType || '2D';
+		    document.getElementById('m_releaseDate').value = movie.releaseDate || '';
+		    document.getElementById('m_rating').value = movie.rating || '';
+		    document.getElementById('m_director').value = movie.director || '';
+		    document.getElementById('m_country').value = movie.country || '';
+		    document.getElementById('m_cast').value = movie.cast || '';
+		    document.getElementById('m_description').value = movie.description || '';
+
+		    // Nạp Poster cũ
+		    const posterUrl = movie.posterUrl || movie.poster_url || '';
+		    document.getElementById('m_posterUrl').value = posterUrl;
+		    const img = document.getElementById('posterPreviewImg');
+		    if (posterUrl) {
+		        img.src = posterUrl;
+		        img.style.display = 'block';
+		    } else {
+		        img.style.display = 'none';
+		    }
+
+		    // NẠP VIDEO TRAILER CỦ (Xử lý đúng cả thuộc tính posterUrl/trailerUrl)
+		    const trailerUrl = movie.trailerUrl || movie.trailer_url || '';
+		    document.getElementById('m_trailerUrl').value = trailerUrl;
+		    const video = document.getElementById('trailerPreviewVideo');
+		    if (trailerUrl && trailerUrl.trim() !== '' && trailerUrl !== 'null') {
+		        video.src = trailerUrl;
+		        video.style.display = 'block';
+		    } else {
+		        video.src = '';
+		        video.style.display = 'none';
+		    }
+
+		    document.getElementById('modalTitle').innerText = 'Chỉnh Sửa Phim';
+		    document.getElementById('movieModal').style.display = 'flex';
+		}
+
+        // Xóa phim
+        async function deleteMovie(id) {
+            if (confirm(`Bạn có chắc chắn muốn xóa phim mã "${id}" không?`)) {
+                const res = await fetch(`/api/movies/${id}`, { method: 'DELETE' });
+                if (res.ok) {
+                    alert("Đã xóa phim thành công!");
+                    loadAdminMovies();
+                } else {
+                    alert("Không thể xóa phim này!");
+                }
+            }
+        }
+
+        // Khởi chạy khi load xong DOM
+        document.addEventListener('DOMContentLoaded', loadAdminMovies);
+    </script>
+</body>
+</html>

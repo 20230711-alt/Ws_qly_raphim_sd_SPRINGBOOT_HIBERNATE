@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>CineBook - Báo Cáo</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style th:replace="~{admin :: admin-css}"></style>
+</head>
+<body>
+    <div th:replace="~{fragments/sidebar :: sidebar('bao-cao')}"></div>
+
+    <div class="main-content">
+        <div th:replace="~{fragments/header :: header('Báo cáo thống kê')}"></div>
+
+        <div class="content-section active">
+            <div class="panel">
+                <div class="panel-header"><h4>Báo Cáo Tài Chính & Doanh Thu Chi Tiết</h4></div>
+                <p style="font-size: 13px; color: var(--text-gray); line-height: 1.6;">Hệ thống đang tổng hợp dữ liệu xuất file Excel/PDF tự động theo yêu cầu kiểm toán hàng ngày của rạp chiếu phim CineBook.</p>
+                <button class="btn-action" style="margin-top: 15px;" onclick="alert('Đang tải xuống báo cáo chi tiết (.xlsx)...')"><i class="fa-solid fa-download"></i> Tải xuống báo cáo</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

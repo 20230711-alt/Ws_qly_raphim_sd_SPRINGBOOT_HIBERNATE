@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>CineBook - Quản lý Đặt Vé</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style th:replace="~{admin :: admin-css}"></style>
+</head>
+<body>
+    <div th:replace="~{fragments/sidebar :: sidebar('dat-ve')}"></div>
+
+    <div class="main-content">
+        <div th:replace="~{fragments/header :: header('Quản lý Đặt vé')}"></div>
+
+        <div class="content-section active">
+            <div class="panel">
+                <div class="panel-header"><h4>Danh Sách Giao Dịch Đặt Vé Khách Hàng</h4></div>
+                <table>
+                    <thead>
+                        <tr><th>Mã Đơn</th><th>Khách Hàng</th><th>Phim Đặt</th><th>Tổng Tiền</th><th>Trạng Thái</th><th>Thao Tác</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>#CB0001256</td><td>Trần Thị B</td><td>Godzilla x Kong</td><td>240.000 đ</td><td><span class="badge success">Đã thanh toán</span></td><td><button class="btn-sm btn-edit">Chi tiết</button></td></tr>
+                        <tr><td>#CB0001255</td><td>Lê Văn C</td><td>Dune: Phần hai</td><td>180.000 đ</td><td><span class="badge success">Đã check-in</span></td><td><button class="btn-sm btn-edit">Chi tiết</button></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

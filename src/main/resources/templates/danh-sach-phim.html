@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CINEBOOK - Danh Sách Phim</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* ==========================================
+           1. SYSTEM VARIABLES & BASE RESET
+           ========================================== */
+        :root {
+            --bg-dark: #07090E;
+            --card-bg: #10141E;
+            --pink-accent: #FF2A5F;
+            --pink-hover: #FF4D79;
+            --text-light: #FFFFFF;
+            --text-gray: #8E96A7;
+            --border-color: rgba(255, 255, 255, 0.07);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* ==========================================
+           2. VIDEO BACKGROUND SETTINGS
+           ========================================== */
+        .video-bg-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -2;
+            overflow: hidden;
+        }
+
+        .video-bg-container video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .video-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(7, 9, 14, 0.9);
+            backdrop-filter: blur(8px);
+            z-index: -1;
+        }
+
+        /* ==========================================
+           3. HEADER & NAVIGATION
+           ========================================== */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 60px;
+            background: rgba(7, 9, 14, 0.85);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--text-light);
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            gap: 8px;
+            cursor: pointer;
+        }
+
+        .logo i, .logo span {
+            color: var(--pink-accent);
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 28px;
+            align-items: center;
+            margin: 0;
+            padding: 0;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: var(--text-gray);
+            font-size: 12px;
+            font-weight: 500;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        nav a i { 
+            font-size: 15px; 
+        }
+
+        nav a:hover, nav a.nav-item.active {
+            color: var(--text-light);
+        }
+
+        nav a.nav-item.active i {
+            color: var(--pink-accent);
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 22px;
+            position: relative;
+        }
+
+        .header-right i {
+            color: var(--text-gray);
+            cursor: pointer;
+            font-size: 16px;
+            transition: color 0.2s;
+        }
+
+        .header-right i:hover {
+            color: var(--text-light);
+        }
+
+        .user-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: #fff;
+            white-space: nowrap;
+        }
+
+        .btn-auth-action {
+            background: linear-gradient(135deg, #FF2A5F 0%, #E50914 100%);
+            color: white;
+            border: none;
+            padding: 8px 18px;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 13px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(255, 42, 95, 0.3);
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: inline-block;
+            white-space: nowrap;
+        }
+
+        .auth-only { display: none; }
+        .guest-only { display: inline-block; }
+
+        body.is-logged-in .auth-only { display: flex !important; }
+        body.is-logged-in a.auth-only { display: inline-block !important; }
+        body.is-logged-in li.auth-only { display: flex !important; }
+        body.is-logged-in .guest-only { display: none !important; }
+
+        /* Search Dropdown */
+        .search-container-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+
+        .search-dropdown-box {
+            position: absolute;
+            top: calc(100% + 15px);
+            right: 0;
+            width: 320px;
+            background: #10141E;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            display: none;
+            z-index: 1000;
+        }
+
+        .search-dropdown-box.active {
+            display: block;
+        }
+
+        .search-dropdown-box input {
+            width: 100%;
+            padding: 10px 12px;
+            background: #07090E;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: #fff;
+            font-size: 13px;
+            outline: none;
+        }
+
+        .search-dropdown-box input:focus {
+            border-color: var(--pink-accent);
+        }
+
+        .search-results-list {
+            margin-top: 10px;
+            max-height: 250px;
+            overflow-y: auto;
+        }
+
+        .search-result-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px;
+            border-radius: 6px;
+            text-decoration: none;
+            color: #fff;
+            transition: background 0.2s;
+        }
+
+        .search-result-item:hover {
+            background: rgba(255, 42, 95, 0.15);
+        }
+
+        .search-result-item img {
+            width: 40px;
+            height: 55px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+
+        .search-result-info h4 {
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .search-result-info span {
+            font-size: 11px;
+            color: var(--text-gray);
+        }
+
+        /* Notification Dropdown */
+        .notification-dropdown {
+            position: absolute;
+            top: calc(100% + 15px);
+            right: 0;
+            width: 300px;
+            background: #10141E;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            display: none;
+            z-index: 1000;
+        }
+
+        .notification-dropdown.active {
+            display: block;
+        }
+
+        .notification-dropdown h4 {
+            font-size: 14px;
+            margin-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 8px;
+            color: #fff;
+        }
+
+        /* ==========================================
+           4. MAIN CONTAINER & MOVIES GRID
+           ========================================== */
+        .container {
+            max-width: 1400px;
+            margin: 30px auto;
+            padding: 0 30px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            margin-top: 30px;
+        }
+
+        .section-header:first-of-type {
+            margin-top: 0;
+        }
+
+        .section-title { 
+            font-size: 18px; 
+            font-weight: 700; 
+            border-left: 4px solid var(--pink-accent);
+            padding-left: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .movies-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 12px;
+            width: 100%;
+        }
+
+        .movie-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .movie-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(255, 42, 95, 0.4);
+        }
+
+        .movie-poster-box {
+            position: relative;
+            width: 100%;
+            height: 220px;
+            overflow: hidden;
+        }
+
+        .movie-poster-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .movie-badge {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            font-size: 9px;
+            font-weight: 800;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: white;
+        }
+
+        .badge-imax { background: #E50914; }
+        .badge-2d { background: #8B5CF6; }
+        .badge-3d { background: #EC4899; }
+        .badge-coming { background: #3B82F6; }
+
+        .movie-info { padding: 10px; display: flex; flex-direction: column; flex-grow: 1; }
+        .movie-title { font-size: 12px; font-weight: 700; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .movie-meta { display: flex; justify-content: space-between; font-size: 10px; color: var(--text-gray); margin-bottom: 10px; }
+        .rating-box { color: #FACC15; font-weight: 700; }
+
+        .btn-book-ticket {
+            width: 100%;
+            background: var(--pink-accent);
+            color: white;
+            border: none;
+            padding: 7px 0;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: auto;
+            text-align: center;
+            text-decoration: none;
+            display: block;
+        }
+
+        .btn-coming-soon {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--text-gray);
+            border: 1px solid var(--border-color);
+            padding: 7px 0;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: default;
+            margin-top: auto;
+            text-align: center;
+            text-decoration: none;
+            display: block;
+        }
+
+        /* ==========================================
+           5. FOOTER SECTION
+           ========================================== */
+        footer {
+            background-color: #2b2b18;
+            color: #b3b392;
+            font-size: 12px;
+            margin-top: 60px;
+            border-top: 2px solid #3d3d22;
+        }
+
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 25px 40px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 30px;
+        }
+
+        .footer-col h3 { color: #dcdcc0; font-size: 13px; font-weight: bold; margin-bottom: 15px; }
+        .footer-col ul { list-style: none; }
+        .footer-col ul li { margin-bottom: 8px; }
+        .footer-col ul li a { color: #b3b392; text-decoration: none; }
+
+        .footer-bottom {
+            background-color: #232314;
+            padding: 20px 40px;
+            border-top: 1px solid #3d3d22;
+        }
+
+        @media(max-width: 1200px) {
+            .movies-grid { grid-template-columns: repeat(3, 1fr); }
+        }
+        @media(max-width: 768px) {
+            .movies-grid { grid-template-columns: repeat(2, 1fr); }
+            header { padding: 16px 20px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="video-bg-container">
+        <video autoplay loop muted playsinline poster="https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?q=80&w=1600">
+            <source src="https://assets.mixkit.co/videos/preview/mixkit-curtain-opening-in-a-cinema-42823-large.mp4" type="video/mp4">
+        </video>
+    </div>
+    <div class="video-overlay"></div>
+
+    <!-- HEADER -->
+    <header>
+        <a th:href="@{/}" href="/" class="logo"><i class="fa-solid fa-film"></i> CDD<span>BOOK</span></a>
+
+        <nav>
+            <ul>
+                <li><a th:href="@{/}" class="nav-item"><i class="fa-solid fa-house"></i> Trang chủ</a></li>
+                <li><a th:href="@{/khuyen-mai}" class="nav-item"><i class="fa-solid fa-gift"></i> Khuyến mãi</a></li>
+                <li><a th:href="@{/phim}" class="nav-item active"><i class="fa-solid fa-clapperboard"></i> Phim</a></li>
+                <li class="auth-only"><a th:href="@{/thanh-vien}" class="nav-item"><i class="fa-solid fa-id-card"></i><span>Thành viên</span></a></li>
+            </ul>
+        </nav>
+
+        <div class="header-right">
+            <div class="search-container-wrapper">
+                <i class="fa-solid fa-magnifying-glass" id="searchBtn"></i>
+                <div class="search-dropdown-box" id="searchDropdown">
+                    <input type="text" id="searchInput" placeholder="Nhập tên phim cần tìm...">
+                    <div class="search-results-list" id="searchResultsList"></div>
+                </div>
+            </div>
+
+            <a href="/login" th:href="@{/login}" class="btn-auth-action guest-only">
+                <i class="fa-solid fa-user"></i> Đăng nhập
+            </a>
+
+            <span class="user-name auth-only"
+                  th:text="${user != null} ? 'Xin chào, ' + ${user.fullName} : 'Đại Vương'">Đại Vương</span>
+
+            <a th:href="@{/dang-nhap}" href="/logout" class="btn-auth-action auth-only"
+               style="background: rgba(255, 42, 95, 0.2); border: 1px solid var(--pink-accent);">
+                <i class="fa-solid fa-right-from-bracket"></i> Đăng xuất
+            </a>
+        </div>
+    </header>
+    
+    <div class="container">
+        <!-- PHIM ĐANG CHIẾU -->
+        <div class="section-header">
+            <h2 class="section-title"><i class="fa-solid fa-fire" style="color: var(--pink-accent);"></i> Phim Đang Chiếu</h2>
+        </div>
+
+        <div class="movies-grid" id="nowShowingGrid">
+            <!-- MOCK DATA HIỆN TẠI GIỮ NGUYÊN -->
+            <div class="movie-card" data-title="Furiosa: A Mad Max Saga" data-id="furiosa">
+                <div class="movie-poster-box">
+                    <span class="movie-badge badge-imax">IMAX</span>
+                    <img src="https://image.tmdb.org/t/p/original/iADOJ8Zymht2JPMoy3R7xceZprc.jpg" alt="Furiosa">
+                </div>
+                <div class="movie-info">
+                    <h3 class="movie-title">Furiosa: A Mad Max Saga</h3>
+                    <div class="movie-meta"><span>Hành động</span><span class="rating-box">8.5 <i class="fa-solid fa-star"></i></span></div>
+                    <a th:href="@{/chi-tiet-phim(movieId='furiosa')}" href="/chi-tiet-phim?movieId=furiosa" class="btn-book-ticket">Đặt vé</a>
+                </div>
+            </div>
+
+            <div class="movie-card" data-title="Godzilla x Kong" data-id="godzilla-kong">
+                <div class="movie-poster-box">
+                    <span class="movie-badge badge-2d">2D</span>
+                    <img src="https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/a58a7719-0dcf-4e0b-b7bb-d2b725dbbb8e/dgmztse-c5a1ca5c-d154-40de-9a5f-a58193198725.png/v1/fill/w_1280,h_1897,q_80,strp/godzilla_x_kong_the_new_empire_poster_4k_by_andrewvm_dgmztse-fullview.jpg?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7ImhlaWdodCI6Ijw9MTg5NyIsInBhdGgiOiJcL2ZcL2E1OGE3NzE5LTBkY2YtNGUwYi1iN2JiLWQyYjcyNWRiYmI4ZVwvZGdtenRzZS1jNWExY2E1Yy1kMTU0LTQwZGUtOWE1Zi1hNTgxOTMxOTg3MjUucG5nIiwid2lkdGgiOiI8PTEyODAifV1dLCJhdWQiOlsidXJuOnNlcnZpY2U6aW1hZ2Uub3BlcmF0aW9ucyJdfQ.UkFVAFZ5INkUyrpq0ezIrBKvMSyb80K2l2TCn0mC7sE" alt="Godzilla x Kong">
+                </div>
+                <div class="movie-info">
+                    <h3 class="movie-title">Godzilla x Kong</h3>
+                    <div class="movie-meta"><span>Khoa học viễn tưởng</span><span class="rating-box">7.8 <i class="fa-solid fa-star"></i></span></div>
+                    <a th:href="@{/chi-tiet-phim(movieId='godzilla-kong')}" href="/chi-tiet-phim?movieId=godzilla-kong" class="btn-book-ticket">Đặt vé</a>
+                </div>
+            </div>
+
+            <div class="movie-card" data-title="Dune: Phần hai" data-id="dune-2">
+                <div class="movie-poster-box">
+                    <span class="movie-badge badge-3d">3D</span>
+                    <img src="https://static1.srcdn.com/wordpress/wp-content/uploads/2024/01/dune-part-2-poster-showing-timothee-chalamet-as-paul-atreides-and-zendaya-as-chani-holding-daggers.jpeg" alt="Dune">
+                </div>
+                <div class="movie-info">
+                    <h3 class="movie-title">Dune: Phần hai</h3>
+                    <div class="movie-meta"><span>Khoa học viễn tưởng</span><span class="rating-box">8.9 <i class="fa-solid fa-star"></i></span></div>
+                    <a th:href="@{/chi-tiet-phim(movieId='dune-2')}" href="/chi-tiet-phim?movieId=dune-2" class="btn-book-ticket">Đặt vé</a>
+                </div>
+            </div>
+
+            <div class="movie-card" data-title="Mai" data-id="mai">
+                <div class="movie-poster-box">
+                    <span class="movie-badge badge-2d">2D</span>
+                    <img src="https://dep.com.vn/wp-content/uploads/2024/02/Special-Poster-2-MAI.jpg" alt="Mai">
+                </div>
+                <div class="movie-info">
+                    <h3 class="movie-title">Mai</h3>
+                    <div class="movie-meta"><span>Tình cảm</span><span class="rating-box">8.1 <i class="fa-solid fa-star"></i></span></div>
+                    <a th:href="@{/chi-tiet-phim(movieId='mai')}" href="/chi-tiet-phim?movieId=mai" class="btn-book-ticket">Đặt vé</a>
+                </div>
+            </div>
+
+            <div class="movie-card" data-title="Quỷ Cẩu" data-id="quy-cau">
+                <div class="movie-poster-box">
+                    <span class="movie-badge badge-2d">2D</span>
+                    <img src="https://images2.thanhnien.vn/528068263637045248/2023/11/20/edit-teaser-poster-17004959248601312622703.png" alt="Quỷ Cẩu">
+                </div>
+                <div class="movie-info">
+                    <h3 class="movie-title">Quỷ Cẩu</h3>
+                    <div class="movie-meta"><span>Kinh dị</span><span class="rating-box">6.5 <i class="fa-solid fa-star"></i></span></div>
+                    <a th:href="@{/chi-tiet-phim(movieId='quy-cau')}" href="/chi-tiet-phim?movieId=quy-cau" class="btn-book-ticket">Đặt vé</a>
+                </div>
+            </div>
+
+            <div class="movie-card" data-title="Kung Fu Panda 4" data-id="kung-fu-panda-4">
+                <div class="movie-poster-box">
+                    <span class="movie-badge badge-2d">2D</span>
+                    <img src="https://i.pinimg.com/736x/75/eb/1d/75eb1d3c965ddac7771f22ee43525ee3.jpg" alt="Kung Fu Panda 4">
+                </div>
+                <div class="movie-info">
+                    <h3 class="movie-title">Kung Fu Panda 4</h3>
+                    <div class="movie-meta"><span>Hoạt hình</span><span class="rating-box">7.6 <i class="fa-solid fa-star"></i></span></div>
+                    <a th:href="@{/chi-tiet-phim(movieId='kung-fu-panda-4')}" href="/chi-tiet-phim?movieId=kung-fu-panda-4" class="btn-book-ticket">Đặt vé</a>
+                </div>
+            </div>
+
+            <div class="movie-card" data-title="Doraemon: Bản Giao Hưởng Địa Cầu" data-id="doraemon">
+                <div class="movie-poster-box">
+                    <span class="movie-badge badge-2d">2D</span>
+                    <img src="https://images2.thanhnien.vn/528068263637045248/2024/5/5/phim-doraemon-nobita-va-ban-giao-huong-dia-caucgv-1714919139675623733840.jpg" alt="Doraemon">
+                </div>
+                <div class="movie-info">
+                    <h3 class="movie-title">Doraemon: Bản Giao Hưởng Địa Cầu</h3>
+                    <div class="movie-meta"><span>Hoạt hình</span><span class="rating-box">8.2 <i class="fa-solid fa-star"></i></span></div>
+                    <a th:href="@{/chi-tiet-phim(movieId='doraemon')}" href="/chi-tiet-phim?movieId=doraemon" class="btn-book-ticket">Đặt vé</a>
+                </div>
+            </div>
+
+            <div class="movie-card" data-title="Thám tử Lừng danh Conan: Ngôi Sao 1 Triệu Đô" data-id="conan">
+                <div class="movie-poster-box">
+                    <span class="movie-badge badge-imax">IMAX</span>
+                    <img src="https://animevsub.cc/wp-content/uploads/2025/06/01a129f40195c588ebc3d00c225fa33c.jpg" alt="Conan">
+                </div>
+                <div class="movie-info">
+                    <h3 class="movie-title">Thám tử Lừng danh Conan: Ngôi Sao 1 Triệu Đô</h3>
+                    <div class="movie-meta"><span>Hoạt hình</span><span class="rating-box">8.8 <i class="fa-solid fa-star"></i></span></div>
+                    <a th:href="@{/chi-tiet-phim(movieId='conan')}" href="/chi-tiet-phim?movieId=conan" class="btn-book-ticket">Đặt vé</a>
+                </div>
+            </div>
+
+            <div class="movie-card" data-title="Spider-Man: Across the Spider-Verse" data-id="spider-man-sv">
+                <div class="movie-poster-box">
+                    <span class="movie-badge badge-imax">IMAX</span>
+                    <img src="https://image.tmdb.org/t/p/original/8Vt6mWEReuy4Of61Lnj5Xj704m8.jpg" alt="Spider-Man">
+                </div>
+                <div class="movie-info">
+                    <h3 class="movie-title">Spider-Man: Across the Spider-Verse</h3>
+                    <div class="movie-meta"><span>Hoạt hình</span><span class="rating-box">9.0 <i class="fa-solid fa-star"></i></span></div>
+                    <a th:href="@{/chi-tiet-phim(movieId='spider-man-sv')}" href="/chi-tiet-phim?movieId=spider-man-sv" class="btn-book-ticket">Đặt vé</a>
+                </div>
+            </div>
+
+            <div class="movie-card" data-title="Interstellar" data-id="interstellar">
+                <div class="movie-poster-box">
+                    <span class="movie-badge badge-imax">IMAX</span>
+                    <img src="https://image.tmdb.org/t/p/original/rAiYTfKGqDCRIIqo664sY9XZIvQ.jpg" alt="Interstellar">
+                </div>
+                <div class="movie-info">
+                    <h3 class="movie-title">Interstellar</h3>
+                    <div class="movie-meta"><span>Khoa học viễn tưởng</span><span class="rating-box">9.3 <i class="fa-solid fa-star"></i></span></div>
+                    <a th:href="@{/chi-tiet-phim(movieId='interstellar')}" href="/chi-tiet-phim?movieId=interstellar" class="btn-book-ticket">Đặt vé</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- PHIM SẮP RA MẮT -->
+        <div class="section-header">
+            <h2 class="section-title"><i class="fa-solid fa-clock" style="color: #3B82F6;"></i> Phim Sắp Ra Mắt</h2>
+        </div>
+
+        <div class="movies-grid" id="upcomingGrid">
+            <!-- MOCK DATA SẮP CHIẾU GIỮ NGUYÊN -->
+            <div class="movie-card" data-title="Avatar 3: Lửa và Tro" data-id="avatar-3">
+                <div class="movie-poster-box">
+                    <span class="movie-badge badge-coming">Sắp chiếu</span>
+                    <img src="https://image.tmdb.org/t/p/original/kyeqWdyUXW608qlYkRqosgbbJyK.jpg" alt="Avatar 3">
+                </div>
+                <div class="movie-info">
+                    <h3 class="movie-title">Avatar 3: Lửa và Tro</h3>
+                    <div class="movie-meta"><span>Phiêu lưu</span><span class="rating-box">12/2026</span></div>
+                    <span class="btn-coming-soon">Sắp ra mắt</span>
+                </div>
+            </div>
+
+            <div class="movie-card" data-title="Avengers: Secret Wars" data-id="avengers-secret-wars">
+                <div class="movie-poster-box">
+                    <span class="movie-badge badge-coming">Sắp chiếu</span>
+                    <img src="https://i.pinimg.com/736x/5e/6c/11/5e6c11f6ab3df315a873ebf5b1b0cf01.jpg" alt="Avengers">
+                </div>
+                <div class="movie-info">
+                    <h3 class="movie-title">Avengers: Secret Wars</h3>
+                    <div class="movie-meta"><span>Hành động</span><span class="rating-box">05/2027</span></div>
+                    <span class="btn-coming-soon">Sắp ra mắt</span>
+                </div>
+            </div>
+
+            <div class="movie-card" data-title="Spider-Man: Beyond the Spider-Verse" data-id="spider-man-beyond">
+                <div class="movie-poster-box">
+                    <span class="movie-badge badge-coming">Sắp chiếu</span>
+                    <img src="https://i.pinimg.com/originals/67/fd/cd/67fdcdbc1731aa1b8747114bcce2fc78.jpg" alt="Spider-Man Beyond">
+                </div>
+                <div class="movie-info">
+                    <h3 class="movie-title">Spider-Man: Beyond</h3>
+                    <div class="movie-meta"><span>Hoạt hình</span><span class="rating-box">Sắp cập nhật</span></div>
+                    <span class="btn-coming-soon">Sắp ra mắt</span>
+                </div>
+            </div>
+
+            <div class="movie-card" data-title="ONE PIECE - SPAMCEDE" data-id="lat-mat-8">
+                <div class="movie-poster-box">
+                    <span class="movie-badge badge-coming">Sắp chiếu</span>
+                    <img src="https://dep.com.vn/wp-content/uploads/2019/12/poster-chinh-thuc-phim-one-piece-stampede.jpg" alt="One Piece">
+                </div>
+                <div class="movie-info">
+                    <h3 class="movie-title">ONE PIECE - SPAMCEDE</h3>
+                    <div class="movie-meta"><span>Hoạt hình</span><span class="rating-box">13/01/2027</span></div>
+                    <span class="btn-coming-soon">Sắp ra mắt</span>
+                </div>
+            </div>
+
+            <div class="movie-card" data-title="The Batman - Phần 2" data-id="the-batman-2">
+                <div class="movie-poster-box">
+                    <span class="movie-badge badge-coming">Sắp chiếu</span>
+                    <img src="https://image.tmdb.org/t/p/original/74xTEgt7R36Fpooo50r9T25onhq.jpg" alt="The Batman 2">
+                </div>
+                <div class="movie-info">
+                    <h3 class="movie-title">The Batman - Phần 2</h3>
+                    <div class="movie-meta"><span>Tội phạm</span><span class="rating-box">10/2026</span></div>
+                    <span class="btn-coming-soon">Sắp ra mắt</span>
+                </div>
+            </div>
+
+            <div class="movie-card" data-title="Tron: Ares" data-id="tron-ares">
+                <div class="movie-poster-box">
+                    <span class="movie-badge badge-coming">Sắp chiếu</span>
+                    <img src="https://mlpnk72yciwc.i.optimole.com/cqhiHLc.IIZS~2ef73/w:auto/h:auto/q:75/https://bleedingcool.com/wp-content/uploads/2025/09/tron_ares_ver7_xlg.jpg" alt="Tron Ares">
+                </div>
+                <div class="movie-info">
+                    <h3 class="movie-title">Tron: Ares</h3>
+                    <div class="movie-meta"><span>Viễn tưởng</span><span class="rating-box">10/2026</span></div>
+                    <span class="btn-coming-soon">Sắp ra mắt</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-col">
+                <h3>CINEBOOK Việt Nam</h3>
+                <ul>
+                    <li><a href="#">Giới Thiệu</a></li>
+                    <li><a href="#">Thẻ Quà Tặng</a></li>
+                    <li><a href="#">Tuyển Dụng</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3>Điều khoản sử dụng</h3>
+                <ul>
+                    <li><a href="#">Điều Khoản Chung</a></li>
+                    <li><a href="#">Chính Sách Bảo Mật</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3>Chăm sóc khách hàng</h3>
+                <ul>
+                    <li>Hotline: 1900 6017</li>
+                    <li>Email: support@cinebook.vn</li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom" style="text-align: center; color: var(--text-gray);">
+            &copy; 2026 CINEBOOK. All rights reserved.
+        </div>
+    </footer>
+
+    <!-- JAVASCRIPT KẾT NỐI API ĐỘNG BỔ SUNG PHIM MỚI TỪ ADMIN -->
+    <script>
+        let isLoggedIn = [[${user != null}]];
+
+        function updateAuthUI() {
+            if (isLoggedIn) {
+                document.body.classList.add('is-logged-in');
+            } else {
+                document.body.classList.remove('is-logged-in');
+            }
+        }
+        updateAuthUI();
+
+        // Danh sách phim mẫu phục vụ tìm kiếm nhanh (Tự động cập nhật thêm phim mới từ API)
+        let sampleMovies = [
+            { id: "furiosa", title: "Furiosa: A Mad Max Saga", genre: "Hành động", image: "https://image.tmdb.org/t/p/original/iADOJ8Zymht2JPMoy3R7xceZprc.jpg" },
+            { id: "godzilla-kong", title: "Godzilla x Kong", genre: "Khoa học viễn tưởng", image: "https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/a58a7719-0dcf-4e0b-b7bb-d2b725dbbb8e/dgmztse-c5a1ca5c-d154-40de-9a5f-a58193198725.png/v1/fill/w_1280,h_1897,q_80,strp/godzilla_x_kong_the_new_empire_poster_4k_by_andrewvm_dgmztse-fullview.jpg?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7ImhlaWdodCI6Ijw9MTg5NyIsInBhdGgiOiJcL2ZcL2E1OGE3NzE5LTBkY2YtNGUwYi1iN2JiLWQyYjcyNWRiYmI4ZVwvZGdtenRzZS1jNWExY2E1Yy1kMTU0LTQwZGUtOWE1Zi1hNTgxOTMxOTg3MjUucG5nIiwid2lkdGgiOiI8PTEyODAifV1dLCJhdWQiOlsidXJuOnNlcnZpY2U6aW1hZ2Uub3BlcmF0aW9ucyJdfQ.UkFVAFZ5INkUyrpq0ezIrBKvMSyb80K2l2TCn0mC7sE" },
+            { id: "dune-2", title: "Dune: Phần hai", genre: "Khoa học viễn tưởng", image: "https://static1.srcdn.com/wordpress/wp-content/uploads/2024/01/dune-part-2-poster-showing-timothee-chalamet-as-paul-atreides-and-zendaya-as-chani-holding-daggers.jpeg" },
+            { id: "mai", title: "Mai", genre: "Tình cảm", image: "https://dep.com.vn/wp-content/uploads/2024/02/Special-Poster-2-MAI.jpg" },
+            { id: "quy-cau", title: "Quỷ Cẩu", genre: "Kinh dị", image: "https://images2.thanhnien.vn/528068263637045248/2023/11/20/edit-teaser-poster-17004959248601312622703.png" },
+            { id: "kung-fu-panda-4", title: "Kung Fu Panda 4", genre: "Hoạt hình", image: "https://i.pinimg.com/736x/75/eb/1d/75eb1d3c965ddac7771f22ee43525ee3.jpg" },
+            { id: "doraemon", title: "Doraemon: Bản Giao Hưởng Địa Cầu", genre: "Hoạt hình", image: "https://images2.thanhnien.vn/528068263637045248/2024/5/5/phim-doraemon-nobita-va-ban-giao-huong-dia-caucgv-1714919139675623733840.jpg" },
+            { id: "conan", title: "Thám tử Lừng danh Conan: Ngôi Sao 1 Triệu Đô", genre: "Hoạt hình", image: "https://animevsub.cc/wp-content/uploads/2025/06/01a129f40195c588ebc3d00c225fa33c.jpg" },
+            { id: "spider-man-sv", title: "Spider-Man: Across the Spider-Verse", genre: "Hoạt hình", image: "https://image.tmdb.org/t/p/original/8Vt6mWEReuy4Of61Lnj5Xj704m8.jpg" },
+            { id: "interstellar", title: "Interstellar", genre: "Khoa học viễn tưởng", image: "https://image.tmdb.org/t/p/original/rAiYTfKGqDCRIIqo664sY9XZIvQ.jpg" }
+        ];
+
+        // GỌI API ĐỘNG LẤY PHIM MỚI TỪ ADMIN VÀ RENDER NỐI TIẾP VÀO GIAO DIỆN
+        async function fetchDynamicMoviesFromAdmin() {
+            try {
+                const res = await fetch('/api/movies');
+                if (!res.ok) return;
+                const moviesFromDb = await res.json();
+
+                const nowShowingGrid = document.getElementById('nowShowingGrid');
+                const upcomingGrid = document.getElementById('upcomingGrid');
+
+                // Lấy danh sách mã phim mock hiện tại để tránh hiển thị trùng lặp
+                const existingIds = Array.from(document.querySelectorAll('.movie-card')).map(card => card.getAttribute('data-id'));
+
+                moviesFromDb.forEach(movie => {
+                    // Nếu phim đã có sẵn trong mock data thì bỏ qua
+                    if (existingIds.includes(movie.id)) return;
+
+                    // Thêm vào mảng tìm kiếm
+                    sampleMovies.push({
+                        id: movie.id,
+                        title: movie.title,
+                        genre: movie.genre || 'Phim rạp',
+                        image: movie.posterUrl || 'https://via.placeholder.com/220x300?text=No+Poster'
+                    });
+
+                    // Định dạng Badge 2D / 3D / IMAX
+                    const badgeType = movie.formatType === 'IMAX 3D' || movie.formatType === 'IMAX' ? 'badge-imax' :
+                                      movie.formatType === '3D' ? 'badge-3d' : 'badge-2d';
+
+                    const posterImg = movie.posterUrl || 'https://via.placeholder.com/220x300?text=No+Poster';
+
+                    if (movie.status === 'Sắp chiếu') {
+                        // Tạo Card phim Sắp chiếu
+                        const card = document.createElement('div');
+                        card.className = 'movie-card';
+                        card.setAttribute('data-id', movie.id);
+                        card.setAttribute('data-title', movie.title);
+                        card.innerHTML = `
+                            <div class="movie-poster-box">
+                                <span class="movie-badge badge-coming">Sắp chiếu</span>
+                                <img src="${posterImg}" alt="${movie.title}">
+                            </div>
+                            <div class="movie-info">
+                                <h3 class="movie-title">${movie.title}</h3>
+                                <div class="movie-meta">
+                                    <span>${movie.genre || 'Phim rạp'}</span>
+                                    <span class="rating-box">${movie.releaseDate || 'Sắp ra mắt'}</span>
+                                </div>
+                                <span class="btn-coming-soon">Sắp ra mắt</span>
+                            </div>
+                        `;
+                        upcomingGrid.appendChild(card);
+                    } else {
+                        // Tạo Card phim Đang chiếu
+                        const card = document.createElement('div');
+                        card.className = 'movie-card';
+                        card.setAttribute('data-id', movie.id);
+                        card.setAttribute('data-title', movie.title);
+                        card.innerHTML = `
+                            <div class="movie-poster-box">
+                                <span class="movie-badge ${badgeType}">${movie.formatType || '2D'}</span>
+                                <img src="${posterImg}" alt="${movie.title}">
+                            </div>
+                            <div class="movie-info">
+                                <h3 class="movie-title">${movie.title}</h3>
+                                <div class="movie-meta">
+                                    <span>${movie.genre || 'Phim rạp'}</span>
+                                    <span class="rating-box">${movie.rating || 8.0} <i class="fa-solid fa-star"></i></span>
+                                </div>
+                                <a href="/chi-tiet-phim?movieId=${movie.id}" class="btn-book-ticket">Đặt vé</a>
+                            </div>
+                        `;
+                        nowShowingGrid.appendChild(card);
+                    }
+                });
+            } catch (error) {
+                console.error("Lỗi khi kết nối lấy danh sách phim động từ Server:", error);
+            }
+        }
+
+        // ĐIỀU KHIỂN KHUNG TÌM KIẾM
+        const searchBtn = document.getElementById('searchBtn');
+        const searchDropdown = document.getElementById('searchDropdown');
+        const searchInput = document.getElementById('searchInput');
+        const searchResultsList = document.getElementById('searchResultsList');
+
+        if (searchBtn) {
+            searchBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                searchDropdown.classList.toggle('active');
+                if (searchDropdown.classList.contains('active')) {
+                    searchInput.focus();
+                    renderSearchResults(sampleMovies);
+                }
+            });
+        }
+
+        document.addEventListener('click', function() {
+            if (searchDropdown) searchDropdown.classList.remove('active');
+        });
+
+        if (searchDropdown) {
+            searchDropdown.addEventListener('click', function(e) {
+                e.stopPropagation();
+            });
+        }
+
+        function renderSearchResults(movies) {
+            searchResultsList.innerHTML = '';
+            if (movies.length === 0) {
+                searchResultsList.innerHTML = '<div style="padding: 10px; font-size: 12px; color: var(--text-gray); text-align: center;">Không tìm thấy phim phù hợp</div>';
+                return;
+            }
+
+            movies.forEach(movie => {
+                const item = document.createElement('a');
+                item.href = `/chi-tiet-phim?movieId=${movie.id}`;
+                item.className = 'search-result-item';
+                item.innerHTML = `
+                    <img src="${movie.image}" alt="${movie.title}">
+                    <div class="search-result-info">
+                        <h4>${movie.title}</h4>
+                        <span>${movie.genre}</span>
+                    </div>
+                `;
+                searchResultsList.appendChild(item);
+            });
+        }
+
+        if (searchInput) {
+            searchInput.addEventListener('input', function(e) {
+                const keyword = e.target.value.toLowerCase().trim();
+                const filtered = sampleMovies.filter(m => m.title.toLowerCase().includes(keyword));
+                renderSearchResults(filtered);
+            });
+        }
+
+        // Tải danh sách phim động ngay sau khi load trang
+        document.addEventListener('DOMContentLoaded', fetchDynamicMoviesFromAdmin);
+    </script>
+</body>
+</html>

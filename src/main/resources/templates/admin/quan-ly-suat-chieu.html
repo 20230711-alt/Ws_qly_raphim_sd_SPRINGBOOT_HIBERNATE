@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>CineBook - Quản lý Suất Chiếu</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style th:replace="~{admin :: admin-css}"></style>
+</head>
+<body>
+    <div th:replace="~{fragments/sidebar :: sidebar('suat-chieu')}"></div>
+
+    <div class="main-content">
+        <div th:replace="~{fragments/header :: header('Quản lý Suất chiếu')}"></div>
+
+        <div class="content-section active">
+            <div class="panel">
+                <div class="panel-header">
+                    <h4>Lịch Suất Chiếu Hệ Thống</h4>
+                    <button class="btn-action" onclick="openModal('Tạo Suất Chiếu')"><i class="fa-solid fa-plus"></i> Tạo suất chiếu</button>
+                </div>
+                <table>
+                    <thead>
+                        <tr><th>Giờ Chiếu</th><th>Phim</th><th>Phòng Chiếu</th><th>Tỷ Lệ Lấp Đầy</th><th>Trạng Thái</th><th>Thao Tác</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>10:30 - 08/05/2026</td><td><b>Dune: Phần hai</b></td><td>IMAX</td><td>72%</td><td><span class="badge success">Đang chiếu</span></td><td><button class="btn-sm btn-edit">Sửa</button> <button class="btn-sm btn-del">Xóa</button></td></tr>
+                        <tr><td>13:30 - 08/05/2026</td><td><b>Avengers: Đế chế Ultron</b></td><td>Phòng 2</td><td>85%</td><td><span class="badge pending">Sắp chiếu</span></td><td><button class="btn-sm btn-edit">Sửa</button> <button class="btn-sm btn-del">Xóa</button></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="~{fragments/modal :: commonModal}"></div>
+
+    <script>
+        function openModal(title) { document.getElementById('modalTitle').innerText = title; document.getElementById('commonModal').style.display = 'flex'; }
+        function closeModal() { document.getElementById('commonModal').style.display = 'none'; }
+    </script>
+</body>
+</html>

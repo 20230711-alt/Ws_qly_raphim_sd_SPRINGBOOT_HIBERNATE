@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CineBook - Chi Tiết Phim</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --bg-dark: #07090E;
+            --card-bg: #10141E;
+            --pink-accent: #FF2A5F;
+            --text-light: #FFFFFF;
+            --text-gray: #8E96A7;
+            --border-color: rgba(255, 255, 255, 0.08);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        body { background-color: var(--bg-dark); color: var(--text-light); }
+
+        /* HEADER */
+        header {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 16px 60px; background: rgba(7, 9, 14, 0.9);
+            border-bottom: 1px solid var(--border-color); position: sticky; top: 0; z-index: 100;
+        }
+        .logo { font-size: 22px; font-weight: 800; color: #fff; text-decoration: none; display: flex; align-items: center; gap: 8px; }
+        .logo i, .logo span { color: var(--pink-accent); }
+
+        /* MAIN CONTAINER */
+        .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
+        
+        .movie-detail-wrapper {
+            display: grid; grid-template-columns: 300px 1fr; gap: 40px;
+            background: var(--card-bg); border: 1px solid var(--border-color);
+            border-radius: 16px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .poster-box { width: 100%; border-radius: 12px; overflow: hidden; border: 1px solid var(--border-color); }
+        .poster-box img { width: 100%; height: 420px; object-fit: cover; display: block; }
+
+        .info-box { display: flex; flex-direction: column; gap: 16px; }
+        .movie-title { font-size: 28px; font-weight: 800; color: #ffffff !important; }
+
+        .badge-tags { display: flex; gap: 10px; align-items: center; }
+        .badge { padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; }
+        .badge-pink { background: rgba(255, 42, 95, 0.2); color: var(--pink-accent); border: 1px solid var(--pink-accent); }
+        .badge-gray { background: rgba(255, 255, 255, 0.1); color: #ddd; }
+
+        .meta-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin: 10px 0; font-size: 14px; }
+        .meta-item { color: #94a3b8 !important; }
+        .meta-item strong { color: #f8fafc !important; font-weight: 600; }
+
+        .description { font-size: 14px; line-height: 1.6; color: #cbd5e1; margin-top: 10px; }
+        .description h4 { color: #ffffff !important; margin-bottom: 6px; }
+
+        .actions { display: flex; gap: 16px; margin-top: 20px; }
+        .btn-book {
+            background: var(--pink-accent); color: white; padding: 12px 28px;
+            border-radius: 8px; text-decoration: none; font-weight: 700; font-size: 14px;
+            box-shadow: 0 4px 15px rgba(255, 42, 95, 0.4); transition: opacity 0.2s;
+        }
+        .btn-book:hover { opacity: 0.9; }
+
+        /* VIDEO TRAILER SECTION */
+        .trailer-section { margin-top: 50px; }
+        .trailer-section h3 { font-size: 20px; font-weight: 700; margin-bottom: 20px; border-left: 4px solid var(--pink-accent); padding-left: 12px; color: #fff; }
+        
+        .video-player-container {
+            width: 100%; background: #000; border-radius: 12px; overflow: hidden;
+            border: 1px solid var(--border-color); aspect-ratio: 16/9; max-height: 550px;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .video-player-container video {
+            width: 100%; height: 100%; object-fit: contain; outline: none;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- HEADER -->
+    <header>
+        <a href="/phim" class="logo"><i class="fa-solid fa-film"></i> CINE<span>BOOK</span></a>
+        <a href="/phim" style="color: var(--text-gray); text-decoration: none; font-size: 14px;"><i class="fa-solid fa-arrow-left"></i> Quay lại danh sách phim</a>
+    </header>
+
+    <!-- NỘI DUNG CHI TIẾT PHIM -->
+    <div class="container">
+        <div class="movie-detail-wrapper">
+            <!-- ẢNH POSTER -->
+            <div class="poster-box">
+                <img id="moviePoster" src="https://via.placeholder.com/300x420?text=Poster" alt="Movie Poster">
+            </div>
+
+            <!-- THÔNG TIN CHÍNH -->
+            <div class="info-box">
+                <h1 id="movieTitle" class="movie-title">Đang tải tên phim...</h1>
+                
+                <div class="badge-tags">
+                    <span id="movieFormat" class="badge badge-pink">2D</span>
+                    <span id="movieGenre" class="badge badge-gray">Thể loại</span>
+                    <span id="movieDuration" class="badge badge-gray">0 Phút</span>
+                </div>
+
+                <div class="meta-grid">
+                    <div class="meta-item">Đạo diễn: <strong id="movieDirector">---</strong></div>
+                    <div class="meta-item">Quốc gia: <strong id="movieCountry">---</strong></div>
+                    <div class="meta-item">Khởi chiếu: <strong id="movieRelease">---</strong></div>
+                    <div class="meta-item">Đánh giá: <strong id="movieRating" style="color: #f59e0b;">8.0 ★</strong></div>
+                    <div class="meta-item" style="grid-column: span 2;">Diễn viên: <strong id="movieCast">---</strong></div>
+                </div>
+
+                <div class="description">
+                    <h4>Tóm tắt nội dung:</h4>
+                    <p id="movieDescription">Đang tải mô tả nội dung phim...</p>
+                </div>
+
+                <div class="actions">
+                    <a id="btnBookSeat" href="#" class="btn-book"><i class="fa-solid fa-ticket"></i> Chọn Suất Chiếu & Đặt Vé</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- PHÁT VIDEO TRAILER -->
+        <div class="trailer-section">
+            <h3><i class="fa-solid fa-circle-play" style="color: var(--pink-accent);"></i> Video Trailer</h3>
+            <div class="video-player-container" id="videoContainer">
+                <!-- Video sẽ được load động tại đây -->
+            </div>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT XỬ LÝ LẤY DỮ LIỆU & RENDER VIDEO TỪ MÁY -->
+    <script>
+        async function fetchMovieDetails() {
+            // Lấy tham số movieId từ URL (VD: ?movieId=P04)
+            const urlParams = new URLSearchParams(window.location.search);
+            let movieId = urlParams.get('movieId');
+
+            if (!movieId) {
+                alert("Không tìm thấy mã phim!");
+                window.location.href = '/phim';
+                return;
+            }
+
+            try {
+                const res = await fetch(`/api/movies/${movieId}`);
+                if (!res.ok) {
+                    alert("Bộ phim không tồn tại!");
+                    return;
+                }
+
+                const movie = await res.json();
+
+                // 1. Hiển thị thông tin phim
+                document.getElementById('movieTitle').textContent = movie.title || 'Chưa có tên';
+                document.getElementById('movieGenre').textContent = movie.genre || 'Phim rạp';
+                document.getElementById('movieDuration').textContent = (movie.duration || 0) + ' Phút';
+                document.getElementById('movieFormat').textContent = movie.formatType || '2D';
+                document.getElementById('movieDirector').textContent = movie.director || 'Đang cập nhật';
+                document.getElementById('movieCountry').textContent = movie.country || 'Đang cập nhật';
+                document.getElementById('movieRelease').textContent = movie.releaseDate || 'Đang cập nhật';
+                document.getElementById('movieRating').textContent = (movie.rating || 8.0) + ' ★';
+                document.getElementById('movieCast').textContent = movie.cast || 'Đang cập nhật';
+                document.getElementById('movieDescription').textContent = movie.description || 'Chưa có mô tả.';
+                document.getElementById('btnBookSeat').href = `/chon-ghe?movieId=${movie.id}`;
+
+                // 2. Hiển thị Poster
+                const posterImg = document.getElementById('moviePoster');
+                posterImg.src = movie.posterUrl || movie.poster_url || 'https://via.placeholder.com/300x420?text=No+Poster';
+
+                // 3. Render Video Trailer (Dùng thẻ HTML5 <video> loại bỏ hoàn toàn iframe lỗi 400)
+                const videoContainer = document.getElementById('videoContainer');
+                const trailerUrl = movie.trailerUrl || movie.trailer_url;
+
+                if (!trailerUrl || trailerUrl.trim() === '' || trailerUrl === 'null' || trailerUrl === 'undefined') {
+                    videoContainer.innerHTML = `
+                        <div style="color: var(--text-gray); font-size: 14px;">
+                            <i class="fa-solid fa-video-slash" style="font-size:24px; margin-right:8px; color:var(--pink-accent);"></i> 
+                            Chưa có Video Trailer cho bộ phim này
+                        </div>`;
+                } else if (trailerUrl.includes('youtube.com') || trailerUrl.includes('youtu.be')) {
+                    let embedUrl = trailerUrl.replace("watch?v=", "embed/");
+                    if (trailerUrl.includes('youtu.be/')) embedUrl = trailerUrl.replace("youtu.be/", "youtube.com/embed/");
+                    videoContainer.innerHTML = `<iframe src="${embedUrl}" style="width:100%; height:100%; border:none;" allowfullscreen></iframe>`;
+                } else {
+                    // Trình phát Video local tải từ máy tính
+                    videoContainer.innerHTML = `
+                        <video controls style="width:100%; height:100%;" poster="${posterImg.src}">
+                            <source src="${trailerUrl}" type="video/mp4">
+                            Trình duyệt không hỗ trợ phát Video.
+                        </video>
+                    `;
+                }
+
+            } catch (error) {
+                console.error("Lỗi khi tải chi tiết phim:", error);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', fetchMovieDetails);
+    </script>
+</body>
+</html>

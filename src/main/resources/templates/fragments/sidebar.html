@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+    <aside th:fragment="sidebar(activeMenu)">
+        <div class="sidebar-brand">
+            <i class="fa-solid fa-film"></i>
+            <div>CINE BOOK <small style="display:block; font-size:9px; color:var(--text-gray); letter-spacing:1px;">ADMIN SYSTEM</small></div>
+        </div>
+        <ul class="sidebar-menu">
+            <li th:class="${activeMenu == 'dashboard' ? 'active' : ''}"><a href="/admin"><i class="fa-solid fa-chart-pie"></i> Dashboard</a></li>
+            <li th:class="${activeMenu == 'phim' ? 'active' : ''}"><a href="/admin/phim"><i class="fa-solid fa-clapperboard"></i> Quản lý Phim</a></li>
+            <li th:class="${activeMenu == 'suat-chieu' ? 'active' : ''}"><a href="/admin/suat-chieu"><i class="fa-solid fa-calendar-days"></i> Quản lý Suất chiếu</a></li>
+            <li th:class="${activeMenu == 'dat-ve' ? 'active' : ''}"><a href="/admin/dat-ve"><i class="fa-solid fa-ticket"></i> Quản lý Đặt vé</a></li>
+            <li th:class="${activeMenu == 'combo' ? 'active' : ''}"><a href="/admin/combo"><i class="fa-solid fa-utensils"></i> Quản lý Combo</a></li>
+            <li th:class="${activeMenu == 'khuyen-mai' ? 'active' : ''}"><a href="/admin/khuyen-mai"><i class="fa-solid fa-tags"></i> Quản lý Khuyến mãi</a></li>
+            <li th:class="${activeMenu == 'bao-cao' ? 'active' : ''}"><a href="/admin/bao-cao"><i class="fa-solid fa-chart-line"></i> Báo cáo</a></li>
+            <li th:class="${activeMenu == 'cai-dat' ? 'active' : ''}"><a href="/admin/cai-dat"><i class="fa-solid fa-gear"></i> Cài đặt hệ thống</a></li>
+            <li style="margin-top: 20px;"><a href="http://localhost:8080/dang-nhap" style="color: #ef4444;"><i class="fa-solid fa-right-from-bracket"></i> Đăng xuất</a></li>
+        </ul>
+        <div class="admin-user-box">
+            <div class="admin-user-info">
+                <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=100" alt="Admin">
+                <div>
+                    <div class="name">Admin</div>
+                    <div class="role">Quản trị viên</div>
+                </div>
+            </div>
+            <a href="http://localhost:8080/dang-nhap" title="Đăng xuất" style="color: #ef4444; font-size: 14px;"><i class="fa-solid fa-right-from-bracket"></i></a>
+        </div>
+    </aside>
+</body>
+</html>

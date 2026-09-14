@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>CineBook - Quản lý Combo</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style th:replace="~{admin :: admin-css}"></style>
+</head>
+<body>
+    <div th:replace="~{fragments/sidebar :: sidebar('combo')}"></div>
+
+    <div class="main-content">
+        <div th:replace="~{fragments/header :: header('Quản lý Combo Bắp Nước')}"></div>
+
+        <div class="content-section active">
+            <div class="panel">
+                <div class="panel-header">
+                    <h4>Quản lý Bắp Nước & Combo</h4>
+                    <button class="btn-action" onclick="openModal('Thêm Combo Mới')"><i class="fa-solid fa-plus"></i> Thêm combo</button>
+                </div>
+                <table>
+                    <thead>
+                        <tr><th>Mã Combo</th><th>Tên Combo</th><th>Mô Tả Thành Phần</th><th>Giá Bán</th><th>Thao Tác</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>CB_BIG</td><td>Combo Siêu To</td><td>1 Bắp lớn + 2 Nước ngọt Coca lớn</td><td>89.000 đ</td><td><button class="btn-sm btn-edit">Sửa</button> <button class="btn-sm btn-del">Xóa</button></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="~{fragments/modal :: commonModal}"></div>
+
+    <script>
+        function openModal(title) { document.getElementById('modalTitle').innerText = title; document.getElementById('commonModal').style.display = 'flex'; }
+        function closeModal() { document.getElementById('commonModal').style.display = 'none'; }
+    </script>
+</body>
+</html>
