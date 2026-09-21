@@ -2,9 +2,90 @@
 <html lang="vi" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>CineBook - Báo Cáo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CineBook - Báo Cáo Thống Kê</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style th:replace="~{admin :: admin-css}"></style>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+    <style>
+        .filter-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+            padding: 18px;
+            margin-bottom: 20px;
+        }
+        .filter-grid {
+            display: flex;
+            gap: 15px;
+            align-items: flex-end;
+            flex-wrap: wrap;
+        }
+        .filter-item {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .filter-item label {
+            font-size: 12px;
+            color: #8E96A7;
+            font-weight: 600;
+        }
+        .filter-item select, .filter-item input {
+            background: #10141E;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #FFF;
+            padding: 9px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            outline: none;
+        }
+
+        #reportContainer {
+            background: #181E2A;
+            padding: 24px;
+            border-radius: 12px;
+            color: #FFF;
+        }
+        .report-header-pdf {
+            text-align: center;
+            border-bottom: 2px solid #FF2A5F;
+            padding-bottom: 12px;
+            margin-bottom: 20px;
+        }
+        .report-header-pdf h2 { color: #FF2A5F; margin: 0; font-size: 22px; }
+        .report-header-pdf p { color: #8E96A7; margin: 5px 0 0 0; font-size: 12px; }
+        
+        .summary-cards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .card-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .card-item span { font-size: 12px; color: #8E96A7; }
+        .card-item h3 { margin: 8px 0 0 0; color: #22C55E; font-size: 18px; }
+
+        .pdf-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        .pdf-table th, .pdf-table td {
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 10px;
+            text-align: left;
+            font-size: 13px;
+        }
+        .pdf-table th { background: rgba(255, 42, 95, 0.2); color: #FF2A5F; }
+    </style>
 </head>
 <body>
     <div th:replace="~{fragments/sidebar :: sidebar('bao-cao')}"></div>
@@ -13,12 +94,150 @@
         <div th:replace="~{fragments/header :: header('Báo cáo thống kê')}"></div>
 
         <div class="content-section active">
+            
+            <!-- THANH BỘ LỌC BÁO CÁO THEO NGÀY, THÁNG, NĂM -->
+            <div class="filter-card">
+                <form th:action="@{/admin/bao-cao}" method="get" class="filter-grid">
+                    
+                    <div class="filter-item">
+                        <label><i class="fa-solid fa-filter"></i> Loại thời gian</label>
+                        <select name="filterType" id="filterTypeSelect" onchange="toggleFilterInputs()">
+                            <option value="ALL" th:selected="${filterType == 'ALL'}">-- Tất cả thời gian --</option>
+                            <option value="DATE" th:selected="${filterType == 'DATE'}">Theo Ngày Cụ Thể</option>
+                            <option value="MONTH" th:selected="${filterType == 'MONTH'}">Theo Tháng</option>
+                            <option value="YEAR" th:selected="${filterType == 'YEAR'}">Theo Năm</option>
+                        </select>
+                    </div>
+
+                    <!-- Ô chọn Ngày -->
+                    <div class="filter-item" id="dateInputGroup" style="display: none;">
+                        <label><i class="fa-solid fa-calendar-day"></i> Chọn Ngày</label>
+                        <input type="date" name="selectedDate" th:value="${selectedDate}">
+                    </div>
+
+                    <!-- Ô chọn Tháng -->
+                    <div class="filter-item" id="monthInputGroup" style="display: none;">
+                        <label><i class="fa-solid fa-calendar-week"></i> Chọn Tháng</label>
+                        <select name="selectedMonth">
+                            <option th:each="m : ${#numbers.sequence(1, 12)}" 
+                                    th:value="${m}" 
+                                    th:text="'Tháng ' + ${m}" 
+                                    th:selected="${m == selectedMonth}"></option>
+                        </select>
+                    </div>
+
+                    <!-- Ô chọn Năm -->
+                    <div class="filter-item" id="yearInputGroup" style="display: none;">
+                        <label><i class="fa-solid fa-calendar"></i> Chọn Năm</label>
+                        <select name="selectedYear">
+                            <option th:each="y : ${#numbers.sequence(2023, 2026)}" 
+                                    th:value="${y}" 
+                                    th:text="'Năm ' + ${y}" 
+                                    th:selected="${y == selectedYear}"></option>
+                        </select>
+                    </div>
+
+                    <div style="display: flex; gap: 10px;">
+                        <button type="submit" class="btn-filter" style="background: #FF2A5F; color: white; padding: 9px 18px; border-radius: 6px; border: none; font-weight: 600; cursor: pointer;">
+                            <i class="fa-solid fa-magnifying-glass"></i> Tra cứu
+                        </button>
+                        <a th:href="@{/admin/bao-cao}" style="background: rgba(255,255,255,0.1); color: #8E96A7; padding: 9px 14px; border-radius: 6px; text-decoration: none;" title="Xóa bộ lọc">
+                            <i class="fa-solid fa-rotate-left"></i>
+                        </a>
+                    </div>
+                </form>
+            </div>
+
+            <!-- BẢNG BÁO CÁO THỐNG KÊ -->
             <div class="panel">
-                <div class="panel-header"><h4>Báo Cáo Tài Chính & Doanh Thu Chi Tiết</h4></div>
-                <p style="font-size: 13px; color: var(--text-gray); line-height: 1.6;">Hệ thống đang tổng hợp dữ liệu xuất file Excel/PDF tự động theo yêu cầu kiểm toán hàng ngày của rạp chiếu phim CineBook.</p>
-                <button class="btn-action" style="margin-top: 15px;" onclick="alert('Đang tải xuống báo cáo chi tiết (.xlsx)...')"><i class="fa-solid fa-download"></i> Tải xuống báo cáo</button>
+                <div class="panel-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <h4>Báo Cáo Tài Chính & Doanh Thu Chi Tiết</h4>
+                    
+                    <button class="btn-action" style="background: #FF2A5F; color: white; border: none; padding: 10px 18px; border-radius: 6px; font-weight: 600; cursor: pointer;" onclick="downloadPDFReport()">
+                        <i class="fa-solid fa-file-pdf"></i> Tải xuống báo cáo (PDF)
+                    </button>
+                </div>
+
+                <div id="reportContainer">
+                    <div class="report-header-pdf">
+                        <h2>HỆ THỐNG RẠP CHIẾU PHIM CINEBOOK</h2>
+                        <p>BÁO CÁO DOANH THU & TÀI CHÍNH TỔNG HỢP</p>
+                        <small style="color: #8E96A7;">Ngày xuất báo cáo: <span id="currentReportDate"></span></small>
+                    </div>
+
+                    <!-- THỐNG KÊ ĐỘNG -->
+                    <div class="summary-cards">
+                        <div class="card-item">
+                            <span>Doanh thu Vé xem phim</span>
+                            <h3 th:text="${#numbers.formatDecimal(ticketRevenue, 0, 'COMMA', 0, 'POINT') + ' đ'}">0 đ</h3>
+                        </div>
+                        <div class="card-item">
+                            <span>Doanh thu Combo Bắp Nước</span>
+                            <h3 th:text="${#numbers.formatDecimal(comboRevenue, 0, 'COMMA', 0, 'POINT') + ' đ'}">0 đ</h3>
+                        </div>
+                        <div class="card-item">
+                            <span>Tổng Doanh Thu Thực Nhận</span>
+                            <h3 style="color: #FF2A5F;" th:text="${#numbers.formatDecimal(totalRevenue, 0, 'COMMA', 0, 'POINT') + ' đ'}">0 đ</h3>
+                        </div>
+                    </div>
+
+                    <table class="pdf-table">
+                        <thead>
+                            <tr>
+                                <th>Mục Thống Kê</th>
+                                <th>Số Lượng Giao Dịch</th>
+                                <th>Thành Tiền</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Vé xem phim (Phim Chiếu Rạp)</td>
+                                <td th:text="${totalTickets + ' vé'}">0 vé</td>
+                                <td th:text="${#numbers.formatDecimal(ticketRevenue, 0, 'COMMA', 0, 'POINT') + ' đ'}">0 đ</td>
+                            </tr>
+                            <tr>
+                                <td>Combo Bắp Nước & Bắp Rang</td>
+                                <td th:text="${totalCombos + ' Combo'}">0 Combo</td>
+                                <td th:text="${#numbers.formatDecimal(comboRevenue, 0, 'COMMA', 0, 'POINT') + ' đ'}">0 đ</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
             </div>
         </div>
     </div>
+
+    <script>
+        document.getElementById('currentReportDate').innerText = new Date().toLocaleDateString('vi-VN');
+
+        // Hàm ẩn / hiện các ô nhập thời gian tùy theo loại chọn
+        function toggleFilterInputs() {
+            const type = document.getElementById('filterTypeSelect').value;
+            const dateGrp = document.getElementById('dateInputGroup');
+            const monthGrp = document.getElementById('monthInputGroup');
+            const yearGrp = document.getElementById('yearInputGroup');
+
+            dateGrp.style.display = (type === 'DATE') ? 'flex' : 'none';
+            monthGrp.style.display = (type === 'MONTH') ? 'flex' : 'none';
+            yearGrp.style.display = (type === 'MONTH' || type === 'YEAR') ? 'flex' : 'none';
+        }
+
+        // Chạy ngay khi tải trang để giữ đúng ô đã chọn
+        toggleFilterInputs();
+
+        function downloadPDFReport() {
+            const element = document.getElementById('reportContainer');
+            const opt = {
+                margin:       [10, 10, 10, 10],
+                filename:     'Bao_Cao_Doanh_Thu_CineBook.pdf',
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2, useCORS: true },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+
+            html2pdf().set(opt).from(element).save();
+        }
+    </script>
 </body>
 </html>

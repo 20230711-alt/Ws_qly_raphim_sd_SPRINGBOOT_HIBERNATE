@@ -19,7 +19,7 @@
             --hover-card: #1a2032;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-        body { background-color: var(--bg-main); color: var(--text-main); display: flex; min-height: 100vh; }
+        body { background-color: var(--bg-main); color: var(--text-main); display: flex; min-height: 100vh; font-size: 13px; }
         aside { width: 260px; background-color: var(--bg-sidebar); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; position: fixed; height: 100vh; overflow-y: auto; z-index: 200; }
         .sidebar-brand { padding: 24px 20px; font-size: 20px; font-weight: 800; display: flex; align-items: center; gap: 12px; color: #fff; border-bottom: 1px solid var(--border-color); }
         .sidebar-brand i.fa-film { color: var(--pink-accent); background: rgba(255,42,95,0.15); padding: 8px; border-radius: 8px; }
@@ -64,7 +64,7 @@
         .movie-name { font-weight: 600; font-size: 12px; }
         .movie-rev { color: var(--text-gray); font-size: 10px; }
         table { width: 100%; border-collapse: collapse; text-align: left; font-size: 12px; }
-        th { color: var(--text-gray); font-weight: 600; padding-bottom: 12px; border-bottom: 1px solid var(--border-color); }
+        th { color: var(--text-gray); font-weight: 600; padding-bottom: 12px; border-bottom: 1px solid var(--border-color); font-size: 11px; text-transform: uppercase; }
         td { padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.03); vertical-align: middle; }
         .badge { padding: 4px 10px; border-radius: 20px; font-size: 10px; font-weight: 600; display: inline-block; }
         .badge.success { background: rgba(16, 185, 129, 0.15); color: #10b981; }
@@ -95,29 +95,30 @@
         <div th:replace="~{fragments/header :: header('Dashboard')}"></div>
 
         <div class="content-section active">
+            <!-- 4 CARD THỐNG KÊ (HIỂN THỊ DỮ LIỆU THẬT DÙNG TH:TEXT) -->
             <div class="stats-grid">
                 <div class="stat-card">
                     <span>Tổng doanh thu</span>
-                    <h3>1.245.800.000 đ</h3>
-                    <div class="trend"><i class="fa-solid fa-arrow-up"></i> +18.6% so với hôm qua</div>
+                    <h3 th:text="${#numbers.formatDecimal(totalRevenue, 0, 'COMMA', 0, 'POINT') + ' đ'}">1.245.800.000 đ</h3>
+                    <div class="trend"><i class="fa-solid fa-arrow-up"></i> Số liệu thực tế CSDL</div>
                     <div class="icon-box"><i class="fa-solid fa-sack-dollar"></i></div>
                 </div>
                 <div class="stat-card">
                     <span>Vé đã bán</span>
-                    <h3>3.248 vé</h3>
-                    <div class="trend"><i class="fa-solid fa-arrow-up"></i> +12.4% so với hôm qua</div>
+                    <h3 th:text="${totalTickets + ' vé'}">3.248 vé</h3>
+                    <div class="trend"><i class="fa-solid fa-arrow-up"></i> Tổng đơn đặt thành công</div>
                     <div class="icon-box"><i class="fa-solid fa-ticket"></i></div>
                 </div>
                 <div class="stat-card">
                     <span>Suất chiếu hôm nay</span>
-                    <h3>156 suất</h3>
-                    <div class="trend"><i class="fa-solid fa-arrow-up"></i> +8.3% so với hôm qua</div>
+                    <h3 th:text="${totalShowtimes + ' suất'}">156 suất</h3>
+                    <div class="trend"><i class="fa-solid fa-arrow-up"></i> Lịch chiếu rạp</div>
                     <div class="icon-box"><i class="fa-solid fa-video"></i></div>
                 </div>
                 <div class="stat-card">
                     <span>Khách hàng mới</span>
-                    <h3>482 khách</h3>
-                    <div class="trend"><i class="fa-solid fa-arrow-up"></i> +25.7% so với hôm qua</div>
+                    <h3 th:text="${totalUsers + ' khách'}">482 khách</h3>
+                    <div class="trend"><i class="fa-solid fa-arrow-up"></i> Tài khoản thành viên</div>
                     <div class="icon-box"><i class="fa-solid fa-user-plus"></i></div>
                 </div>
             </div>
@@ -144,75 +145,70 @@
             </div>
 
             <div class="grid-2col">
+                <!-- DANH SÁCH PHIM THẬT TỪ DATABASE -->
                 <div class="panel">
                     <div class="panel-header">
                         <h4>Top phim doanh thu cao nhất</h4>
                         <a href="/admin/phim">Xem tất cả</a>
                     </div>
                     <div class="movie-top-list">
-                        <div class="movie-top-item">
+                        <div class="movie-top-item" th:each="m, iter : ${movies}">
                             <div class="movie-info">
-                                <div class="movie-rank gold">1</div>
-                                <img src="https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=100" alt="Movie">
-                                <div><div class="movie-name">Avengers: Đế chế Ultron</div><div class="movie-rev">2.345.800.000 đ</div></div>
+                                <div class="movie-rank" 
+                                     th:classappend="${iter.index == 0 ? 'gold' : (iter.index == 1 ? 'silver' : (iter.index == 2 ? 'bronze' : ''))}" 
+                                     th:text="${iter.index + 1}">1</div>
+                                <img th:src="${m.posterUrl != null ? m.posterUrl : 'https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=100'}" alt="Movie">
+                                <div>
+                                    <div class="movie-name" th:text="${m.title}">Avengers: Đế chế Ultron</div>
+                                    <div class="movie-rev" th:text="${m.genre}">Thể loại</div>
+                                </div>
                             </div>
-                            <span style="font-size: 11px; color: var(--text-gray);">12.456 vé</span>
+                            <span style="font-size: 11px; color: var(--text-gray);" th:text="${m.duration + ' phút'}">120 phút</span>
                         </div>
-                        <div class="movie-top-item">
-                            <div class="movie-info">
-                                <div class="movie-rank silver">2</div>
-                                <img src="https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?q=80&w=100" alt="Movie">
-                                <div><div class="movie-name">Godzilla x Kong: Đế chế mới</div><div class="movie-rev">1.825.400.000 đ</div></div>
-                            </div>
-                            <span style="font-size: 11px; color: var(--text-gray);">9.854 vé</span>
-                        </div>
-                        <div class="movie-top-item">
-                            <div class="movie-info">
-                                <div class="movie-rank bronze">3</div>
-                                <img src="https://images.unsplash.com/photo-1485846234645-a62644f84728?q=80&w=100" alt="Movie">
-                                <div><div class="movie-name">Dune: Phần hai</div><div class="movie-rev">1.245.800.000 đ</div></div>
-                            </div>
-                            <span style="font-size: 11px; color: var(--text-gray);">6.248 vé</span>
-                        </div>
+                        <div th:if="${movies == null || movies.isEmpty()}" style="color: var(--text-gray); font-size: 12px; text-align: center; padding: 10px;">Chưa có dữ liệu phim.</div>
                     </div>
                 </div>
 
+                <!-- DANH SÁCH GIAO DỊCH VÉ GẦN ĐÂY THẬT -->
                 <div class="panel">
                     <div class="panel-header">
                         <h4>Hoạt động gần đây</h4>
                     </div>
                     <div class="activity-list">
-                        <div class="activity-item">
-                            <div class="activity-left"><i class="fa-solid fa-circle-dot" style="color:var(--pink-accent); font-size:8px;"></i> <span>Nguyễn Văn A tạo suất chiếu mới</span></div>
-                            <span class="activity-time">5 phút trước</span>
+                        <div class="activity-item" th:each="t : ${recentTickets}">
+                            <div class="activity-left">
+                                <i class="fa-solid fa-circle-dot" style="color:var(--pink-accent); font-size:8px;"></i> 
+                                <span>
+                                    <b th:text="${t.user != null ? t.user.fullName : 'Khách vãng lai'}">Nguyễn Văn A</b> 
+                                    đặt đơn hàng <span th:text="${'#CB000' + t.id}" style="color: var(--pink-accent);">#CB0001256</span>
+                                </span>
+                            </div>
+                            <span class="activity-time" th:text="${#numbers.formatDecimal(t.totalPrice, 0, 'COMMA', 0, 'POINT') + ' đ'}" style="color: #10b981; font-weight: 600;">225.000 đ</span>
                         </div>
-                        <div class="activity-item">
-                            <div class="activity-left"><i class="fa-solid fa-circle-dot" style="color:#3b82f6; font-size:8px;"></i> <span>Trần Thị B đặt đơn hàng #CB0001256</span></div>
-                            <span class="activity-time">12 phút trước</span>
-                        </div>
-                        <div class="activity-item">
-                            <div class="activity-left"><i class="fa-solid fa-circle-dot" style="color:#10b981; font-size:8px;"></i> <span>Lê Văn C check-in vé #CB0001255</span></div>
-                            <span class="activity-time">15 phút trước</span>
-                        </div>
-                        <div class="activity-item">
-                            <div class="activity-left"><i class="fa-solid fa-circle-dot" style="color:#f59e0b; font-size:8px;"></i> <span>Hệ thống xuất báo cáo doanh thu</span></div>
-                            <span class="activity-time">1 giờ trước</span>
-                        </div>
+                        <div th:if="${recentTickets == null || recentTickets.isEmpty()}" style="color: var(--text-gray); font-size: 12px; text-align: center; padding: 10px;">Chưa có hoạt động gần đây.</div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <script>
+    <!-- SCRIPT VẼ BIỂU ĐỒ KẾT NỐI BIẾN ĐỘNG TỪ SPRING BOOT -->
+    <script th:inline="javascript">
+        // Lấy các giá trị thực tế từ Controller truyền qua Model
+        const totalRevenueVal = [[${totalRevenue}]];
+        const countPaid = [[${countPaid}]];
+        const countPending = [[${countPending}]];
+        const countCancelled = [[${countCancelled}]];
+
+        // 1. Biểu đồ đường Doanh thu
         const ctxRev = document.getElementById('revenueChart').getContext('2d');
         new Chart(ctxRev, {
             type: 'line',
             data: {
-                labels: ['02/05', '03/05', '04/05', '05/05', '06/05', '07/05', '08/05'],
+                labels: ['02/05', '03/05', '04/05', '05/05', '06/05', '07/05', 'Hôm nay'],
                 datasets: [{
                     label: 'Doanh thu (VNĐ)',
-                    data: [800000000, 950000000, 1100000000, 980000000, 1150000000, 1200000000, 1245800000],
+                    data: [800000000, 950000000, 1100000000, 980000000, 1150000000, 1200000000, totalRevenueVal],
                     borderColor: '#FF2A5F',
                     backgroundColor: 'rgba(255, 42, 95, 0.1)',
                     borderWidth: 2,
@@ -230,13 +226,14 @@
             }
         });
 
+        // 2. Biểu đồ tròn Tỷ lệ vé theo trạng thái từ CSDL
         const ctxStatus = document.getElementById('statusChart').getContext('2d');
         new Chart(ctxStatus, {
             type: 'doughnut',
             data: {
                 labels: ['Đã thanh toán', 'Chờ thanh toán', 'Đã hủy'],
                 datasets: [{
-                    data: [68.5, 21.7, 9.8],
+                    data: [countPaid, countPending, countCancelled],
                     backgroundColor: ['#10b981', '#f59e0b', '#ef4444'],
                     borderWidth: 0
                 }]

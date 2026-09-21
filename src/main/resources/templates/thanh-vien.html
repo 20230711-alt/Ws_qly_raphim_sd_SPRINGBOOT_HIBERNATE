@@ -581,10 +581,26 @@
             border-radius: 20px;
             font-size: 11px;
             font-weight: 600;
+            display: inline-block;
         }
 
         .status-success { background: rgba(16, 185, 129, 0.15); color: #10B981; }
         .status-pending { background: rgba(245, 158, 11, 0.15); color: #F59E0B; }
+        .status-danger { background: rgba(239, 68, 68, 0.15); color: #EF4444; }
+
+        .btn-action-sm {
+            padding: 4px 8px;
+            font-size: 10px;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            margin-right: 4px;
+        }
+        .btn-pay-sm { background: rgba(16, 185, 129, 0.2); color: #10B981; }
+        .btn-pay-sm:hover { background: #10B981; color: white; }
+        .btn-cancel-sm { background: rgba(239, 68, 68, 0.2); color: #EF4444; }
+        .btn-cancel-sm:hover { background: #EF4444; color: white; }
 
         .list-group {
             display: flex;
@@ -785,8 +801,6 @@
         </nav>
 
         <div class="header-right">
-            </div>
-            
         </div>
     </header>
 
@@ -892,7 +906,6 @@
                                 <h3>Phim yêu thích</h3>
                                 <a href="#" onclick="switchTab('tab-favorites', document.getElementById('menu-favorites')); return false;">Xem tất cả ></a>
                             </div>
-                            <!-- Nơi đổ danh sách phim thả tim của Tab Tổng quan -->
                             <div class="fav-movies-row" id="overviewFavoritesRow"></div>
                         </div>
 
@@ -945,30 +958,30 @@
                     </div>
                 </div>
 
-				<!-- TAB 3: ĐỔI MẬT KHẨU -->
-				<div id="tab-password" class="form-section">
-				    <div class="section-card">
-				        <div class="card-header-flex" style="margin-bottom: 20px;">
-				            <h3>Đổi mật khẩu tài khoản</h3>
-				        </div>
-				        <form class="styled-form" action="/doi-mat-khau" method="POST">
-				            <div class="form-group">
-				                <label>Mật khẩu hiện tại</label>
-				                <input type="password" name="currentPassword" placeholder="Nhập mật khẩu cũ" required>
-				            </div>
-				            <div class="form-group">
-				                <label>Mật khẩu mới</label>
-				                <input type="password" name="newPassword" placeholder="Nhập mật khẩu mới" required>
-				            </div>
-				            <div class="form-group">
-				                <label>Xác nhận mật khẩu mới</label>
-				                <input type="password" name="confirmPassword" placeholder="Nhập lại mật khẩu mới" required>
-				            </div>
-				            <button type="submit" class="btn-submit">Cập nhật mật khẩu</button>
-				        </form>
-				    </div>
-				</div>
-				
+                <!-- TAB 3: ĐỔI MẬT KHẨU -->
+                <div id="tab-password" class="form-section">
+                    <div class="section-card">
+                        <div class="card-header-flex" style="margin-bottom: 20px;">
+                            <h3>Đổi mật khẩu tài khoản</h3>
+                        </div>
+                        <form class="styled-form" action="/doi-mat-khau" method="POST">
+                            <div class="form-group">
+                                <label>Mật khẩu hiện tại</label>
+                                <input type="password" name="currentPassword" placeholder="Nhập mật khẩu cũ" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Mật khẩu mới</label>
+                                <input type="password" name="newPassword" placeholder="Nhập mật khẩu mới" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Xác nhận mật khẩu mới</label>
+                                <input type="password" name="confirmPassword" placeholder="Nhập lại mật khẩu mới" required>
+                            </div>
+                            <button type="submit" class="btn-submit">Cập nhật mật khẩu</button>
+                        </form>
+                    </div>
+                </div>
+
                 <!-- TAB 4: KHO ƯU ĐÃI -->
                 <div id="tab-vouchers" class="form-section">
                     <div class="section-card">
@@ -1004,7 +1017,7 @@
                     </div>
                 </div>
 
-                <!-- TAB 5: LỊCH SỬ ĐẶT VÉ -->
+                <!-- TAB 5: LỊCH SỬ ĐẶT VÉ (ĐÃ THÊM XỬ LÝ 3 TRẠNG THÁI & NÚT THAO TÁC) -->
                 <div id="tab-tickets" class="form-section">
                     <div class="section-card">
                         <div class="card-header-flex" style="margin-bottom: 20px;">
@@ -1022,11 +1035,12 @@
                                         <th>Tổng tiền</th>
                                         <th>Ngày đặt</th>
                                         <th>Trạng thái</th>
+                                        <th>Thao tác</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr th:if="${tickets == null or tickets.empty}">
-                                        <td colspan="8" style="text-align: center; color: var(--text-gray);">Bạn chưa có vé nào.</td>
+                                        <td colspan="9" style="text-align: center; color: var(--text-gray);">Bạn chưa có vé nào.</td>
                                     </tr>
                                     <tr class="ticket-row" th:each="ticket : ${tickets}">
                                         <td style="font-weight: bold; color: var(--pink-accent);" th:text="'#CB-' + ${ticket.id}">#CB-8921</td>
@@ -1034,11 +1048,24 @@
                                         <td style="color: #60A5FA; font-weight: 600;" th:text="${ticket.cinemaName != null ? ticket.cinemaName : 'CINEBOOK Đồng Khởi'}">CINEBOOK Đồng Khởi</td>
                                         <td th:text="${ticket.showTime}">19:30 - 05/09/2026</td>
                                         <td th:text="${ticket.seats}">F12, F13</td>
-                                        <td class="ticket-price" th:text="${ticket.totalPrice}">180000</td>
+                                        <td class="ticket-price" th:text="${#numbers.formatDecimal(ticket.totalPrice, 0, 'COMMA', 0, 'POINT') + ' đ'}">180.000 đ</td>
                                         <td th:text="${#temporals.format(ticket.bookingDate, 'dd-MM-yyyy HH:mm')}">05/09/2026 18:15</td>
-										<td style="white-space: nowrap;">
-										    <span class="status-badge status-success">Thành công</span>
-										</td>
+                                        
+                                        <!-- PHÂN LOẠI BADGE 3 TRẠNG THÁI VÉ -->
+                                        <td style="white-space: nowrap;">
+                                            <span th:if="${ticket.status == 'Chờ thanh toán'}" class="status-badge status-pending"><i class="fa-solid fa-clock"></i> Chờ thanh toán</span>
+                                            <span th:if="${ticket.status == 'Đã thanh toán' or ticket.status == null}" class="status-badge status-success"><i class="fa-solid fa-check"></i> Đã thanh toán</span>
+                                            <span th:if="${ticket.status == 'Đã hủy'}" class="status-badge status-danger"><i class="fa-solid fa-xmark"></i> Đã hủy</span>
+                                        </td>
+
+                                        <!-- CỤM NÚT THAO TÁC KHI CHỜ THANH TOÁN -->
+                                        <td style="white-space: nowrap;">
+                                            <div th:if="${ticket.status == 'Chờ thanh toán'}">
+                                                <button class="btn-action-sm btn-pay-sm" th:onclick="'payTicket(' + ${ticket.id} + ')'">Thanh toán</button>
+                                                <button class="btn-action-sm btn-cancel-sm" th:onclick="'cancelTicket(' + ${ticket.id} + ')'">Hủy vé</button>
+                                            </div>
+                                            <span th:if="${ticket.status != 'Chờ thanh toán'}" style="color: var(--text-gray); font-size: 11px;">--</span>
+                                        </td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -1052,7 +1079,6 @@
                         <div class="card-header-flex" style="margin-bottom: 20px;">
                             <h3>Danh sách phim yêu thích</h3>
                         </div>
-                        <!-- Nơi đổ đầy đủ danh sách phim thả tim của Tab Danh sách yêu thích -->
                         <div class="fav-movies-row" id="favoritesTabGrid" style="grid-template-columns: repeat(4, 1fr);"></div>
                     </div>
                 </div>
@@ -1103,6 +1129,35 @@
 
     <!-- SCRIPTS -->
     <script>
+        // Xử lý gửi API cập nhật trạng thái vé cho Nút Thanh toán / Hủy vé
+        function payTicket(ticketId) {
+            fetch(`/api/tickets/${ticketId}/pay`, { method: 'POST' })
+                .then(res => {
+                    if (res.ok) {
+                        showToast('Thanh toán đơn vé thành công!', '#10B981');
+                        setTimeout(() => window.location.reload(), 1000);
+                    } else {
+                        showToast('Có lỗi xảy ra khi thanh toán!', '#EF4444');
+                    }
+                })
+                .catch(() => showToast('Không thể kết nối đến máy chủ!', '#EF4444'));
+        }
+
+        function cancelTicket(ticketId) {
+            if (!confirm('Bạn có chắc chắn muốn hủy đơn vé này không?')) return;
+
+            fetch(`/api/tickets/${ticketId}/cancel`, { method: 'POST' })
+                .then(res => {
+                    if (res.ok) {
+                        showToast('Đã hủy đơn vé thành công!', '#10B981');
+                        setTimeout(() => window.location.reload(), 1000);
+                    } else {
+                        showToast('Có lỗi xảy ra khi hủy vé!', '#EF4444');
+                    }
+                })
+                .catch(() => showToast('Không thể kết nối đến máy chủ!', '#EF4444'));
+        }
+
         function switchTab(tabId, element) {
             document.querySelectorAll('.form-section').forEach(el => {
                 el.classList.remove('active-tab');
@@ -1254,9 +1309,7 @@
                 showToast('Cập nhật ảnh đại diện thành công!', '#10B981');
             }
 
-            // ==========================================
-            // 3. TẢI VÀ ĐỒNG BỘ PHIM YÊU THÍCH TỪ API MYSQL
-            // ==========================================
+            // 3. Phim yêu thích
             function getFavorites() {
                 try { return JSON.parse(localStorage.getItem(FAVORITES_KEY)) || []; } catch(e) { return []; }
             }
@@ -1275,15 +1328,11 @@
                 }
 
                 try {
-                    // Gọi API MySQL lấy danh sách phim thật
                     const res = await fetch('/api/movies');
                     if (!res.ok) return;
                     const allMovies = await res.json();
-
-                    // Lọc ra các phim người dùng đã bấm tim
                     const favMovies = allMovies.filter(m => favIds.includes(m.id));
 
-                    // Render vào Tab Tổng quan (Hiển thị tối đa 4 phim)
                     if (overviewRow) {
                         const overviewMovies = favMovies.slice(0, 4);
                         overviewRow.innerHTML = overviewMovies.map(movie => {
@@ -1305,7 +1354,6 @@
                         }).join('');
                     }
 
-                    // Render vào Tab Danh sách yêu thích (Hiển thị toàn bộ)
                     if (favoritesTab) {
                         favoritesTab.innerHTML = favMovies.map(movie => {
                             let poster = movie.posterUrl || movie.poster_url || 'https://via.placeholder.com/150x200?text=No+Poster';
@@ -1330,7 +1378,6 @@
                 }
             }
 
-            // Gắn sự kiện click bỏ yêu thích ngay trong trang Thành viên
             document.addEventListener('click', function(e) {
                 if (e.target.classList.contains('fav-heart')) {
                     let movieId = e.target.getAttribute('data-id');

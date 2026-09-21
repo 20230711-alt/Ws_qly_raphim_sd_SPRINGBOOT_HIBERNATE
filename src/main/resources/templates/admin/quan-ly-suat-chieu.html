@@ -5,6 +5,78 @@
     <title>CineBook - Quản lý Suất Chiếu</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style th:replace="~{admin :: admin-css}"></style>
+    <style>
+        .toolbar-flex {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .filter-group-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .filter-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .filter-select {
+            background: #10141E;
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            outline: none;
+        }
+        .modal-form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        .form-group-custom {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-bottom: 12px;
+            text-align: left;
+        }
+        .form-group-custom label {
+            font-size: 12px;
+            color: #8E96A7;
+            font-weight: 600;
+        }
+        .form-input-custom {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 8px 12px;
+            border-radius: 6px;
+            color: #fff;
+            font-size: 13px;
+            outline: none;
+            color-scheme: dark;
+        }
+        .form-input-custom option {
+            background: #10141E;
+            color: #fff;
+        }
+        .status-badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            white-space: nowrap;
+            display: inline-block;
+        }
+        .status-success { background: rgba(16, 185, 129, 0.15); color: #10B981; }
+        .status-ended { background: rgba(239, 68, 68, 0.15); color: #EF4444; }
+        .status-pending { background: rgba(245, 158, 11, 0.15); color: #F59E0B; }
+    </style>
 </head>
 <body>
     <div th:replace="~{fragments/sidebar :: sidebar('suat-chieu')}"></div>
@@ -16,26 +88,333 @@
             <div class="panel">
                 <div class="panel-header">
                     <h4>Lịch Suất Chiếu Hệ Thống</h4>
-                    <button class="btn-action" onclick="openModal('Tạo Suất Chiếu')"><i class="fa-solid fa-plus"></i> Tạo suất chiếu</button>
+                    <button class="btn-action" onclick="openCreateModal()"><i class="fa-solid fa-plus"></i> Tạo suất chiếu</button>
                 </div>
+
+                <!-- BỘ LỌC ĐA NĂNG -->
+                <div class="toolbar-flex" style="padding: 10px 0;">
+                    <div class="filter-group-wrapper">
+                        <div class="filter-item">
+                            <label style="font-size: 13px; color: #8E96A7;"><i class="fa-solid fa-building-user"></i> Rạp:</label>
+                            <select id="cinemaFilter" class="filter-select" onchange="filterShowtimes()">
+                                <option value="ALL">-- Tất cả các rạp --</option>
+                                <option value="CINEBOOK Vincom Center Đồng Khởi">CINEBOOK Vincom Center Đồng Khởi</option>
+                                <option value="CINEBOOK Bà Triệu">CINEBOOK Bà Triệu</option>
+                                <option value="CINEBOOK Landmark 81">CINEBOOK Landmark 81</option>
+                            </select>
+                        </div>
+
+                        <div class="filter-item">
+                            <label style="font-size: 13px; color: #8E96A7;"><i class="fa-solid fa-film"></i> Phim:</label>
+                            <select id="movieFilter" class="filter-select" onchange="filterShowtimes()">
+                                <option value="ALL">-- Tất cả các phim --</option>
+                                <option th:each="m : ${movies}" th:value="${m.title}" th:text="${m.title}">Furiosa: A Mad Max Saga</option>
+                                <option th:if="${movies == null}" value="Furiosa: A Mad Max Saga">Furiosa: A Mad Max Saga</option>
+                                <option th:if="${movies == null}" value="Godzilla x Kong: Đế Chế Mới">Godzilla x Kong: Đế Chế Mới</option>
+                                <option th:if="${movies == null}" value="Dune: Phần hai">Dune: Phần hai</option>
+                            </select>
+                        </div>
+
+                        <div class="filter-item">
+                            <label style="font-size: 13px; color: #8E96A7;"><i class="fa-solid fa-clock"></i> Giờ:</label>
+                            <select id="timeFilter" class="filter-select" onchange="filterShowtimes()">
+                                <option value="ALL">-- Tất cả khung giờ --</option>
+                                <option value="10:30">10:30</option>
+                                <option value="13:30">13:30</option>
+                                <option value="16:00">16:00</option>
+                                <option value="19:45">19:45</option>
+								<option value="19:45">12:00</option>
+                            </select>
+                        </div>
+
+                        <div class="filter-item">
+                            <label style="font-size: 13px; color: #8E96A7;"><i class="fa-solid fa-door-open"></i> Phòng:</label>
+                            <select id="roomFilter" class="filter-select" onchange="filterShowtimes()">
+                                <option value="ALL">-- Tất cả phòng --</option>
+                                <option value="IMAX">IMAX</option>
+                                <option value="Phòng 1">Phòng 1</option>
+                                <option value="Phòng 2">Phòng 2</option>
+                                <option value="Phòng VIP">Phòng VIP</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BẢNG SUẤT CHIẾU -->
                 <table>
                     <thead>
-                        <tr><th>Giờ Chiếu</th><th>Phim</th><th>Phòng Chiếu</th><th>Tỷ Lệ Lấp Đầy</th><th>Trạng Thái</th><th>Thao Tác</th></tr>
+                        <tr>
+                            <th>ID</th>
+                            <th>Giờ Chiếu</th>
+                            <th>Tên Rạp</th>
+                            <th>Phim</th>
+                            <th>Phòng Chiếu</th>
+                            <th>Giá Vé</th>
+                            <th>Tỷ Lệ Lấp Đầy</th>
+                            <th>Trạng Thái</th>
+                            <th>Thao Tác</th>
+                        </tr>
                     </thead>
-                    <tbody>
-                        <tr><td>10:30 - 08/05/2026</td><td><b>Dune: Phần hai</b></td><td>IMAX</td><td>72%</td><td><span class="badge success">Đang chiếu</span></td><td><button class="btn-sm btn-edit">Sửa</button> <button class="btn-sm btn-del">Xóa</button></td></tr>
-                        <tr><td>13:30 - 08/05/2026</td><td><b>Avengers: Đế chế Ultron</b></td><td>Phòng 2</td><td>85%</td><td><span class="badge pending">Sắp chiếu</span></td><td><button class="btn-sm btn-edit">Sửa</button> <button class="btn-sm btn-del">Xóa</button></td></tr>
+                    <tbody id="showtimeTableBody">
+                        <tr class="showtime-row" 
+                            th:each="st : ${showtimes}" 
+                            th:data-cinema="${st.cinemaName != null ? st.cinemaName : ''}"
+                            th:data-movie="${st.movieTitle != null ? st.movieTitle : ''}"
+                            th:data-time="${st.showTime != null ? st.showTime : ''}"
+                            th:data-room="${st.room != null ? st.room : ''}">
+                            <td th:text="${st.id}">1</td>
+                            <td th:text="${st.showTime != null ? (st.showDate != null ? st.showTime + ' - ' + st.showDate : st.showTime) : '10:30'}">10:30 - 08/05/2026</td>
+                            <td style="color: #60A5FA; font-weight: 600;" th:text="${st.cinemaName != null ? st.cinemaName : 'CINEBOOK Vincom Center Đồng Khởi'}">CINEBOOK Vincom Center Đồng Khởi</td>
+                            <td><b th:text="${st.movieTitle != null ? st.movieTitle : 'Furiosa: A Mad Max Saga'}">Dune: Phần hai</b></td>
+                            <td th:text="${st.room != null ? st.room : 'IMAX'}">IMAX</td>
+                            <td th:text="${st.ticketPrice != null ? st.ticketPrice + ' đ' : '75.000 đ'}">75.000 đ</td>
+							<!-- CẬP NHẬT: Đọc số ghế thực từ Map tính toán ở Backend -->
+							<td th:text="${occupancyMap != null and occupancyMap.containsKey(st.id) ? occupancyMap.get(st.id) : '0/96 (0%)'}">0/96 (0%)</td>
+                            <td>
+                                <span class="status-badge" 
+                                      th:classappend="${st.status == 'Đã chiếu' ? 'status-ended' : (st.status == 'Sắp chiếu' ? 'status-pending' : 'status-success')}"
+                                      th:text="${st.status != null ? st.status : 'Đang chiếu'}">Đang chiếu</span>
+                            </td>
+                            <td>
+                                <!-- TRUYỀN DỮ LIỆU AN TOÀN QUA DATA-ATTRIBUTES ĐỂ TRÁNH LỖI PARSING -->
+                                <button class="btn-sm btn-edit" 
+                                        th:data-id="${st.id}"
+                                        th:data-cinema="${st.cinemaName}"
+                                        th:data-movie="${st.movieTitle}"
+                                        th:data-room="${st.room}"
+                                        th:data-price="${st.ticketPrice}"
+                                        th:data-date="${st.showDate}"
+                                        th:data-time="${st.showTime}"
+                                        th:data-status="${st.status}"
+                                        onclick="handleEditButtonClick(this)">Sửa</button> 
+                                <a th:href="@{'/admin/suat-chieu/delete/' + ${st.id}}" onclick="return confirm('Bạn có chắc chắn muốn xóa suất chiếu này?');" class="btn-sm btn-del" style="text-decoration: none; display: inline-block;">Xóa</a>
+                            </td>
+                        </tr>
+
+                        <!-- MẪU HÀNG NẾU DATABASE CHƯA CÓ DỮ LIỆU -->
+                        <tr class="showtime-row" 
+                            data-cinema="CINEBOOK Bà Triệu" 
+                            data-movie="Avengers: Đế chế Ultron"
+                            data-time="13:30"
+                            data-room="Phòng 2"
+                            th:if="${showtimes == null or #lists.isEmpty(showtimes)}">
+                            <td>1</td>
+                            <td>13:30 - 08/05/2026</td>
+                            <td style="color: #60A5FA; font-weight: 600;">CINEBOOK Bà Triệu</td>
+                            <td><b>Avengers: Đế chế Ultron</b></td>
+                            <td>Phòng 2</td>
+                            <td>75.000 đ</td>
+                            <td>102/120 (85%)</td>
+                            <td><span class="status-badge status-success">Đang chiếu</span></td>
+                            <td>
+                                <button class="btn-sm btn-edit" onclick="openEditModal(1, 'CINEBOOK Bà Triệu', 'Avengers: Đế chế Ultron', 'Phòng 2', 75000, '2026-05-08', '13:30', 'Đang chiếu')">Sửa</button> 
+                                <button class="btn-sm btn-del" onclick="alert('Vui lòng kết nối database để xóa!')">Xóa</button>
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
 
-    <div th:replace="~{fragments/modal :: commonModal}"></div>
+    <!-- MODAL TẠO SUẤT CHIẾU MỚI -->
+    <div class="modal-overlay" id="customShowtimeModal" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.75); display: none; align-items: center; justify-content: center; z-index: 2000;">
+        <div style="background: #10141E; border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; width: 500px; max-width: 90%; padding: 25px; color: #fff;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px;">
+                <h4 style="margin: 0; font-size: 16px;"><i class="fa-solid fa-clapperboard" style="color: #FF2A5F; margin-right: 8px;"></i> Tạo Suất Chiếu Mới</h4>
+                <i class="fa-solid fa-xmark" onclick="closeCreateModal()" style="cursor: pointer; color: #8E96A7;"></i>
+            </div>
 
+            <form th:action="@{/admin/suat-chieu/add}" action="/admin/suat-chieu/add" method="POST">
+                <div class="form-group-custom">
+                    <label>Rạp chiếu</label>
+                    <select name="cinemaName" class="form-input-custom" required>
+                        <option value="CINEBOOK Vincom Center Đồng Khởi">CINEBOOK Vincom Center Đồng Khởi</option>
+                        <option value="CINEBOOK Bà Triệu">CINEBOOK Bà Triệu</option>
+                        <option value="CINEBOOK Landmark 81">CINEBOOK Landmark 81</option>
+                    </select>
+                </div>
+
+                <div class="form-group-custom">
+                    <label>Tên phim</label>
+                    <select name="movieTitle" class="form-input-custom" required>
+                        <option th:each="m : ${movies}" th:value="${m.title}" th:text="${m.title}">Furiosa: A Mad Max Saga</option>
+                        <option th:if="${movies == null}" value="Furiosa: A Mad Max Saga">Furiosa: A Mad Max Saga</option>
+                        <option th:if="${movies == null}" value="Godzilla x Kong: Đế Chế Mới">Godzilla x Kong: Đế Chế Mới</option>
+                        <option th:if="${movies == null}" value="Dune: Phần hai">Dune: Phần hai</option>
+                    </select>
+                </div>
+
+                <div class="modal-form-grid">
+                    <div class="form-group-custom">
+                        <label>Phòng chiếu</label>
+                        <select name="room" class="form-input-custom" required>
+                            <option value="IMAX">IMAX</option>
+                            <option value="Phòng 1">Phòng 1</option>
+                            <option value="Phòng 2">Phòng 2</option>
+                            <option value="Phòng VIP">Phòng VIP</option>
+                        </select>
+                    </div>
+                    <div class="form-group-custom">
+                        <label>Giá vé cơ bản (VNĐ)</label>
+                        <input type="number" name="ticketPrice" class="form-input-custom" value="75000" step="1000" required>
+                    </div>
+                </div>
+
+                <div class="modal-form-grid">
+                    <div class="form-group-custom">
+                        <label>Ngày chiếu</label>
+                        <input type="date" name="showDate" class="form-input-custom" required>
+                    </div>
+                    <div class="form-group-custom">
+                        <label>Giờ chiếu</label>
+                        <input type="time" name="showTime" class="form-input-custom" required>
+                    </div>
+                </div>
+
+                <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 15px;">
+                    <button type="button" onclick="closeCreateModal()" class="btn-action" style="background: rgba(255,255,255,0.08);">Hủy bỏ</button>
+                    <button type="submit" class="btn-action" style="background: #FF2A5F; border: none;">Lưu suất chiếu</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL SỬA SUẤT CHIẾU -->
+    <div class="modal-overlay" id="editShowtimeModal" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.75); display: none; align-items: center; justify-content: center; z-index: 2000;">
+        <div style="background: #10141E; border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; width: 500px; max-width: 90%; padding: 25px; color: #fff;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px;">
+                <h4 style="margin: 0; font-size: 16px;"><i class="fa-solid fa-pen-to-square" style="color: #60A5FA; margin-right: 8px;"></i> Cập Nhật Suất Chiếu</h4>
+                <i class="fa-solid fa-xmark" onclick="closeEditModal()" style="cursor: pointer; color: #8E96A7;"></i>
+            </div>
+
+            <form th:action="@{/admin/suat-chieu/update}" action="/admin/suat-chieu/update" method="POST">
+                <input type="hidden" id="editId" name="id">
+
+                <div class="form-group-custom">
+                    <label>Rạp chiếu</label>
+                    <select id="editCinemaName" name="cinemaName" class="form-input-custom" required>
+                        <option value="CINEBOOK Vincom Center Đồng Khởi">CINEBOOK Vincom Center Đồng Khởi</option>
+                        <option value="CINEBOOK Bà Triệu">CINEBOOK Bà Triệu</option>
+                        <option value="CINEBOOK Landmark 81">CINEBOOK Landmark 81</option>
+                    </select>
+                </div>
+
+                <div class="form-group-custom">
+                    <label>Tên phim</label>
+                    <input type="text" id="editMovieTitle" name="movieTitle" class="form-input-custom" required>
+                </div>
+
+                <div class="modal-form-grid">
+                    <div class="form-group-custom">
+                        <label>Phòng chiếu</label>
+                        <select id="editRoom" name="room" class="form-input-custom" required>
+                            <option value="IMAX">IMAX</option>
+                            <option value="Phòng 1">Phòng 1</option>
+                            <option value="Phòng 2">Phòng 2</option>
+                            <option value="Phòng VIP">Phòng VIP</option>
+                        </select>
+                    </div>
+                    <div class="form-group-custom">
+                        <label>Giá vé cơ bản (VNĐ)</label>
+                        <input type="number" id="editTicketPrice" name="ticketPrice" class="form-input-custom" required>
+                    </div>
+                </div>
+
+                <div class="modal-form-grid">
+                    <div class="form-group-custom">
+                        <label>Ngày chiếu</label>
+                        <input type="date" id="editShowDate" name="showDate" class="form-input-custom" required>
+                    </div>
+                    <div class="form-group-custom">
+                        <label>Giờ chiếu</label>
+                        <input type="time" id="editShowTime" name="showTime" class="form-input-custom" required>
+                    </div>
+                </div>
+
+                <div class="form-group-custom">
+                    <label>Trạng thái</label>
+                    <select id="editStatus" name="status" class="form-input-custom">
+                        <option value="Đang chiếu">Đang chiếu</option>
+                        <option value="Đã chiếu">Đã chiếu</option>
+						<option value="Đã chiếu">Sắp chiếu</option>
+                    </select>
+                </div>
+
+                <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 15px;">
+                    <button type="button" onclick="closeEditModal()" class="btn-action" style="background: rgba(255,255,255,0.08);">Hủy bỏ</button>
+                    <button type="submit" class="btn-action" style="background: #60A5FA; border: none; color: #000; font-weight: bold;">Cập nhật</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- SCRIPT XỬ LÝ SỰ KIỆN -->
     <script>
-        function openModal(title) { document.getElementById('modalTitle').innerText = title; document.getElementById('commonModal').style.display = 'flex'; }
-        function closeModal() { document.getElementById('commonModal').style.display = 'none'; }
+        function openCreateModal() {
+            document.getElementById('customShowtimeModal').style.display = 'flex';
+        }
+
+        function closeCreateModal() {
+            document.getElementById('customShowtimeModal').style.display = 'none';
+        }
+
+        function handleEditButtonClick(btn) {
+            const id = btn.getAttribute('data-id');
+            const cinemaName = btn.getAttribute('data-cinema');
+            const movieTitle = btn.getAttribute('data-movie');
+            const room = btn.getAttribute('data-room');
+            const ticketPrice = btn.getAttribute('data-price');
+            const showDate = btn.getAttribute('data-date');
+            const showTime = btn.getAttribute('data-time');
+            const status = btn.getAttribute('data-status');
+
+            openEditModal(id, cinemaName, movieTitle, room, ticketPrice, showDate, showTime, status);
+        }
+
+        function openEditModal(id, cinemaName, movieTitle, room, ticketPrice, showDate, showTime, status) {
+            document.getElementById('editId').value = id || '';
+            if (cinemaName) document.getElementById('editCinemaName').value = cinemaName;
+            if (movieTitle) document.getElementById('editMovieTitle').value = movieTitle;
+            if (room) document.getElementById('editRoom').value = room;
+            if (ticketPrice) document.getElementById('editTicketPrice').value = ticketPrice;
+            if (showDate) document.getElementById('editShowDate').value = showDate;
+            if (showTime) document.getElementById('editShowTime').value = showTime;
+            if (status) document.getElementById('editStatus').value = status;
+            
+            document.getElementById('editShowtimeModal').style.display = 'flex';
+        }
+
+        function closeEditModal() {
+            document.getElementById('editShowtimeModal').style.display = 'none';
+        }
+
+        function filterShowtimes() {
+            const selectedCinema = document.getElementById('cinemaFilter').value;
+            const selectedMovie = document.getElementById('movieFilter') ? document.getElementById('movieFilter').value : 'ALL';
+            const selectedTime = document.getElementById('timeFilter') ? document.getElementById('timeFilter').value : 'ALL';
+            const selectedRoom = document.getElementById('roomFilter') ? document.getElementById('roomFilter').value : 'ALL';
+
+            const rows = document.querySelectorAll('.showtime-row');
+
+            rows.forEach(row => {
+                const rowCinema = row.getAttribute('data-cinema') || '';
+                const rowMovie = row.getAttribute('data-movie') || '';
+                const rowTime = row.getAttribute('data-time') || '';
+                const rowRoom = row.getAttribute('data-room') || '';
+
+                const matchCinema = (selectedCinema === 'ALL' || selectedCinema === '' || rowCinema === selectedCinema);
+                const matchMovie = (selectedMovie === 'ALL' || selectedMovie === '' || rowMovie === selectedMovie);
+                const matchTime = (selectedTime === 'ALL' || selectedTime === '' || rowTime.includes(selectedTime));
+                const matchRoom = (selectedRoom === 'ALL' || selectedRoom === '' || rowRoom === selectedRoom);
+
+                if (matchCinema && matchMovie && matchTime && matchRoom) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
     </script>
 </body>
 </html>

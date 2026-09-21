@@ -2,9 +2,74 @@
 <html lang="vi" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CineBook - Quản lý Khuyến Mãi</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style th:replace="~{admin :: admin-css}"></style>
+    <style>
+        .badge-hot {
+            background: rgba(255, 42, 95, 0.2);
+            color: #FF2A5F;
+            border: 1px solid rgba(255, 42, 95, 0.4);
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: bold;
+            margin-left: 6px;
+        }
+        .icon-box {
+            width: 36px;
+            height: 36px;
+            background: rgba(255, 42, 95, 0.1);
+            color: #FF2A5F;
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+
+        /* Modal Custom Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.75);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        .modal-overlay.show { opacity: 1; visibility: visible; }
+        .modal-content-box {
+            background: #181E2A;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            width: 480px;
+            max-width: 90%;
+            padding: 24px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+        }
+        .form-group-custom {
+            margin-bottom: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .form-group-custom label { font-size: 13px; color: #8E96A7; font-weight: 600; }
+        .form-group-custom input, .form-group-custom select, .form-group-custom textarea {
+            background: #10141E;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #FFF;
+            padding: 10px 12px;
+            border-radius: 8px;
+            outline: none;
+            font-size: 13px;
+        }
+        .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
+    </style>
 </head>
 <body>
     <div th:replace="~{fragments/sidebar :: sidebar('khuyen-mai')}"></div>
@@ -14,27 +79,129 @@
 
         <div class="content-section active">
             <div class="panel">
-                <div class="panel-header">
+                <div class="panel-header" style="display: flex; justify-content: space-between; align-items: center;">
                     <h4>Mã Giảm Giá & Chương Trình Khuyến Mãi</h4>
-                    <button class="btn-action" onclick="openModal('Tạo Mã Khuyến Mãi')"><i class="fa-solid fa-plus"></i> Tạo mã mới</button>
+                    <button class="btn-action" style="background: #FF2A5F; color: white; padding: 8px 16px; border-radius: 6px; border: none; cursor: pointer; font-weight: 600;" onclick="openVoucherModal()">
+                        <i class="fa-solid fa-plus"></i> Tạo mã mới
+                    </button>
                 </div>
+
                 <table>
                     <thead>
-                        <tr><th>Mã Voucher</th><th>Tên Chương Trình</th><th>Mức Giảm</th><th>Hạn Dùng</th><th>Trạng Thái</th></tr>
+                        <tr>
+                            <th>Icon</th>
+                            <th>Mã Voucher</th>
+                            <th>Tên Chương Trình</th>
+                            <th>Mô Tả Mức Giảm</th>
+                            <th>Hạn Dùng</th>
+                            <th>Thao Tác</th>
+                        </tr>
                     </thead>
                     <tbody>
-                        <tr><td><b>SUMMER50</b></td><td>Ưu đãi chào hè rực rỡ</td><td>Giảm 50.000đ đơn từ 150k</td><td>31/05/2026</td><td><span class="badge success">Hoạt động</span></td></tr>
+                        <tr th:each="v : ${vouchers}">
+                            <td>
+                                <div class="icon-box">
+                                    <i th:class="${v.iconClass != null ? v.iconClass : 'fa-solid fa-gift'}"></i>
+                                </div>
+                            </td>
+                            <td>
+                                <b th:text="${v.code}" style="color: #FF2A5F;">SUMMER50</b>
+                                <span th:if="${v.isHot}" class="badge-hot"><i class="fa-solid fa-fire"></i> HOT</span>
+                            </td>
+                            <td th:text="${v.title}" style="font-weight: 600;">Ưu đãi chào hè rực rỡ</td>
+                            <td th:text="${v.description}" style="color: #22C55E;">Giảm 50.000đ đơn từ 150k</td>
+                            <td th:text="${v.expiryDate}" style="color: #8E96A7;">31/05/2026</td>
+                            <td>
+                                <button type="button" class="btn-sm btn-edit" th:onclick="editVoucher([[${v.id}]], [[${v.code}]], [[${v.title}]], [[${v.description}]], [[${v.expiryDate}]], [[${v.iconClass}]], [[${v.isHot}]])">Sửa</button>
+                                <a th:href="@{/admin/khuyen-mai/delete/{id}(id=${v.id})}" class="btn-sm btn-delete" style="background: #EF4444; color: white; padding: 5px 10px; border-radius: 4px; text-decoration: none;" onclick="return confirm('Bạn có chắc muốn xóa mã khuyến mãi này?')">Xóa</a>
+                            </td>
+                        </tr>
+                        <tr th:if="${vouchers == null || vouchers.isEmpty()}">
+                            <td colspan="6" style="text-align: center; color: #8E96A7; padding: 20px;">Chưa có chương trình khuyến mãi nào.</td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
 
-    <div th:replace="~{fragments/modal :: commonModal}"></div>
+    <!-- MODAL POPUP THÊM / SỬA VOUCHER -->
+    <div id="voucherModalOverlay" class="modal-overlay">
+        <div class="modal-content-box">
+            <h3 id="modalTitle" style="color: #FFF; margin-top: 0; margin-bottom: 16px;">Tạo Mã Khuyến Mãi Mới</h3>
+            
+            <form th:action="@{/admin/khuyen-mai/save}" method="post">
+                <input type="hidden" id="vId" name="id">
+
+                <div class="form-group-custom">
+                    <label>Mã Voucher:</label>
+                    <input type="text" id="vCode" name="code" required placeholder="VD: SUMMER50">
+                </div>
+
+                <div class="form-group-custom">
+                    <label>Tên Chương Trình:</label>
+                    <input type="text" id="vTitle" name="title" required placeholder="VD: Ưu đãi chào hè rực rỡ">
+                </div>
+
+                <div class="form-group-custom">
+                    <label>Mô tả / Mức Giảm:</label>
+                    <textarea id="vDescription" name="description" rows="2" required placeholder="VD: Giảm 50.000đ đơn từ 150k"></textarea>
+                </div>
+
+                <div class="form-group-custom">
+                    <label>Hạn Sử Dụng (YYYY-MM-DD):</label>
+                    <input type="date" id="vExpiryDate" name="expiryDate" required>
+                </div>
+
+                <div class="form-group-custom">
+                    <label>Icon Class (FontAwesome):</label>
+                    <input type="text" id="vIconClass" name="iconClass" placeholder="VD: fa-solid fa-gift">
+                </div>
+
+                <div class="form-group-custom">
+                    <label>Nổi Bật (Hot):</label>
+                    <select id="vIsHot" name="hot">
+                        <option value="false">Bình thường</option>
+                        <option value="true">Nổi bật (HOT)</option>
+                    </select>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" onclick="closeVoucherModal()" style="background: rgba(255,255,255,0.1); color: #8E96A7; padding: 8px 16px; border-radius: 6px; border: none; cursor: pointer;">Hủy bỏ</button>
+                    <button type="submit" style="background: #FF2A5F; color: white; padding: 8px 16px; border-radius: 6px; border: none; cursor: pointer; font-weight: 600;">Lưu dữ liệu</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
     <script>
-        function openModal(title) { document.getElementById('modalTitle').innerText = title; document.getElementById('commonModal').style.display = 'flex'; }
-        function closeModal() { document.getElementById('commonModal').style.display = 'none'; }
+        function openVoucherModal() {
+            document.getElementById('modalTitle').innerText = "Tạo Mã Khuyến Mãi Mới";
+            document.getElementById('vId').value = "";
+            document.getElementById('vCode').value = "";
+            document.getElementById('vTitle').value = "";
+            document.getElementById('vDescription').value = "";
+            document.getElementById('vExpiryDate').value = "";
+            document.getElementById('vIconClass').value = "fa-solid fa-gift";
+            document.getElementById('vIsHot').value = "false";
+            document.getElementById('voucherModalOverlay').classList.add('show');
+        }
+
+        function editVoucher(id, code, title, description, expiryDate, iconClass, isHot) {
+            document.getElementById('modalTitle').innerText = "Chỉnh Sửa Mã Khuyến Mãi";
+            document.getElementById('vId').value = id;
+            document.getElementById('vCode').value = code;
+            document.getElementById('vTitle').value = title;
+            document.getElementById('vDescription').value = description;
+            document.getElementById('vExpiryDate').value = expiryDate;
+            document.getElementById('vIconClass').value = iconClass || "fa-solid fa-gift";
+            document.getElementById('vIsHot').value = isHot ? "true" : "false";
+            document.getElementById('voucherModalOverlay').classList.add('show');
+        }
+
+        function closeVoucherModal() {
+            document.getElementById('voucherModalOverlay').classList.remove('show');
+        }
     </script>
 </body>
 </html>

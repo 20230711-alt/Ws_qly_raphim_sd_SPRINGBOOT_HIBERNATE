@@ -2,9 +2,195 @@
 <html lang="vi" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CineBook - Quản lý Đặt Vé</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style th:replace="~{admin :: admin-css}"></style>
+    <style>
+        .filter-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+            padding: 18px;
+            margin-bottom: 20px;
+        }
+        .filter-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            align-items: end;
+        }
+        .filter-item {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .filter-item label {
+            font-size: 12px;
+            color: #8E96A7;
+            font-weight: 600;
+        }
+        .filter-item input, .filter-item select {
+            background: #10141E;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #FFF;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            outline: none;
+        }
+        .filter-actions {
+            display: flex;
+            gap: 10px;
+        }
+        .btn-filter {
+            background: #FF2A5F;
+            color: #FFF;
+            border: none;
+            padding: 9px 18px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-filter:hover { background: #FF4D79; }
+        .btn-reset {
+            background: rgba(255, 255, 255, 0.1);
+            color: #8E96A7;
+            border: none;
+            padding: 9px 15px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 13px;
+            text-align: center;
+        }
+        
+        .pagination-wrapper {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            margin-top: 15px;
+        }
+        .page-info { font-size: 13px; color: #8E96A7; }
+        .pagination-nav { display: flex; gap: 6px; }
+        .page-link {
+            padding: 6px 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 6px;
+            color: #FFF;
+            text-decoration: none;
+            font-size: 13px;
+        }
+        .page-link.active {
+            background: #FF2A5F;
+            border-color: #FF2A5F;
+        }
+        .page-link.disabled {
+            opacity: 0.4;
+            pointer-events: none;
+        }
+
+        /* STYLES CHO POPUP MODAL VÉ */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.75);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        .modal-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        .ticket-modal {
+            background: #181E2A;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            width: 450px;
+            max-width: 90%;
+            padding: 24px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+            transform: scale(0.9);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        .modal-overlay.show .ticket-modal {
+            transform: scale(1);
+        }
+        .close-modal-btn {
+            position: absolute;
+            top: 18px; right: 20px;
+            color: #8E96A7;
+            font-size: 20px;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        .close-modal-btn:hover { color: #FFF; }
+        .ticket-header {
+            text-align: center;
+            border-bottom: 2px dashed rgba(255, 255, 255, 0.1);
+            padding-bottom: 16px;
+            margin-bottom: 16px;
+        }
+        .status-success-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(34, 197, 94, 0.15);
+            color: #22C55E;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            border: 1px solid rgba(34, 197, 94, 0.3);
+        }
+        .ticket-id-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #FF2A5F;
+            margin: 0;
+        }
+        .ticket-info-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            font-size: 14px;
+        }
+        .ticket-info-row {
+            display: flex;
+            justify-content: space-between;
+        }
+        .ticket-info-label { color: #8E96A7; }
+        .ticket-info-val { font-weight: 600; color: #FFF; text-align: right; }
+        .price-highlight { color: #22C55E; font-size: 18px; font-weight: 700; }
+        .ticket-footer-actions {
+            margin-top: 20px;
+            padding-top: 16px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            display: flex;
+            gap: 10px;
+        }
+        .btn-modal-action {
+            flex: 1;
+            padding: 10px;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: center;
+        }
+        .btn-modal-close { background: rgba(255, 255, 255, 0.1); color: #FFF; }
+        .btn-modal-print { background: #FF2A5F; color: #FFF; }
+    </style>
 </head>
 <body>
     <div th:replace="~{fragments/sidebar :: sidebar('dat-ve')}"></div>
@@ -13,19 +199,208 @@
         <div th:replace="~{fragments/header :: header('Quản lý Đặt vé')}"></div>
 
         <div class="content-section active">
+            
+            <!-- THANH BỘ LỌC -->
+            <div class="filter-card">
+                <form th:action="@{/admin/dat-ve}" method="get" class="filter-grid">
+                    <div class="filter-item">
+                        <label><i class="fa-solid fa-magnifying-glass"></i> Tìm kiếm</label>
+                        <input type="text" name="keyword" th:value="${keyword}" placeholder="Mã đơn / SĐT / Email...">
+                    </div>
+                    
+                    <div class="filter-item">
+                        <label><i class="fa-solid fa-calendar-days"></i> Khoảng thời gian</label>
+                        <select name="timeRange">
+                            <option value="ALL" th:selected="${timeRange == 'ALL'}">-- Tất cả thời gian --</option>
+                            <option value="TODAY" th:selected="${timeRange == 'TODAY'}">Hôm nay</option>
+                            <option value="7DAYS" th:selected="${timeRange == '7DAYS'}">7 ngày qua</option>
+                            <option value="MONTH" th:selected="${timeRange == 'MONTH'}">Tháng này</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-item">
+                        <label><i class="fa-solid fa-filter"></i> Trạng thái</label>
+                        <select name="status">
+                            <option value="ALL" th:selected="${status == 'ALL'}">-- Tất cả trạng thái --</option>
+                            <option value="Chờ thanh toán" th:selected="${status == 'Chờ thanh toán'}">Chờ thanh toán</option>
+                            <option value="Đã thanh toán" th:selected="${status == 'Đã thanh toán'}">Đã thanh toán</option>
+                            <option value="Đã hủy" th:selected="${status == 'Đã hủy'}">Đã hủy</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-actions">
+                        <button type="submit" class="btn-filter"><i class="fa-solid fa-filter"></i> Lọc</button>
+                        <a th:href="@{/admin/dat-ve}" class="btn-reset" title="Xóa bộ lọc"><i class="fa-solid fa-rotate-left"></i></a>
+                    </div>
+                </form>
+            </div>
+
+            <!-- BẢNG DANH SÁCH VÉ -->
             <div class="panel">
-                <div class="panel-header"><h4>Danh Sách Giao Dịch Đặt Vé Khách Hàng</h4></div>
+                <div class="panel-header">
+                    <h4>Danh Sách Giao Dịch Đặt Vé Khách Hàng</h4>
+                </div>
                 <table>
                     <thead>
-                        <tr><th>Mã Đơn</th><th>Khách Hàng</th><th>Phim Đặt</th><th>Tổng Tiền</th><th>Trạng Thái</th><th>Thao Tác</th></tr>
+                        <tr>
+                            <th>Mã Đơn</th>
+                            <th>Khách Hàng</th>
+                            <th>Phim Đặt</th>
+                            <th>Rạp / Suất</th>
+                            <th>Ghế</th>
+                            <th>Tổng Tiền</th>
+                            <th>Trạng Thái</th>
+                            <th>Thao Tác</th>
+                        </tr>
                     </thead>
                     <tbody>
-                        <tr><td>#CB0001256</td><td>Trần Thị B</td><td>Godzilla x Kong</td><td>240.000 đ</td><td><span class="badge success">Đã thanh toán</span></td><td><button class="btn-sm btn-edit">Chi tiết</button></td></tr>
-                        <tr><td>#CB0001255</td><td>Lê Văn C</td><td>Dune: Phần hai</td><td>180.000 đ</td><td><span class="badge success">Đã check-in</span></td><td><button class="btn-sm btn-edit">Chi tiết</button></td></tr>
+                        <tr th:each="ticket : ${ticketPage.content}">
+                            <td th:text="${ticket.id != null ? '#CB000' + ticket.id : '#N/A'}" style="font-weight: bold; color: #FF2A5F;">#CB00010</td>
+                            <td>
+                                <div th:text="${ticket.user != null ? ticket.user.fullName : 'Khách vãng lai'}" style="font-weight: 600;">Long Trần T</div>
+                                <small th:text="${ticket.user != null ? ticket.user.phone : ''}" style="color: #8E96A7; font-size: 11px;"></small>
+                            </td>
+                            <td th:text="${ticket.movieTitle}">Furiosa: A Mad Max Saga</td>
+                            <td>
+                                <div th:text="${ticket.cinemaName}">CINEBOOK Vincom Đồng Khởi</div>
+                                <small th:text="${ticket.showTime}" style="color: #8E96A7; font-size: 11px;"></small>
+                            </td>
+                            <td th:text="${ticket.seats}" style="color: #FACC15;">B4, B3, C5</td>
+                            <td th:text="${#numbers.formatDecimal(ticket.totalPrice, 0, 'COMMA', 0, 'POINT') + ' đ'}">225.000 đ</td>
+                            
+                            <!-- HIỂN THỊ ĐẦY ĐỦ 3 TRẠNG THÁI VÉ -->
+                            <td>
+                                <span th:if="${ticket.status == 'Chờ thanh toán'}" class="badge" style="background: rgba(245, 158, 11, 0.15); color: #f59e0b; padding: 4px 8px; border-radius: 12px; font-weight: 600;">Chờ thanh toán</span>
+                                <span th:if="${ticket.status == 'Đã thanh toán' || ticket.status == null}" class="badge" style="background: rgba(16, 185, 129, 0.15); color: #10b981; padding: 4px 8px; border-radius: 12px; font-weight: 600;">Đã thanh toán</span>
+                                <span th:if="${ticket.status == 'Đã hủy'}" class="badge" style="background: rgba(239, 68, 68, 0.15); color: #ef4444; padding: 4px 8px; border-radius: 12px; font-weight: 600;">Đã hủy</span>
+                            </td>
+
+                            <td>
+                                <button type="button" class="btn-sm btn-edit" 
+                                        th:onclick="openTicketModal([[${ticket.id}]])">
+                                    <i class="fa-solid fa-eye"></i> Chi tiết
+                                </button>
+                            </td>
+                        </tr>
+                        <tr th:if="${ticketPage.totalElements == 0}">
+                            <td colspan="8" style="text-align: center; color: #8E96A7; padding: 25px;">Không tìm thấy giao dịch nào phù hợp.</td>
+                        </tr>
                     </tbody>
                 </table>
+
+                <!-- THANH PHÂN TRANG -->
+                <div class="pagination-wrapper" th:if="${ticketPage.totalPages > 0}">
+                    <div class="page-info">
+                        Hiển thị từ <b th:text="${ticketPage.number * ticketPage.size + 1}">1</b> 
+                        đến <b th:text="${(ticketPage.number + 1) * ticketPage.size > ticketPage.totalElements ? ticketPage.totalElements : (ticketPage.number + 1) * ticketPage.size}">10</b> 
+                        trên tổng số <b th:text="${ticketPage.totalElements}">100</b> giao dịch
+                    </div>
+                    
+                    <div class="pagination-nav">
+                        <a th:href="@{/admin/dat-ve(page=${ticketPage.number - 1}, keyword=${keyword}, timeRange=${timeRange}, status=${status})}" 
+                           class="page-link" th:classappend="${ticketPage.first} ? 'disabled'">
+                            <i class="fa-solid fa-chevron-left"></i>
+                        </a>
+
+                        <a th:each="i : ${#numbers.sequence(0, ticketPage.totalPages - 1)}"
+                           th:href="@{/admin/dat-ve(page=${i}, keyword=${keyword}, timeRange=${timeRange}, status=${status})}"
+                           th:text="${i + 1}"
+                           class="page-link"
+                           th:classappend="${i == ticketPage.number} ? 'active'">1</a>
+
+                        <a th:href="@{/admin/dat-ve(page=${ticketPage.number + 1}, keyword=${keyword}, timeRange=${timeRange}, status=${status})}" 
+                           class="page-link" th:classappend="${ticketPage.last} ? 'disabled'">
+                            <i class="fa-solid fa-chevron-right"></i>
+                        </a>
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>
+
+    <!-- POPUP MODAL VÉ CHI TIẾT -->
+    <div id="ticketModalOverlay" class="modal-overlay">
+        <div class="ticket-modal">
+            <span class="close-modal-btn" onclick="closeTicketModal()">&times;</span>
+            
+            <div class="ticket-header">
+                <div class="status-success-badge">
+                    <i class="fa-solid fa-circle-check"></i> Thông tin đơn vé
+                </div>
+                <h3 class="ticket-id-title" id="mTicketCode">#CB00010</h3>
+                <small style="color: #8E96A7;" id="mBookingDate">2026-09-21 14:15</small>
+            </div>
+
+            <div class="ticket-info-list">
+                <div class="ticket-info-row">
+                    <span class="ticket-info-label">Khách hàng:</span>
+                    <span class="ticket-info-val" id="mCustomerName">Long Trần T</span>
+                </div>
+                <div class="ticket-info-row">
+                    <span class="ticket-info-label">SĐT / Email:</span>
+                    <span class="ticket-info-val" id="mCustomerContact">0123332112</span>
+                </div>
+                <div class="ticket-info-row">
+                    <span class="ticket-info-label">Tên Phim:</span>
+                    <span class="ticket-info-val" id="mMovieTitle" style="color: #FACC15;">Furiosa: A Mad Max Saga</span>
+                </div>
+                <div class="ticket-info-row">
+                    <span class="ticket-info-label">Rạp chiếu:</span>
+                    <span class="ticket-info-val" id="mCinemaName">CINEBOOK Vincom Đồng Khởi</span>
+                </div>
+                <div class="ticket-info-row">
+                    <span class="ticket-info-label">Suất chiếu:</span>
+                    <span class="ticket-info-val" id="mShowTime">14:15 - 2026-09-21</span>
+                </div>
+                <div class="ticket-info-row">
+                    <span class="ticket-info-label">Vị trí ghế:</span>
+                    <span class="ticket-info-val" id="mSeats" style="color: #FF2A5F; font-size: 16px;">B4, B3, C5</span>
+                </div>
+				<div class="ticket-info-row">
+				    <span class="ticket-info-label">Combo bắp nước:</span>
+				    <span class="ticket-info-val" id="mCombos" style="color: #FACC15;">Không có</span>
+				</div>
+                <div class="ticket-info-row" style="margin-top: 8px; border-top: 1px solid rgba(255, 255, 255, 0.05); padding-top: 8px;">
+                    <span class="ticket-info-label">Tổng tiền:</span>
+                    <span class="ticket-info-val price-highlight" id="mTotalPrice">225,000 đ</span>
+                </div>
+            </div>
+
+            <div class="ticket-footer-actions">
+                <button type="button" class="btn-modal-action btn-modal-close" onclick="closeTicketModal()">Đóng</button>
+                <button type="button" class="btn-modal-action btn-modal-print" onclick="window.print()"><i class="fa-solid fa-print"></i> In vé</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCRIPT GỌI API LẤY CHI TIẾT VÉ VÀ MỞ POPUP -->
+    <script>
+        function openTicketModal(ticketId) {
+            fetch('/admin/dat-ve/api/chi-tiet/' + ticketId)
+                .then(res => res.json())
+                .then(data => {
+                    document.getElementById('mTicketCode').innerText = '#CB000' + data.id;
+                    document.getElementById('mBookingDate').innerText = 'Ngày đặt: ' + (data.bookingDate || 'Hôm nay');
+                    document.getElementById('mCustomerName').innerText = data.customerName || 'Khách vãng lai';
+                    document.getElementById('mCustomerContact').innerText = data.customerContact || 'N/A';
+                    document.getElementById('mMovieTitle').innerText = data.movieTitle;
+                    document.getElementById('mCinemaName').innerText = data.cinemaName;
+                    document.getElementById('mShowTime').innerText = data.showTime;
+                    document.getElementById('mSeats').innerText = data.seats;
+                    document.getElementById('mTotalPrice').innerText = data.totalPrice.toLocaleString('vi-VN') + ' đ';
+					document.getElementById('mCombos').innerText = data.combos || 'Không có';
+                    document.getElementById('ticketModalOverlay').classList.add('show');
+                })
+                .catch(err => {
+                    console.error("Lỗi tải chi tiết vé:", err);
+                    alert("Không thể tải thông tin chi tiết vé!");
+                });
+        }
+
+        function closeTicketModal() {
+            document.getElementById('ticketModalOverlay').classList.remove('show');
+        }
+    </script>
 </body>
 </html>

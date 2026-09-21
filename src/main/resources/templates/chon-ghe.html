@@ -158,7 +158,6 @@
             color: #fff;
         }
         
-        /* Available Vouchers list from Storage */
         .available-vouchers {
             display: flex;
             flex-wrap: wrap;
@@ -212,6 +211,17 @@
             box-shadow: 0 8px 25px rgba(255, 42, 95, 0.6);
         }
 
+        /* THÊM NÚT CHỌN COMBO BẮP NƯỚC */
+        .btn-combo {
+            background: rgba(245, 158, 11, 0.15);
+            color: #FACC15;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+        .btn-combo:hover {
+            background: #FACC15;
+            color: #0b0f19;
+        }
+
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(7, 9, 14, 0.85); backdrop-filter: blur(10px);
@@ -220,9 +230,10 @@
         }
         .modal-card {
             background: var(--card-bg); border: 1px solid var(--border-color);
-            border-radius: 20px; width: 100%; max-width: 420px; padding: 35px 30px;
+            border-radius: 20px; width: 100%; max-width: 480px; padding: 35px 30px;
             text-align: center; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
             transform: translateY(20px); animation: slideUp 0.3s ease forwards;
+            max-height: 85vh; overflow-y: auto;
         }
         .modal-icon-success {
             font-size: 50px; color: #10B981; margin-bottom: 20px;
@@ -248,6 +259,37 @@
             box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
         }
         .btn-modal-close:hover { opacity: 0.9; transform: translateY(-1px); }
+
+        .modal-button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .btn-modal-cancel {
+            background: rgba(239, 68, 68, 0.2);
+            color: #EF4444;
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            width: 100%; padding: 12px; border-radius: 10px;
+            font-weight: 700; font-size: 14px; cursor: pointer; transition: all 0.2s;
+        }
+        .btn-modal-cancel:hover { background: rgba(239, 68, 68, 0.3); }
+
+        /* THÊM: STYLES CHO MODAL POPUP COMBO BẮP NƯỚC */
+        .combo-item-row {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 12px 0; border-bottom: 1px solid var(--border-color); text-align: left;
+        }
+        .combo-img { width: 50px; height: 50px; border-radius: 8px; object-fit: cover; }
+        .combo-info { flex: 1; margin-left: 12px; }
+        .combo-title { font-weight: 700; font-size: 13px; color: #fff; }
+        .combo-desc { font-size: 11px; color: var(--text-gray); }
+        .combo-price { font-size: 12px; color: #22C55E; font-weight: 700; }
+        .counter-btn {
+            background: rgba(255, 255, 255, 0.1); color: #fff; border: none;
+            width: 26px; height: 26px; border-radius: 6px; cursor: pointer; font-weight: bold;
+        }
+        .counter-btn:hover { background: var(--pink-accent); }
+        .counter-val { font-size: 13px; font-weight: bold; width: 22px; text-align: center; display: inline-block; }
 
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
@@ -296,8 +338,9 @@
         <div class="booking-footer">
             <div class="summary-info">
                 <p>Ghế đã chọn: <span id="selectedSeatsText" style="font-weight: 600;">Chưa chọn ghế nào</span></p>
+                <!-- THÊM: Dòng hiển thị Combo bắp nước đã chọn -->
+                <p>Combo bắp nước: <span id="selectedComboText" style="color: #FACC15; font-weight: 600;">Chưa chọn</span></p>
                 
-                <!-- Khu vực Mã giảm giá đồng bộ từ Kho ưu đãi cá nhân -->
                 <div class="voucher-section">
                     <div class="voucher-box">
                         <input type="text" id="voucherCodeInput" class="voucher-input" placeholder="Mã giảm giá...">
@@ -312,23 +355,44 @@
                 <h3>Tổng tiền: <span id="totalPrice">0 đ</span></h3>
             </div>
             <div class="action-buttons">
+                <!-- THÊM: Nút Chọn Combo Bắp Nước -->
+                <button type="button" class="btn-action btn-combo" onclick="openComboModal()"><i class="fa-solid fa-burger"></i> Chọn Combo</button>
                 <a href="javascript:history.back()" class="btn-action btn-back"><i class="fa-solid fa-arrow-left"></i> Quay lại</a>
                 <button class="btn-action btn-payment" onclick="openPaymentModal()"><i class="fa-solid fa-credit-card"></i> Thanh Toán</button>
             </div>
         </div>
     </div>
 
+    <!-- POPUP 1: MODAL CHỌN COMBO BẮP NƯỚC -->
+    <div class="modal-overlay" id="comboModal">
+        <div class="modal-card">
+            <div style="font-size: 40px; color: #FACC15; margin-bottom: 15px;"><i class="fa-solid fa-popcorn"></i></div>
+            <h2>Chọn Combo Bắp Nước</h2>
+            <p class="subtitle">Thêm combo bắp nước thưởng thức cùng phim hay</p>
+            
+            <div id="comboListContainer" style="margin-bottom: 20px;">
+                <!-- Dữ liệu combo nạp từ CSDL / Mặc định -->
+            </div>
+
+            <button class="btn-modal-close" style="background: linear-gradient(135deg, #ff2a5f 0%, #e50914 100%);" onclick="closeComboModal()">Xác Nhận & Tiếp Tục</button>
+        </div>
+    </div>
+
+    <!-- POPUP 2: MODAL XÁC NHẬN THANH TOÁN -->
     <div class="modal-overlay" id="paymentModal">
         <div class="modal-card">
             <div class="modal-icon-success">
-                <i class="fa-solid fa-check"></i>
+                <i class="fa-solid fa-clock" style="color: #FACC15;"></i>
             </div>
-            <h2>Đặt Vé Thành Công!</h2>
-            <p class="subtitle">Cảm ơn bạn đã sử dụng dịch vụ của CINEBOOK</p>
+            <h2>Xác Nhận Đơn Đặt Vé</h2>
+            <p class="subtitle">Đơn vé đang ở trạng thái <b style="color: #FACC15;">Chờ thanh toán</b></p>
             
             <div class="ticket-receipt" id="receiptContent"></div>
 
-            <button class="btn-modal-close" onclick="confirmAndReload()">Hoàn Tất</button>
+            <div class="modal-button-group">
+                <button class="btn-modal-cancel" onclick="cancelCurrentTicket()">Hủy Đơn</button>
+                <button class="btn-modal-close" onclick="payCurrentTicket()">Thanh Toán Ngay</button>
+            </div>
         </div>
     </div>
 
@@ -346,7 +410,6 @@
         const movieId = urlParams.get('movieId') || urlParams.get('movie') || 'furiosa';
         const date = urlParams.get('date') || '07-09-2026';
         
-        // Hỗ trợ đồng thời các param 'cinema', 'showtime' hoặc 'time' từ trang chi tiết/chọn suất chiếu truyền sang
         const cinema = decodeURIComponent(urlParams.get('cinema') || 'CINEBOOK Vincom Center Đồng Khởi');
         const time = decodeURIComponent(urlParams.get('showtime') || urlParams.get('time') || '09:00');
 
@@ -357,7 +420,6 @@
         document.getElementById('txtDate').innerText = date;
         document.getElementById('txtTime').innerText = time;
 
-        // Khóa LocalStorage được phân rã tường minh theo Phim, Ngày, Rạp và Suất chiếu
         const showtimeKey = `cinebook_seats_${movieId}_${date}_${encodeURIComponent(cinema)}_${time}`;
         let bookedSeats = JSON.parse(localStorage.getItem(showtimeKey)) || [];
 
@@ -368,21 +430,92 @@
         const seatPrice = 75000;
         let selectedSeats = [];
         
-        // Bảng quy định mức giảm giá tương ứng với từng mã
+        // CẤU HÌNH COMBO BẮP NƯỚC (Nạp động từ API hoặc fallback dữ liệu tĩnh)
+        let comboData = [
+            { id: 1, code: 'CB_SOLO', name: 'Combo Solo', description: '1 Bắp ngọt vừa + 1 Nước Coca lớn', price: 69000, imageUrl: 'https://images.unsplash.com/photo-1585647347483-22b66260dfff?q=80&w=100' },
+            { id: 2, code: 'CB_BIG', name: 'Combo Siêu To', description: '1 Bắp lớn + 2 Nước ngọt Coca lớn', price: 89000, imageUrl: 'https://images.unsplash.com/photo-1578849278619-e73505e9610f?q=80&w=100' },
+            { id: 3, code: 'CB_FAMILY', name: 'Combo Gia Đình', description: '2 Bắp lớn + 4 Nước ngọt + 1 Snack', price: 159000, imageUrl: 'https://images.unsplash.com/photo-1512149177596-f817c7ef5d4c?q=80&w=100' }
+        ];
+        let comboQuantities = {};
+
         const voucherRules = {
             'CINE20': 20,
             'CINE50': 50,
             'VC_QK29': 30,
-            'FREESHIP': 10
+            'FREESHIP': 10,
+            'VIPMEMBER': 35,
+            'HALLOWEEN': 30,
+            'SUMMER50': 25
         };
 
         let appliedDiscountPercent = 0;
         let appliedVoucherCode = '';
+        let currentCreatedTicketId = null;
 
-        // Tải các mã giảm giá mà người dùng đã lưu từ Kho lưu trữ ưu đãi ở trang thành viên
-        function renderSavedVouchers() {
+        // TẢI COMBO TỪ CSDL QUA API (NẾU CÓ)
+        async function loadCombosFromApi() {
+            try {
+                const res = await fetch('/api/combos');
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data && data.length > 0) comboData = data;
+                }
+            } catch (e) {
+                console.log('Sử dụng dữ liệu Combo mặc định');
+            }
+            renderComboList();
+        }
+
+        function renderComboList() {
+            const container = document.getElementById('comboListContainer');
+            container.innerHTML = '';
+            comboData.forEach(c => {
+                if (!(c.id in comboQuantities)) comboQuantities[c.id] = 0;
+                container.innerHTML += `
+                    <div class="combo-item-row">
+                        <img src="${c.imageUrl || 'https://images.unsplash.com/photo-1585647347483-22b66260dfff?q=80&w=100'}" class="combo-img">
+                        <div class="combo-info">
+                            <div class="combo-title">${c.name}</div>
+                            <div class="combo-desc">${c.description || ''}</div>
+                            <div class="combo-price">${(c.price || 0).toLocaleString('vi-VN')} đ</div>
+                        </div>
+                        <div>
+                            <button type="button" class="counter-btn" onclick="updateComboQty(${c.id}, -1)">-</button>
+                            <span class="counter-val" id="qty_${c.id}">${comboQuantities[c.id]}</span>
+                            <button type="button" class="counter-btn" onclick="updateComboQty(${c.id}, 1)">+</button>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function updateComboQty(id, change) {
+            comboQuantities[id] = Math.max(0, (comboQuantities[id] || 0) + change);
+            const qtyEl = document.getElementById(`qty_${id}`);
+            if (qtyEl) qtyEl.innerText = comboQuantities[id];
+            updateSummary();
+        }
+
+        function openComboModal() { document.getElementById('comboModal').style.display = 'flex'; }
+        function closeComboModal() { document.getElementById('comboModal').style.display = 'none'; }
+
+        // TẢI MÃ KHUYẾN MÃI TỪ KHO HOẶC API CSDL
+        async function renderSavedVouchers() {
             const container = document.getElementById('availableVouchersContainer');
             let savedVouchers = JSON.parse(localStorage.getItem('cinebook_saved_vouchers')) || ['CINE50', 'VC_QK29'];
+
+            try {
+                const res = await fetch('/api/vouchers');
+                if (res.ok) {
+                    const apiVouchers = await res.json();
+                    apiVouchers.forEach(v => {
+                        if (v.code && !savedVouchers.includes(v.code)) savedVouchers.push(v.code);
+                        if (v.code && v.discountPercent) voucherRules[v.code] = v.discountPercent;
+                    });
+                }
+            } catch (e) {
+                console.log('Sử dụng mã khuyến mãi kho lưu trữ');
+            }
 
             if (savedVouchers.length === 0) {
                 container.innerHTML += '<span style="font-size: 10px; color: var(--text-gray);">Chưa có mã nào trong kho.</span>';
@@ -402,6 +535,8 @@
                 container.appendChild(tag);
             });
         }
+
+        loadCombosFromApi();
         renderSavedVouchers();
 
         rows.forEach(rowLetter => {
@@ -445,7 +580,6 @@
             seatMapContainer.appendChild(rowDiv);
         });
 
-        // Hàm xử lý áp dụng mã giảm giá
         function applyVoucher() {
             const codeInput = document.getElementById('voucherCodeInput').value.trim().toUpperCase();
             const discountNotice = document.getElementById('discountNotice');
@@ -473,17 +607,37 @@
 
         function updateSummary() {
             const textElement = document.getElementById('selectedSeatsText');
+            const comboTextElement = document.getElementById('selectedComboText');
             const priceElement = document.getElementById('totalPrice');
+
+            let seatTotal = selectedSeats.length * seatPrice;
+            let comboTotal = 0;
+            let selectedComboNames = [];
+
+            comboData.forEach(c => {
+                let qty = comboQuantities[c.id] || 0;
+                if (qty > 0) {
+                    comboTotal += c.price * qty;
+                    selectedComboNames.push(`${qty}x ${c.name}`);
+                }
+            });
 
             if (selectedSeats.length > 0) {
                 textElement.innerText = selectedSeats.join(', ');
-                const rawTotal = selectedSeats.length * seatPrice;
-                const finalTotal = rawTotal - (rawTotal * appliedDiscountPercent / 100);
-                priceElement.innerText = finalTotal.toLocaleString('vi-VN') + ' đ' + (appliedDiscountPercent > 0 ? ` (Đã giảm ${appliedDiscountPercent}%)` : '');
             } else {
                 textElement.innerText = 'Chưa chọn ghế nào';
-                priceElement.innerText = '0 đ';
             }
+
+            if (selectedComboNames.length > 0) {
+                comboTextElement.innerText = selectedComboNames.join(', ');
+            } else {
+                comboTextElement.innerText = 'Chưa chọn';
+            }
+
+            const rawTotal = seatTotal + comboTotal;
+            const finalTotal = rawTotal - (rawTotal * appliedDiscountPercent / 100);
+
+            priceElement.innerText = finalTotal.toLocaleString('vi-VN') + ' đ' + (appliedDiscountPercent > 0 ? ` (Đã giảm ${appliedDiscountPercent}%)` : '');
         }
 
         function openPaymentModal() {
@@ -492,74 +646,92 @@
                 return;
             }
 
-            const rawTotal = selectedSeats.length * seatPrice;
-            const finalTotal = rawTotal - (rawTotal * appliedDiscountPercent / 100);
-            const totalPriceText = finalTotal.toLocaleString('vi-VN') + ' đ';
+            let seatTotal = selectedSeats.length * seatPrice;
+            let comboTotal = 0;
+            let selectedComboNames = [];
 
-            let voucherRowHtml = '';
-            if (appliedDiscountPercent > 0) {
-                voucherRowHtml = `<div class="receipt-row"><span>Mã ưu đãi:</span> <span style="color: #10B981;">${appliedVoucherCode} (-${appliedDiscountPercent}%)</span></div>`;
-            }
+            comboData.forEach(c => {
+                let qty = comboQuantities[c.id] || 0;
+                if (qty > 0) {
+                    comboTotal += c.price * qty;
+                    selectedComboNames.push(`${qty}x ${c.name}`);
+                }
+            });
 
-            document.getElementById('receiptContent').innerHTML = `
-                <div class="receipt-row"><span>Phim:</span> <span>${displayMovieName}</span></div>
-                <div class="receipt-row"><span>Rạp:</span> <span style="text-align: right; max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${cinema}</span></div>
-                <div class="receipt-row"><span>Suất chiếu:</span> <span>${time} - ${date}</span></div>
-                <div class="receipt-row"><span>Ghế đã chọn:</span> <span style="color: var(--pink-accent);">${selectedSeats.join(', ')}</span></div>
-                ${voucherRowHtml}
-                <div class="receipt-row" style="border-top: 1px dashed rgba(255,255,255,0.15); padding-top: 6px; margin-top: 4px;"><span>Tổng tiền:</span> <span style="color: #10B981;">${totalPriceText}</span></div>
-            `;
-
-            document.getElementById('paymentModal').style.display = 'flex';
-        }
-
-        // ĐÃ CẬP NHẬT: Gửi đúng thông tin tên rạp (cinema) về API Spring Boot
-        function confirmAndReload() {
-            if (selectedSeats.length === 0) {
-                alert('Vui lòng chọn ít nhất một ghế trước khi hoàn tất!');
-                return;
-            }
-
-            const rawTotal = selectedSeats.length * seatPrice;
+            const rawTotal = seatTotal + comboTotal;
             const finalTotal = rawTotal - (rawTotal * appliedDiscountPercent / 100);
 
-            // Đóng gói JSON chuẩn khớp với class BookingRequest trong Java Controller
             const payload = {
                 movieTitle: displayMovieName,
-                cinema: cinema,  // Lấy tên rạp chiếu từ URL
+                cinema: cinema,
                 date: date,
                 time: time,
                 seats: selectedSeats,
                 totalPrice: finalTotal
             };
 
-            // Gửi yêu cầu AJAX về Backend Java (/api/book-tickets)
             fetch('/api/book-tickets', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
             })
-            .then(response => {
-                if (response.ok) {
-                    // Lưu trạng thái ghế vào localStorage để khóa ghế trên sơ đồ
-                    bookedSeats.push(...selectedSeats);
-                    localStorage.setItem(showtimeKey, JSON.stringify(bookedSeats));
-                    
-                    // Chuyển hướng sang trang thành viên để xem Lịch sử đặt vé
-                    window.location.href = '/thanh-vien';
-                } else if (response.status === 401) {
-                    alert('Phiên đăng nhập đã hết hạn hoặc bạn chưa đăng nhập. Vui lòng đăng nhập lại!');
+            .then(res => {
+                if (res.ok) return res.json();
+                if (res.status === 401) {
+                    alert('Bạn chưa đăng nhập!');
                     window.location.href = '/dang-nhap';
-                } else {
-                    alert('Có lỗi xảy ra khi lưu vé xuống hệ thống!');
+                    throw new Error("Unauthorized");
                 }
+                throw new Error("Lỗi lưu đơn vé");
             })
-            .catch(error => {
-                console.error('Lỗi kết nối:', error);
-                alert('Không thể kết nối đến máy chủ!');
-            });
+            .then(ticketId => {
+                currentCreatedTicketId = ticketId;
+                
+                const totalPriceText = finalTotal.toLocaleString('vi-VN') + ' đ';
+                let voucherRowHtml = appliedDiscountPercent > 0 ? 
+                    `<div class="receipt-row"><span>Mã ưu đãi:</span> <span style="color: #10B981;">${appliedVoucherCode} (-${appliedDiscountPercent}%)</span></div>` : '';
+                
+                let comboRowHtml = selectedComboNames.length > 0 ?
+                    `<div class="receipt-row"><span>Combo đã chọn:</span> <span style="color: #FACC15;">${selectedComboNames.join(', ')}</span></div>` : '';
+
+                document.getElementById('receiptContent').innerHTML = `
+                    <div class="receipt-row"><span>Phim:</span> <span>${displayMovieName}</span></div>
+                    <div class="receipt-row"><span>Rạp:</span> <span style="text-align: right; max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${cinema}</span></div>
+                    <div class="receipt-row"><span>Suất chiếu:</span> <span>${time} - ${date}</span></div>
+                    <div class="receipt-row"><span>Ghế đã chọn:</span> <span style="color: var(--pink-accent);">${selectedSeats.join(', ')}</span></div>
+                    ${comboRowHtml}
+                    ${voucherRowHtml}
+                    <div class="receipt-row" style="border-top: 1px dashed rgba(255,255,255,0.15); padding-top: 6px; margin-top: 4px;"><span>Tổng tiền:</span> <span style="color: #10B981;">${totalPriceText}</span></div>
+                `;
+
+                document.getElementById('paymentModal').style.display = 'flex';
+            })
+            .catch(err => console.error(err));
+        }
+
+        function payCurrentTicket() {
+            if (!currentCreatedTicketId) return;
+
+            fetch(`/api/tickets/${currentCreatedTicketId}/pay`, { method: 'POST' })
+                .then(res => {
+                    if (res.ok) {
+                        bookedSeats.push(...selectedSeats);
+                        localStorage.setItem(showtimeKey, JSON.stringify(bookedSeats));
+                        window.location.href = '/thanh-vien';
+                    }
+                });
+        }
+
+        function cancelCurrentTicket() {
+            if (!currentCreatedTicketId) return;
+
+            fetch(`/api/tickets/${currentCreatedTicketId}/cancel`, { method: 'POST' })
+                .then(res => {
+                    if (res.ok) {
+                        alert('Đã hủy đơn đặt vé.');
+                        window.location.reload();
+                    }
+                });
         }
     </script>
 </body>

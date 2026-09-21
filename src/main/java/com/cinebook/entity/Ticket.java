@@ -11,16 +11,33 @@ public class Ticket {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "user_id")
     private Long userId;
+
     private String movieTitle;
     private String showTime;
     private String seats;
     private Double totalPrice;
+
+    @Column(name = "booking_date")
     private LocalDateTime bookingDate;
 
-    // Tên rạp chiếu (Khớp với th:text="${ticket.cinemaName}" ở file thanh-vien.html)
+    // Tên rạp chiếu
     @Column(name = "cinema_name")
     private String cinemaName;
+
+    // Trạng thái vé
+    @Column(name = "status")
+    private String status = "Đã thanh toán";
+
+    // Bổ sung thuộc tính lưu combo bắp nước
+    @Column(name = "combos")
+    private String combos;
+
+    // Khai báo liên kết với bảng User (để truy xuất tên, sdt, email khách hàng)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", insertable = false, updatable = false)
+    private User user;
 
     // --- GETTERS AND SETTERS ---
 
@@ -47,4 +64,13 @@ public class Ticket {
 
     public String getCinemaName() { return cinemaName; }
     public void setCinemaName(String cinemaName) { this.cinemaName = cinemaName; }
+
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
+
+    public String getCombos() { return combos; }
+    public void setCombos(String combos) { this.combos = combos; }
+
+    public User getUser() { return user; }
+    public void setUser(User user) { this.user = user; }
 }

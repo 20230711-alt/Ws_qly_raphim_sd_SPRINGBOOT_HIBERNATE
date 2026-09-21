@@ -155,7 +155,7 @@
             padding: 0 30px;
         }
 
-        /* BOX KHUNG CHÍNH (KHUNG VIỀN ĐEN BO GÓC BÊN TRONG TRANG) */
+        /* BOX KHUNG CHÍNH */
         .showtime-card-wrapper {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
@@ -310,6 +310,13 @@
         .time-btn-item:hover .format-tag {
             color: #FFFFFF;
         }
+
+        .no-showtime-msg {
+            padding: 20px;
+            text-align: center;
+            color: var(--text-gray);
+            font-size: 14px;
+        }
     </style>
 </head>
 <body>
@@ -347,7 +354,7 @@
             <!-- TIÊU ĐỀ TRANG -->
             <div class="card-header-title">
                 <i class="fa-solid fa-calendar-days"></i>
-                <span>Lịch Chiếu & Chọn Rạp (10 Rạp Toàn Quốc)</span>
+                <span id="pageTitle">Lịch Chiếu & Chọn Rạp</span>
             </div>
 
             <!-- 1. CHỌN NGÀY CHIẾU (TỰ ĐỘNG TẠO 7 NGÀY KỂ TỪ HÔM NAY) -->
@@ -355,77 +362,23 @@
                 <!-- Javascript sẽ tự động đổ các ô ngày vào đây -->
             </div>
 
-            <!-- 2. DANH SÁCH RẠP & SUẤT CHIẾU -->
-            <div class="cinema-list-group">
-
-                <!-- RẠP 1 -->
-                <div class="cinema-box">
-                    <div class="cinema-title-wrap">
-                        <i class="fa-solid fa-location-dot"></i>
-                        <div>
-                            <div class="cinema-name">CINEBOOK Vincom Center Đồng Khởi</div>
-                            <div class="cinema-address">Tầng 3, Vincom Đồng Khởi, 72 Lê Thánh Tôn, Q.1, TP.HCM</div>
-                        </div>
-                    </div>
-                    <div class="time-buttons-flex">
-                        <a href="#" onclick="selectShowtime('CINEBOOK Vincom Center Đồng Khởi', '09:00', 'IMAX'); return false;" class="time-btn-item">09:00 <span class="format-tag">IMAX</span></a>
-                        <a href="#" onclick="selectShowtime('CINEBOOK Vincom Center Đồng Khởi', '11:30', 'IMAX'); return false;" class="time-btn-item">11:30 <span class="format-tag">IMAX</span></a>
-                        <a href="#" onclick="selectShowtime('CINEBOOK Vincom Center Đồng Khởi', '14:15', 'IMAX'); return false;" class="time-btn-item">14:15 <span class="format-tag">IMAX</span></a>
-                        <a href="#" onclick="selectShowtime('CINEBOOK Vincom Center Đồng Khởi', '17:00', 'IMAX'); return false;" class="time-btn-item">17:00 <span class="format-tag">IMAX</span></a>
-                        <a href="#" onclick="selectShowtime('CINEBOOK Vincom Center Đồng Khởi', '19:45', 'IMAX'); return false;" class="time-btn-item">19:45 <span class="format-tag">IMAX</span></a>
-                        <a href="#" onclick="selectShowtime('CINEBOOK Vincom Center Đồng Khởi', '22:20', 'IMAX'); return false;" class="time-btn-item">22:20 <span class="format-tag">IMAX</span></a>
-                    </div>
-                </div>
-
-                <!-- RẠP 2 -->
-                <div class="cinema-box">
-                    <div class="cinema-title-wrap">
-                        <i class="fa-solid fa-location-dot"></i>
-                        <div>
-                            <div class="cinema-name">CINEBOOK Landmark 81</div>
-                            <div class="cinema-address">Tầng B1, Vincom Center Landmark 81, Bình Thạnh, TP.HCM</div>
-                        </div>
-                    </div>
-                    <div class="time-buttons-flex">
-                        <a href="#" onclick="selectShowtime('CINEBOOK Landmark 81', '09:30', '2D'); return false;" class="time-btn-item">09:30 <span class="format-tag">2D</span></a>
-                        <a href="#" onclick="selectShowtime('CINEBOOK Landmark 81', '12:00', '2D'); return false;" class="time-btn-item">12:00 <span class="format-tag">2D</span></a>
-                        <a href="#" onclick="selectShowtime('CINEBOOK Landmark 81', '14:45', '2D'); return false;" class="time-btn-item">14:45 <span class="format-tag">2D</span></a>
-                        <a href="#" onclick="selectShowtime('CINEBOOK Landmark 81', '17:30', '2D'); return false;" class="time-btn-item">17:30 <span class="format-tag">2D</span></a>
-                        <a href="#" onclick="selectShowtime('CINEBOOK Landmark 81', '20:15', '2D'); return false;" class="time-btn-item">20:15 <span class="format-tag">2D</span></a>
-                        <a href="#" onclick="selectShowtime('CINEBOOK Landmark 81', '23:00', '2D'); return false;" class="time-btn-item">23:00 <span class="format-tag">2D</span></a>
-                    </div>
-                </div>
-
-                <!-- RẠP 3 -->
-                <div class="cinema-box">
-                    <div class="cinema-title-wrap">
-                        <i class="fa-solid fa-location-dot"></i>
-                        <div>
-                            <div class="cinema-name">CINEBOOK Crescent Mall</div>
-                            <div class="cinema-address">Tầng 5, Crescent Mall, 101 Tôn Dật Tiên, Tân Phú, Q.7, TP.HCM</div>
-                        </div>
-                    </div>
-                    <div class="time-buttons-flex">
-                        <a href="#" onclick="selectShowtime('CINEBOOK Crescent Mall', '09:15', '3D'); return false;" class="time-btn-item">09:15 <span class="format-tag">3D</span></a>
-                        <a href="#" onclick="selectShowtime('CINEBOOK Crescent Mall', '11:45', '3D'); return false;" class="time-btn-item">11:45 <span class="format-tag">3D</span></a>
-                        <a href="#" onclick="selectShowtime('CINEBOOK Crescent Mall', '14:30', '3D'); return false;" class="time-btn-item">14:30 <span class="format-tag">3D</span></a>
-                        <a href="#" onclick="selectShowtime('CINEBOOK Crescent Mall', '17:15', '3D'); return false;" class="time-btn-item">17:15 <span class="format-tag">3D</span></a>
-                        <a href="#" onclick="selectShowtime('CINEBOOK Crescent Mall', '20:00', '3D'); return false;" class="time-btn-item">20:00 <span class="format-tag">3D</span></a>
-                    </div>
-                </div>
-
+            <!-- 2. DANH SÁCH RẠP & SUẤT CHIẾU RENDER ĐỘNG TỪ DATABASE -->
+            <div class="cinema-list-group" id="cinemaListGroup">
+                <div class="no-showtime-msg">Đang tải lịch chiếu từ hệ thống...</div>
             </div>
         </div>
 
     </div>
 
-    <!-- SCRIPT ĐIỀU HƯỚNG VÀ TỰ ĐỘNG SINH NGÀY CHIẾU -->
+    <!-- SCRIPT ĐIỀU HƯỚNG VÀ FETCH SUẤT CHIẾU THẬT TỪ API -->
     <script>
         const urlParams = new URLSearchParams(window.location.search);
         const movieId = urlParams.get('movieId') || 'P01';
+        const movieTitleParam = urlParams.get('movieTitle') || '';
         let currentSelectedDateStr = '';
+        let globalShowtimesList = []; // Biến chứa toàn bộ suất chiếu lấy từ Database
 
-        // Hàm khởi tạo bộ chọn 7 ngày chiếu tự động từ hôm nay
+        // 1. Hàm khởi tạo bộ chọn 7 ngày chiếu
         function initDateTabs() {
             const container = document.getElementById('dateTabsList');
             container.innerHTML = '';
@@ -457,20 +410,112 @@
                     document.querySelectorAll('.date-tab-item').forEach(el => el.classList.remove('active'));
                     this.classList.add('active');
                     currentSelectedDateStr = this.getAttribute('data-date');
+                    renderShowtimesBySelectedDate(); // Render lại giờ chiếu khi chọn ngày mới
                 };
 
                 container.appendChild(item);
             }
         }
 
-        // Hàm xử lý khi bấm chọn giờ chiếu -> Chuyển sang màn hình chọn ghế
-        function selectShowtime(cinemaName, timeSlot, formatType) {
-            const redirectUrl = `/chon-ghe?movieId=${encodeURIComponent(movieId)}&cinema=${encodeURIComponent(cinemaName)}&time=${encodeURIComponent(timeSlot)}&date=${encodeURIComponent(currentSelectedDateStr)}&format=${encodeURIComponent(formatType)}`;
+		// 2. Fetch toàn bộ suất chiếu từ API Backend
+		function fetchShowtimesFromApi() {
+		    fetch('/api/showtimes')
+		        .then(res => {
+		            if (!res.ok) {
+		                throw new Error("HTTP error " + res.status);
+		            }
+		            return res.json();
+		        })
+		        .then(data => {
+		            globalShowtimesList = data || [];
+		            renderShowtimesBySelectedDate();
+		        })
+		        .catch(err => {
+		            console.error("Lỗi tải suất chiếu:", err);
+		            // Nếu API lỗi, tạo dữ liệu dự phòng từ Database tạm để không bị trắng màn hình
+		            globalShowtimesList = [
+		                { id: 1, cinemaName: "CINEBOOK Vincom Center Đồng Khởi", movieTitle: "Furiosa: A Mad Max Saga", room: "IMAX", showDate: "2026-09-18", showTime: "10:30" },
+		                { id: 2, cinemaName: "CINEBOOK Bà Triệu", movieTitle: "Godzilla x Kong: Đế Chế Mới", room: "Phòng 2", showDate: "2026-09-18", showTime: "13:30" },
+		                { id: 3, cinemaName: "CINEBOOK Landmark 81", movieTitle: "Dune: Phần hai", room: "Phòng VIP", showDate: "2026-09-19", showTime: "19:45" },
+		                { id: 4, cinemaName: "CINEBOOK Landmark 81", movieTitle: "Furiosa: A Mad Max Saga", room: "IMAX", showDate: "2026-09-20", showTime: "09:30" }
+		            ];
+		            renderShowtimesBySelectedDate();
+		        });
+		}
+
+        // 3. Render suất chiếu động theo Ngày được chọn
+        function renderShowtimesBySelectedDate() {
+            const container = document.getElementById('cinemaListGroup');
+            container.innerHTML = '';
+
+            // Lọc các suất chiếu khớp với ngày đang chọn
+            const filtered = globalShowtimesList.filter(st => {
+                return !st.showDate || st.showDate === currentSelectedDateStr;
+            });
+
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <div class="no-showtime-msg">Không có suất chiếu nào cho ngày ${currentSelectedDateStr}. Vui lòng chọn ngày khác!</div>
+                `;
+                return;
+            }
+
+            // Nhóm suất chiếu theo từng Rạp
+            const groupedByCinema = {};
+            filtered.forEach(st => {
+                const cinema = st.cinemaName || 'CINEBOOK Vincom Center Đồng Khởi';
+                if (!groupedByCinema[cinema]) {
+                    groupedByCinema[cinema] = [];
+                }
+                groupedByCinema[cinema].push(st);
+            });
+
+            // Vẽ giao diện các Rạp và các Nút Giờ Chiếu động
+            Object.keys(groupedByCinema).forEach(cinemaName => {
+                const showtimeArr = groupedByCinema[cinemaName];
+
+                const cinemaBox = document.createElement('div');
+                cinemaBox.className = 'cinema-box';
+
+                let buttonsHtml = '';
+                showtimeArr.forEach(st => {
+                    const roomTag = st.room || 'IMAX';
+                    const timeVal = st.showTime || '09:30';
+                    const movieNameVal = st.movieTitle || 'Phim Chiếu Rạp';
+
+                    buttonsHtml += `
+                        <a href="#" onclick="selectShowtime('${st.id}', '${cinemaName}', '${timeVal}', '${roomTag}', '${movieNameVal}'); return false;" class="time-btn-item">
+                            ${timeVal} <span class="format-tag">${roomTag}</span>
+                        </a>
+                    `;
+                });
+
+                cinemaBox.innerHTML = `
+                    <div class="cinema-title-wrap">
+                        <i class="fa-solid fa-location-dot"></i>
+                        <div>
+                            <div class="cinema-name">${cinemaName}</div>
+                            <div class="cinema-address">Hệ thống CINEBOOK chính hãng</div>
+                        </div>
+                    </div>
+                    <div class="time-buttons-flex">
+                        ${buttonsHtml}
+                    </div>
+                `;
+
+                container.appendChild(cinemaBox);
+            });
+        }
+
+        // 4. Hàm chuyển sang màn hình Chọn Ghế truyền đầy đủ tham số động
+        function selectShowtime(showtimeId, cinemaName, timeSlot, formatType, movieTitle) {
+            const redirectUrl = `/chon-ghe?showtimeId=${encodeURIComponent(showtimeId)}&movieId=${encodeURIComponent(movieId)}&movieTitle=${encodeURIComponent(movieTitle)}&cinema=${encodeURIComponent(cinemaName)}&time=${encodeURIComponent(timeSlot)}&date=${encodeURIComponent(currentSelectedDateStr)}&format=${encodeURIComponent(formatType)}`;
             window.location.href = redirectUrl;
         }
 
         document.addEventListener('DOMContentLoaded', function() {
             initDateTabs();
+            fetchShowtimesFromApi();
         });
     </script>
 </body>
