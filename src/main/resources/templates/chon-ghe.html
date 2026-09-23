@@ -211,7 +211,6 @@
             box-shadow: 0 8px 25px rgba(255, 42, 95, 0.6);
         }
 
-        /* THÊM NÚT CHỌN COMBO BẮP NƯỚC */
         .btn-combo {
             background: rgba(245, 158, 11, 0.15);
             color: #FACC15;
@@ -274,7 +273,6 @@
         }
         .btn-modal-cancel:hover { background: rgba(239, 68, 68, 0.3); }
 
-        /* THÊM: STYLES CHO MODAL POPUP COMBO BẮP NƯỚC */
         .combo-item-row {
             display: flex; align-items: center; justify-content: space-between;
             padding: 12px 0; border-bottom: 1px solid var(--border-color); text-align: left;
@@ -338,7 +336,6 @@
         <div class="booking-footer">
             <div class="summary-info">
                 <p>Ghế đã chọn: <span id="selectedSeatsText" style="font-weight: 600;">Chưa chọn ghế nào</span></p>
-                <!-- THÊM: Dòng hiển thị Combo bắp nước đã chọn -->
                 <p>Combo bắp nước: <span id="selectedComboText" style="color: #FACC15; font-weight: 600;">Chưa chọn</span></p>
                 
                 <div class="voucher-section">
@@ -355,7 +352,6 @@
                 <h3>Tổng tiền: <span id="totalPrice">0 đ</span></h3>
             </div>
             <div class="action-buttons">
-                <!-- THÊM: Nút Chọn Combo Bắp Nước -->
                 <button type="button" class="btn-action btn-combo" onclick="openComboModal()"><i class="fa-solid fa-burger"></i> Chọn Combo</button>
                 <a href="javascript:history.back()" class="btn-action btn-back"><i class="fa-solid fa-arrow-left"></i> Quay lại</a>
                 <button class="btn-action btn-payment" onclick="openPaymentModal()"><i class="fa-solid fa-credit-card"></i> Thanh Toán</button>
@@ -370,9 +366,7 @@
             <h2>Chọn Combo Bắp Nước</h2>
             <p class="subtitle">Thêm combo bắp nước thưởng thức cùng phim hay</p>
             
-            <div id="comboListContainer" style="margin-bottom: 20px;">
-                <!-- Dữ liệu combo nạp từ CSDL / Mặc định -->
-            </div>
+            <div id="comboListContainer" style="margin-bottom: 20px;"></div>
 
             <button class="btn-modal-close" style="background: linear-gradient(135deg, #ff2a5f 0%, #e50914 100%);" onclick="closeComboModal()">Xác Nhận & Tiếp Tục</button>
         </div>
@@ -398,6 +392,12 @@
 
     <script>
         const movieTitles = {
+            '1': 'Joker: Folie à Deux',
+            '2': 'Alien: Romulus',
+            '3': 'Thám Tử Lừng Danh Conan: Ngôi Sao 5 Cánh 1 Triệu Đô',
+            '4': 'Deadpool & Wolverine',
+            '5': 'Despicable Me 4',
+            '6': 'Furiosa: A Mad Max Saga',
             'furiosa': 'Furiosa: A Mad Max Saga',
             'godzilla-kong': 'Godzilla x Kong: Đế Chế Mới',
             'dune-2': 'Dune: Phần Hai',
@@ -406,14 +406,15 @@
             'kung-fu-panda-4': 'Kung Fu Panda 4'
         };
 
-        const urlParams = new URLSearchParams(window.location.search);
-        const movieId = urlParams.get('movieId') || urlParams.get('movie') || 'furiosa';
-        const date = urlParams.get('date') || '07-09-2026';
-        
-        const cinema = decodeURIComponent(urlParams.get('cinema') || 'CINEBOOK Vincom Center Đồng Khởi');
-        const time = decodeURIComponent(urlParams.get('showtime') || urlParams.get('time') || '09:00');
+		const urlParams = new URLSearchParams(window.location.search);
+		const movieId = urlParams.get('movieId') || urlParams.get('movie') || '6'; // Mặc định ID của Inside Out 2 là 6 hoặc phim đang chọn
+		const date = urlParams.get('date') || '22-09-2026';
 
-        const displayMovieName = movieTitles[movieId] || 'Furiosa: A Mad Max Saga';
+		const cinema = decodeURIComponent(urlParams.get('cinema') || 'CINEBOOK Vincom Center Đồng Khởi');
+		const time = decodeURIComponent(urlParams.get('showtime') || urlParams.get('time') || '09:00');
+
+		// LUÔN LẤY TÊN PHIM CHUẨN DỰA TRÊN MOVIEID CỦA PHIM ĐANG XEM, BỎ QUA VIỆC ĐỌC MOVIE TITLE BỊ LỆCH TỪ URL
+		const displayMovieName = movieTitles[movieId] || 'Inside Out 2';
 
         document.getElementById('txtMovie').innerText = displayMovieName;
         document.getElementById('txtCinema').innerText = cinema;
@@ -430,7 +431,6 @@
         const seatPrice = 75000;
         let selectedSeats = [];
         
-        // CẤU HÌNH COMBO BẮP NƯỚC (Nạp động từ API hoặc fallback dữ liệu tĩnh)
         let comboData = [
             { id: 1, code: 'CB_SOLO', name: 'Combo Solo', description: '1 Bắp ngọt vừa + 1 Nước Coca lớn', price: 69000, imageUrl: 'https://images.unsplash.com/photo-1585647347483-22b66260dfff?q=80&w=100' },
             { id: 2, code: 'CB_BIG', name: 'Combo Siêu To', description: '1 Bắp lớn + 2 Nước ngọt Coca lớn', price: 89000, imageUrl: 'https://images.unsplash.com/photo-1578849278619-e73505e9610f?q=80&w=100' },
@@ -452,7 +452,6 @@
         let appliedVoucherCode = '';
         let currentCreatedTicketId = null;
 
-        // TẢI COMBO TỪ CSDL QUA API (NẾU CÓ)
         async function loadCombosFromApi() {
             try {
                 const res = await fetch('/api/combos');
@@ -499,7 +498,6 @@
         function openComboModal() { document.getElementById('comboModal').style.display = 'flex'; }
         function closeComboModal() { document.getElementById('comboModal').style.display = 'none'; }
 
-        // TẢI MÃ KHUYẾN MÃI TỪ KHO HOẶC API CSDL
         async function renderSavedVouchers() {
             const container = document.getElementById('availableVouchersContainer');
             let savedVouchers = JSON.parse(localStorage.getItem('cinebook_saved_vouchers')) || ['CINE50', 'VC_QK29'];
@@ -660,13 +658,16 @@
 
             const rawTotal = seatTotal + comboTotal;
             const finalTotal = rawTotal - (rawTotal * appliedDiscountPercent / 100);
+            const combosString = selectedComboNames.length > 0 ? selectedComboNames.join(', ') : 'Không có';
 
+            // GỬI KÈM TÊN PHIM CHUẨN VÀ COMBO LÊN API
             const payload = {
                 movieTitle: displayMovieName,
                 cinema: cinema,
                 date: date,
                 time: time,
                 seats: selectedSeats,
+                combos: combosString,
                 totalPrice: finalTotal
             };
 
@@ -692,7 +693,7 @@
                     `<div class="receipt-row"><span>Mã ưu đãi:</span> <span style="color: #10B981;">${appliedVoucherCode} (-${appliedDiscountPercent}%)</span></div>` : '';
                 
                 let comboRowHtml = selectedComboNames.length > 0 ?
-                    `<div class="receipt-row"><span>Combo đã chọn:</span> <span style="color: #FACC15;">${selectedComboNames.join(', ')}</span></div>` : '';
+                    `<div class="receipt-row"><span>Combo đã chọn:</span> <span style="color: #FACC15;">${combosString}</span></div>` : '';
 
                 document.getElementById('receiptContent').innerHTML = `
                     <div class="receipt-row"><span>Phim:</span> <span>${displayMovieName}</span></div>

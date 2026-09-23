@@ -589,9 +589,9 @@
         .status-danger { background: rgba(239, 68, 68, 0.15); color: #EF4444; }
 
         .btn-action-sm {
-            padding: 4px 8px;
-            font-size: 10px;
-            border-radius: 4px;
+            padding: 5px 10px;
+            font-size: 11px;
+            border-radius: 6px;
             border: none;
             cursor: pointer;
             font-weight: 600;
@@ -601,6 +601,66 @@
         .btn-pay-sm:hover { background: #10B981; color: white; }
         .btn-cancel-sm { background: rgba(239, 68, 68, 0.2); color: #EF4444; }
         .btn-cancel-sm:hover { background: #EF4444; color: white; }
+
+        /* STYLES CHO NÚT CHI TIẾT & POPUP MODAL VÉ */
+        .btn-detail-sm {
+            background: rgba(255, 42, 95, 0.15);
+            color: #FF2A5F;
+            border: 1px solid rgba(255, 42, 95, 0.3);
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+        .btn-detail-sm:hover {
+            background: #FF2A5F;
+            color: #fff;
+        }
+
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.75);
+            display: flex; justify-content: center; align-items: center;
+            z-index: 9999; opacity: 0; visibility: hidden; transition: all 0.3s ease;
+        }
+        .modal-overlay.show { opacity: 1; visibility: visible; }
+        .ticket-modal {
+            background: #181E2A; border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px; width: 450px; max-width: 90%; padding: 24px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+            transform: scale(0.9); transition: all 0.3s ease; position: relative;
+        }
+        .modal-overlay.show .ticket-modal { transform: scale(1); }
+        .close-modal-btn {
+            position: absolute; top: 18px; right: 20px; color: #8E96A7; font-size: 20px; cursor: pointer;
+        }
+        .close-modal-btn:hover { color: #FFF; }
+        .ticket-header { text-align: center; border-bottom: 2px dashed rgba(255, 255, 255, 0.1); padding-bottom: 16px; margin-bottom: 16px; }
+        .status-success-badge {
+            display: inline-flex; align-items: center; gap: 6px;
+            background: rgba(34, 197, 94, 0.15); color: #22C55E;
+            padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: 700; margin-bottom: 10px;
+            border: 1px solid rgba(34, 197, 94, 0.3);
+        }
+        .ticket-id-title { font-size: 20px; font-weight: 700; color: #FF2A5F; margin: 0; }
+        .ticket-info-list { display: flex; flex-direction: column; gap: 12px; font-size: 14px; }
+        .ticket-info-row { display: flex; justify-content: space-between; }
+        .ticket-info-label { color: #8E96A7; }
+        .ticket-info-val { font-weight: 600; color: #FFF; text-align: right; }
+        .price-highlight { color: #22C55E; font-size: 18px; font-weight: 700; }
+        .ticket-footer-actions {
+            margin-top: 20px; padding-top: 16px; border-top: 1px solid rgba(255, 255, 255, 0.08);
+            display: flex; gap: 10px;
+        }
+        .btn-modal-action { flex: 1; padding: 10px; border-radius: 8px; border: none; font-weight: 600; cursor: pointer; text-align: center; }
+        .btn-modal-close { background: rgba(255, 255, 255, 0.1); color: #FFF; }
+        .btn-modal-print { background: #FF2A5F; color: #FFF; }
 
         .list-group {
             display: flex;
@@ -648,38 +708,6 @@
             color: var(--pink-accent);
             margin-top: 6px;
             display: inline-block;
-        }
-
-        .review-card {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid var(--border-color);
-            border-radius: 10px;
-            padding: 15px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .review-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .review-movie-name {
-            font-weight: 700;
-            font-size: 14px;
-            color: var(--text-light);
-        }
-
-        .review-stars {
-            color: #FACC15;
-            font-size: 12px;
-        }
-
-        .review-text {
-            font-size: 12px;
-            color: var(--text-gray);
         }
 
         /* MODAL POPUP */
@@ -787,6 +815,61 @@
         </div>
     </div>
 
+    <!-- POPUP MODAL CHI TIẾT VÉ -->
+    <div id="ticketModalOverlay" class="modal-overlay">
+        <div class="ticket-modal">
+            <span class="close-modal-btn" onclick="closeTicketModal()">&times;</span>
+            
+            <div class="ticket-header">
+                <div class="status-success-badge">
+                    <i class="fa-solid fa-circle-check"></i> Thông tin đơn vé
+                </div>
+                <h3 class="ticket-id-title" id="mTicketCode">#CB000</h3>
+                <small style="color: #8E96A7;" id="mBookingDate">--</small>
+            </div>
+
+            <div class="ticket-info-list">
+                <div class="ticket-info-row">
+                    <span class="ticket-info-label">Khách hàng:</span>
+                    <span class="ticket-info-val" id="mCustomerName">--</span>
+                </div>
+                <div class="ticket-info-row">
+                    <span class="ticket-info-label">SĐT / Email:</span>
+                    <span class="ticket-info-val" id="mCustomerContact">--</span>
+                </div>
+                <div class="ticket-info-row">
+                    <span class="ticket-info-label">Tên Phim:</span>
+                    <span class="ticket-info-val" id="mMovieTitle" style="color: #FACC15;">--</span>
+                </div>
+                <div class="ticket-info-row">
+                    <span class="ticket-info-label">Rạp chiếu:</span>
+                    <span class="ticket-info-val" id="mCinemaName">--</span>
+                </div>
+                <div class="ticket-info-row">
+                    <span class="ticket-info-label">Suất chiếu:</span>
+                    <span class="ticket-info-val" id="mShowTime">--</span>
+                </div>
+                <div class="ticket-info-row">
+                    <span class="ticket-info-label">Vị trí ghế:</span>
+                    <span class="ticket-info-val" id="mSeats" style="color: #FF2A5F; font-size: 16px;">--</span>
+                </div>
+                <div class="ticket-info-row">
+                    <span class="ticket-info-label">Combo bắp nước:</span>
+                    <span class="ticket-info-val" id="mCombos" style="color: #FACC15;">Không có</span>
+                </div>
+                <div class="ticket-info-row" style="margin-top: 8px; border-top: 1px solid rgba(255, 255, 255, 0.05); padding-top: 8px;">
+                    <span class="ticket-info-label">Tổng tiền:</span>
+                    <span class="ticket-info-val price-highlight" id="mTotalPrice">0 đ</span>
+                </div>
+            </div>
+
+            <div class="ticket-footer-actions">
+                <button type="button" class="btn-modal-action btn-modal-close" onclick="closeTicketModal()">Đóng</button>
+                <button type="button" class="btn-modal-action btn-modal-print" onclick="window.print()"><i class="fa-solid fa-print"></i> In vé</button>
+            </div>
+        </div>
+    </div>
+
     <!-- NAVBAR HEADER -->
     <header>
         <a th:href="@{/}" class="logo"><i class="fa-solid fa-film"></i> CDD<span>BOOK</span></a>
@@ -831,9 +914,7 @@
                     <li class="sidebar-item" id="menu-favorites" onclick="switchTab('tab-favorites', this)">
                         <a href="#"><i class="fa-solid fa-heart"></i> Danh sách yêu thích</a>
                     </li>
-                    <li class="sidebar-item" id="menu-reviews" onclick="switchTab('tab-reviews', this)">
-                        <a href="#"><i class="fa-solid fa-comments"></i> Bình luận của tôi</a>
-                    </li>
+                    <!-- ĐÃ XÓA MỤC BÌNH LUẬN CỦA TÔI KHỎI SIDEBAR -->
                     <li class="sidebar-item" id="menu-notifications" onclick="switchTab('tab-notifications', this)">
                         <a href="#"><i class="fa-solid fa-bell"></i> Thông báo</a>
                     </li>
@@ -1017,7 +1098,7 @@
                     </div>
                 </div>
 
-                <!-- TAB 5: LỊCH SỬ ĐẶT VÉ (ĐÃ THÊM XỬ LÝ 3 TRẠNG THÁI & NÚT THAO TÁC) -->
+                <!-- TAB 5: LỊCH SỬ ĐẶT VÉ -->
                 <div id="tab-tickets" class="form-section">
                     <div class="section-card">
                         <div class="card-header-flex" style="margin-bottom: 20px;">
@@ -1043,28 +1124,30 @@
                                         <td colspan="9" style="text-align: center; color: var(--text-gray);">Bạn chưa có vé nào.</td>
                                     </tr>
                                     <tr class="ticket-row" th:each="ticket : ${tickets}">
-                                        <td style="font-weight: bold; color: var(--pink-accent);" th:text="'#CB-' + ${ticket.id}">#CB-8921</td>
+                                        <td style="font-weight: bold; color: var(--pink-accent);" th:text="'#CB-000' + ${ticket.id}">#CB-8921</td>
                                         <td class="ticket-movie-name" th:text="${ticket.movieTitle}">Interstellar</td>
                                         <td style="color: #60A5FA; font-weight: 600;" th:text="${ticket.cinemaName != null ? ticket.cinemaName : 'CINEBOOK Đồng Khởi'}">CINEBOOK Đồng Khởi</td>
                                         <td th:text="${ticket.showTime}">19:30 - 05/09/2026</td>
                                         <td th:text="${ticket.seats}">F12, F13</td>
                                         <td class="ticket-price" th:text="${#numbers.formatDecimal(ticket.totalPrice, 0, 'COMMA', 0, 'POINT') + ' đ'}">180.000 đ</td>
-                                        <td th:text="${#temporals.format(ticket.bookingDate, 'dd-MM-yyyy HH:mm')}">05/09/2026 18:15</td>
+                                        <td th:text="${ticket.bookingDate != null ? #temporals.format(ticket.bookingDate, 'dd-MM-yyyy HH:mm') : 'Hôm nay'}">05/09/2026 18:15</td>
                                         
-                                        <!-- PHÂN LOẠI BADGE 3 TRẠNG THÁI VÉ -->
+                                        <!-- PHÂN LOẠI TRẠNG THÁI VÉ -->
                                         <td style="white-space: nowrap;">
                                             <span th:if="${ticket.status == 'Chờ thanh toán'}" class="status-badge status-pending"><i class="fa-solid fa-clock"></i> Chờ thanh toán</span>
                                             <span th:if="${ticket.status == 'Đã thanh toán' or ticket.status == null}" class="status-badge status-success"><i class="fa-solid fa-check"></i> Đã thanh toán</span>
                                             <span th:if="${ticket.status == 'Đã hủy'}" class="status-badge status-danger"><i class="fa-solid fa-xmark"></i> Đã hủy</span>
                                         </td>
 
-                                        <!-- CỤM NÚT THAO TÁC KHI CHỜ THANH TOÁN -->
+                                        <!-- CỤM NÚT THAO TÁC -->
                                         <td style="white-space: nowrap;">
-                                            <div th:if="${ticket.status == 'Chờ thanh toán'}">
+                                            <button type="button" class="btn-detail-sm" th:onclick="openTicketModal([[${ticket.id}]])">
+                                                <i class="fa-solid fa-eye"></i> Chi tiết
+                                            </button>
+                                            <div th:if="${ticket.status == 'Chờ thanh toán'}" style="margin-top: 4px;">
                                                 <button class="btn-action-sm btn-pay-sm" th:onclick="'payTicket(' + ${ticket.id} + ')'">Thanh toán</button>
                                                 <button class="btn-action-sm btn-cancel-sm" th:onclick="'cancelTicket(' + ${ticket.id} + ')'">Hủy vé</button>
                                             </div>
-                                            <span th:if="${ticket.status != 'Chờ thanh toán'}" style="color: var(--text-gray); font-size: 11px;">--</span>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -1081,335 +1164,371 @@
                         </div>
                         <div class="fav-movies-row" id="favoritesTabGrid" style="grid-template-columns: repeat(4, 1fr);"></div>
                     </div>
-                </div>
+                </div>               
+				<!-- TAB 9: THÔNG BÁO -->
+				<div id="tab-notifications" class="form-section">
+				    <div class="section-card">
+				        <div class="card-header-flex" style="margin-bottom: 20px;">
+				            <h3>Hệ thống thông báo & Ưu đãi</h3>
+				        </div>
+				        <div class="list-group">
+				            <!-- Nếu chưa có vé nào -->
+				            <div th:if="${tickets == null or tickets.empty}" style="text-align: center; padding: 25px; color: var(--text-gray);">
+				                <i class="fa-regular fa-bell-slash" style="font-size: 30px; margin-bottom: 8px; color: var(--border-color);"></i>
+				                <p>Chưa có thông báo đặt vé nào.</p>
+				            </div>
 
-                <!-- TAB 8: BÌNH LUẬN CỦA TÔI -->
-                <div id="tab-reviews" class="form-section">
-                    <div class="section-card">
-                        <div class="card-header-flex" style="margin-bottom: 20px;">
-                            <h3>Bình luận và đánh giá của tôi</h3>
-                        </div>
-                        <div class="list-group">
-                            <div class="review-card">
-                                <div class="review-header">
-                                    <span class="review-movie-name">Interstellar (2014)</span>
-                                    <span class="review-stars">★ ★ ★ ★ ★ (5/5)</span>
-                                </div>
-                                <p class="review-text">Phim quá đỉnh, âm thanh và hình ảnh không gian cực kỳ mãn nhãn. Nội dung triết lý sâu sắc!</p>
-                                <span style="font-size: 10px; color: var(--text-gray);">Đã đăng ngày: 05/09/2026</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- TAB 9: THÔNG BÁO -->
-                <div id="tab-notifications" class="form-section">
-                    <div class="section-card">
-                        <div class="card-header-flex" style="margin-bottom: 20px;">
-                            <h3>Hệ thống thông báo & Ưu đãi</h3>
-                        </div>
-                        <div class="list-group">
-                            <div class="notification-card">
-                                <div class="notification-icon-box">
-                                    <i class="fa-solid fa-ticket"></i>
-                                </div>
-                                <div class="notification-content">
-                                    <h4>Đặt vé thành công</h4>
-                                    <p>Bạn đã thanh toán thành công vé xem phim tại hệ thống Cinebook. Chúc bạn xem phim vui vẻ!</p>
-                                    <span class="notification-time">Hôm nay</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+				            <!-- Vòng lặp hiển thị thông báo thật cho từng vé đã đặt -->
+				            <div class="notification-card" th:each="ticket : ${tickets}">
+				                <div class="notification-icon-box">
+				                    <i class="fa-solid fa-ticket"></i>
+				                </div>
+				                <div class="notification-content">
+				                    <h4 th:text="'Đặt vé thành công (Mã: #CB-000' + ${ticket.id} + ')'">Đặt vé thành công</h4>
+				                    <p th:text="'Bạn đã đặt vé xem phim ' + ${ticket.movieTitle} + ' tại ' + ${ticket.cinemaName} + ' cho suất chiếu ' + ${ticket.showTime} + ' với ghế ' + ${ticket.seats} + '.'">
+				                        Nội dung chi tiết thông báo...
+				                    </p>
+				                    <span class="notification-time" th:text="${ticket.bookingDate != null ? #temporals.format(ticket.bookingDate, 'dd-MM-yyyy HH:mm') : 'Hôm nay'}">Hôm nay</span>
+				                </div>
+				            </div>
+				        </div>
+				    </div>
+				</div>
 
             </div>
         </div>
     </div>
 
-    <!-- SCRIPTS -->
-    <script>
-        // Xử lý gửi API cập nhật trạng thái vé cho Nút Thanh toán / Hủy vé
-        function payTicket(ticketId) {
-            fetch(`/api/tickets/${ticketId}/pay`, { method: 'POST' })
-                .then(res => {
-                    if (res.ok) {
-                        showToast('Thanh toán đơn vé thành công!', '#10B981');
-                        setTimeout(() => window.location.reload(), 1000);
-                    } else {
-                        showToast('Có lỗi xảy ra khi thanh toán!', '#EF4444');
-                    }
-                })
-                .catch(() => showToast('Không thể kết nối đến máy chủ!', '#EF4444'));
-        }
+	<!-- SCRIPTS -->
+	    <script>
+	        function openTicketModal(ticketId) {
+	            fetch('/admin/dat-ve/api/chi-tiet/' + ticketId)
+	                .then(res => res.json())
+	                .then(data => {
+	                    document.getElementById('mTicketCode').innerText = '#CB000' + data.id;
+	                    document.getElementById('mBookingDate').innerText = 'Ngày đặt: ' + (data.bookingDate || 'Hôm nay');
+	                    document.getElementById('mCustomerName').innerText = data.customerName || 'Thành viên';
+	                    document.getElementById('mCustomerContact').innerText = data.customerContact || 'N/A';
+	                    document.getElementById('mMovieTitle').innerText = data.movieTitle;
+	                    document.getElementById('mCinemaName').innerText = data.cinemaName;
+	                    document.getElementById('mShowTime').innerText = data.showTime;
+	                    document.getElementById('mSeats').innerText = data.seats;
+	                    document.getElementById('mCombos').innerText = data.combos || 'Không có';
+	                    document.getElementById('mTotalPrice').innerText = (data.totalPrice || 0).toLocaleString('vi-VN') + ' đ';
 
-        function cancelTicket(ticketId) {
-            if (!confirm('Bạn có chắc chắn muốn hủy đơn vé này không?')) return;
+	                    document.getElementById('ticketModalOverlay').classList.add('show');
+	                })
+	                .catch(err => {
+	                    console.error("Lỗi tải chi tiết vé:", err);
+	                    alert("Không thể tải thông tin chi tiết vé!");
+	                });
+	        }
 
-            fetch(`/api/tickets/${ticketId}/cancel`, { method: 'POST' })
-                .then(res => {
-                    if (res.ok) {
-                        showToast('Đã hủy đơn vé thành công!', '#10B981');
-                        setTimeout(() => window.location.reload(), 1000);
-                    } else {
-                        showToast('Có lỗi xảy ra khi hủy vé!', '#EF4444');
-                    }
-                })
-                .catch(() => showToast('Không thể kết nối đến máy chủ!', '#EF4444'));
-        }
+	        function closeTicketModal() {
+	            document.getElementById('ticketModalOverlay').classList.remove('show');
+	        }
 
-        function switchTab(tabId, element) {
-            document.querySelectorAll('.form-section').forEach(el => {
-                el.classList.remove('active-tab');
-            });
-            document.querySelectorAll('.sidebar-item').forEach(el => {
-                el.classList.remove('active');
-            });
-            document.getElementById(tabId).classList.add('active-tab');
-            if (element) {
-                element.classList.add('active');
-            }
-        }
+	        function payTicket(ticketId) {
+	            fetch(`/api/tickets/${ticketId}/pay`, { method: 'POST' })
+	                .then(res => {
+	                    if (res.ok) {
+	                        showToast('Thanh toán đơn vé thành công!', '#10B981');
+	                        setTimeout(() => window.location.reload(), 1000);
+	                    } else {
+	                        showToast('Có lỗi xảy ra khi thanh toán!', '#EF4444');
+	                    }
+	                })
+	                .catch(() => showToast('Không thể kết nối đến máy chủ!', '#EF4444'));
+	        }
 
-        function submitFormAjax(event, formElement, type) {
-            event.preventDefault();
-            const url = type === 'profile' ? '/cap-nhat-thong-tin' : '/doi-mat-khau';
-            const formData = new URLSearchParams(new FormData(formElement));
+	        function cancelTicket(ticketId) {
+	            if (!confirm('Bạn có chắc chắn muốn hủy đơn vé này không?')) return;
 
-            fetch(url, { method: 'POST', body: formData })
-            .then(response => {
-                if (response.ok) {
-                    showToast(type === 'profile' ? 'Cập nhật thông tin thành công!' : 'Đổi mật khẩu thành công!', '#10B981');
-                    if (type === 'password') formElement.reset();
-                } else {
-                    showToast('Có lỗi xảy ra, vui lòng thử lại!', '#EF4444');
-                }
-            })
-            .catch(() => showToast('Không thể kết nối đến máy chủ!', '#EF4444'));
-        }
+	            fetch(`/api/tickets/${ticketId}/cancel`, { method: 'POST' })
+	                .then(res => {
+	                    if (res.ok) {
+	                        showToast('Đã hủy đơn vé thành công!', '#10B981');
+	                        setTimeout(() => window.location.reload(), 1000);
+	                    } else {
+	                        showToast('Có lỗi xảy ra khi hủy vé!', '#EF4444');
+	                    }
+	                })
+	                .catch(() => showToast('Không thể kết nối đến máy chủ!', '#EF4444'));
+	        }
 
-        function showToast(message, bgColor) {
-            const toast = document.getElementById('toast-notification');
-            const toastText = document.getElementById('toast-text');
-            toast.style.background = bgColor;
-            toastText.innerText = message;
-            toast.style.display = 'flex';
-            setTimeout(() => { toast.style.display = 'none'; }, 3500);
-        }
+	        function switchTab(tabId, element) {
+	            document.querySelectorAll('.form-section').forEach(el => {
+	                el.classList.remove('active-tab');
+	            });
+	            document.querySelectorAll('.sidebar-item').forEach(el => {
+	                el.classList.remove('active');
+	            });
+	            document.getElementById(tabId).classList.add('active-tab');
+	            if (element) {
+	                element.classList.add('active');
+	            }
+	        }
 
-        function openWatchedModal() {
-            const listContainer = document.getElementById('watchedMoviesListContainer');
-            listContainer.innerHTML = '';
-            
-            const movieNameEls = document.querySelectorAll('.ticket-movie-name');
-            let uniqueWatched = [...new Set(Array.from(movieNameEls).map(el => el.innerText.trim()))];
+	        function submitFormAjax(event, formElement, type) {
+	            event.preventDefault();
+	            const url = type === 'profile' ? '/cap-nhat-thong-tin' : '/doi-mat-khau';
+	            const formData = new URLSearchParams(new FormData(formElement));
 
-            if (uniqueWatched.length === 0 || (uniqueWatched.length === 1 && uniqueWatched[0] === '')) {
-                listContainer.innerHTML = '<div style="text-align: center; color: var(--text-gray); padding: 20px;">Bạn chưa xem bộ phim nào qua hệ thống đặt vé.</div>';
-            } else {
-                uniqueWatched.forEach((movieName, index) => {
-                    let div = document.createElement('div');
-                    div.className = 'watched-movie-row';
-                    div.innerHTML = `<i class="fa-solid fa-film"></i> <span><b>${index + 1}.</b> ${movieName}</span>`;
-                    listContainer.appendChild(div);
-                });
-            }
-            document.getElementById('watchedMoviesModal').style.display = 'flex';
-        }
+	            fetch(url, { method: 'POST', body: formData })
+	            .then(response => {
+	                if (response.ok) {
+	                    showToast(type === 'profile' ? 'Cập nhật thông tin thành công!' : 'Đổi mật khẩu thành công!', '#10B981');
+	                    
+	                    if (type === 'profile') {
+	                        // Cập nhật ngay tên mới lên giao diện banner tổng quan
+	                        const newFullNameInput = formElement.querySelector('input[name="fullName"]');
+	                        if (newFullNameInput) {
+	                            const updatedName = newFullNameInput.value;
+	                            const profileHeading = document.querySelector('.profile-details h2');
+	                            if (profileHeading) {
+	                                const rankBadgeHtml = profileHeading.querySelector('.rank-badge')?.outerHTML || '<span class="rank-badge">THÀNH VIÊN BẠC</span>';
+	                                profileHeading.innerHTML = `${updatedName} ${rankBadgeHtml}`;
+	                            }
+	                        }
+	                    }
 
-        function closeWatchedModal() {
-            document.getElementById('watchedMoviesModal').style.display = 'none';
-        }
+	                    if (type === 'password') formElement.reset();
+	                } else {
+	                    showToast('Có lỗi xảy ra, vui lòng thử lại!', '#EF4444');
+	                }
+	            })
+	            .catch(() => showToast('Không thể kết nối đến máy chủ!', '#EF4444'));
+	        }
 
-        document.addEventListener("DOMContentLoaded", function() {
-            const FAVORITES_KEY = 'cinebook_favorite_movies';
-            const userEmailKey = document.getElementById('currentLoggedUserKey') ? document.getElementById('currentLoggedUserKey').value : 'default_user';
-            const AVATAR_KEY = 'cinebook_user_avatar_' + userEmailKey;
+	        function showToast(message, bgColor) {
+	            const toast = document.getElementById('toast-notification');
+	            const toastText = document.getElementById('toast-text');
+	            toast.style.background = bgColor;
+	            toastText.innerText = message;
+	            toast.style.display = 'flex';
+	            setTimeout(() => { toast.style.display = 'none'; }, 3500);
+	        }
 
-            // 1. Thống kê vé và điểm tích lũy
-            const ticketRows = document.querySelectorAll('.ticket-row');
-            let totalTickets = ticketRows.length;
-            let totalSpentMoney = 0;
-            let uniqueMovies = new Set();
+	        function openWatchedModal() {
+	            const listContainer = document.getElementById('watchedMoviesListContainer');
+	            listContainer.innerHTML = '';
+	            
+	            const movieNameEls = document.querySelectorAll('.ticket-movie-name');
+	            let uniqueWatched = [...new Set(Array.from(movieNameEls).map(el => el.innerText.trim()))];
 
-            ticketRows.forEach(row => {
-                const priceEl = row.querySelector('.ticket-price');
-                const movieNameEl = row.querySelector('.ticket-movie-name');
-                if (priceEl) {
-                    let val = parseFloat(priceEl.innerText.replace(/[^0-9.-]+/g,"")) || 0;
-                    totalSpentMoney += val;
-                }
-                if (movieNameEl) {
-                    uniqueMovies.add(movieNameEl.innerText.trim());
-                }
-            });
+	            if (uniqueWatched.length === 0 || (uniqueWatched.length === 1 && uniqueWatched[0] === '')) {
+	                listContainer.innerHTML = '<div style="text-align: center; color: var(--text-gray); padding: 20px;">Bạn chưa xem bộ phim nào qua hệ thống đặt vé.</div>';
+	            } else {
+	                uniqueWatched.forEach((movieName, index) => {
+	                    let div = document.createElement('div');
+	                    div.className = 'watched-movie-row';
+	                    div.innerHTML = `<i class="fa-solid fa-film"></i> <span><b>${index + 1}.</b> ${movieName}</span>`;
+	                    listContainer.appendChild(div);
+	                });
+	            }
+	            document.getElementById('watchedMoviesModal').style.display = 'flex';
+	        }
 
-            let earnedPointsFromTickets = Math.floor(totalSpentMoney / 10000);
-            const statTicketsEl = document.getElementById('statTicketsCount');
-            const statMoviesEl = document.getElementById('statMoviesCount');
-            const statPointsEl = document.getElementById('statPointsValue');
+	        function closeWatchedModal() {
+	            document.getElementById('watchedMoviesModal').style.display = 'none';
+	        }
 
-            if (statTicketsEl) statTicketsEl.innerText = totalTickets;
-            if (statMoviesEl) statMoviesEl.innerText = uniqueMovies.size;
-            if (statPointsEl) statPointsEl.innerText = earnedPointsFromTickets.toLocaleString('en-US');
+	        document.addEventListener("DOMContentLoaded", function() {
+	            const FAVORITES_KEY = 'cinebook_favorite_movies';
+	            const userEmailKey = document.getElementById('currentLoggedUserKey') ? document.getElementById('currentLoggedUserKey').value : 'default_user';
+	            const AVATAR_KEY = 'cinebook_user_avatar_' + userEmailKey;
 
-            const maxRankPoints = 4000;
-            let percent = Math.min(Math.round((earnedPointsFromTickets / maxRankPoints) * 100), 100);
-            const progressBarFill = document.getElementById('rankProgressBarFill');
-            const pointsFraction = document.getElementById('rankPointsFraction');
-            const progressText = document.getElementById('rankProgressText');
+	            const ticketRows = document.querySelectorAll('.ticket-row');
+	            let totalTickets = 0;
+	            let totalSpentMoney = 0;
+	            let uniqueMovies = new Set();
 
-            if (progressBarFill) progressBarFill.style.width = percent + '%';
-            if (pointsFraction) pointsFraction.innerText = earnedPointsFromTickets.toLocaleString('en-US') + ' / ' + maxRankPoints.toLocaleString('en-US') + ' điểm';
-            if (progressText) {
-                let remaining = maxRankPoints - earnedPointsFromTickets;
-                if (remaining > 0) {
-                    progressText.innerText = 'Bạn còn ' + remaining.toLocaleString('en-US') + ' điểm để lên hạng Vàng';
-                } else {
-                    progressText.innerText = 'Bạn đã đạt hạng thành viên cao nhất!';
-                }
-            }
+	            ticketRows.forEach(row => {
+	                const priceEl = row.querySelector('.ticket-price');
+	                const movieNameEl = row.querySelector('.ticket-movie-name');
+	                const statusBadge = row.querySelector('.status-badge');
 
-            // 2. Avatar
-            const savedAvatar = localStorage.getItem(AVATAR_KEY);
-            if (savedAvatar) {
-                const mainAvatar = document.getElementById('mainProfileAvatar');
-                const headerAvatar = document.getElementById('headerUserAvatar');
-                if (mainAvatar) mainAvatar.src = savedAvatar;
-                if (headerAvatar) headerAvatar.src = savedAvatar;
-            }
+	                // Chỉ tính điểm và thống kê cho các vé đã thanh toán
+	                const statusText = statusBadge ? statusBadge.innerText.trim() : '';
+	                const isPaid = statusText.includes('Đã thanh toán') || (!statusText.includes('Chờ') && !statusText.includes('hủy'));
 
-            const avatarTrigger = document.getElementById('avatarUploadTrigger');
-            const avatarFileInput = document.getElementById('avatarFileInput');
+	                if (isPaid) {
+	                    totalTickets++;
+	                    if (priceEl) {
+	                        let val = parseFloat(priceEl.innerText.replace(/[^0-9.-]+/g,"")) || 0;
+	                        totalSpentMoney += val;
+	                    }
+	                    if (movieNameEl) {
+	                        uniqueMovies.add(movieNameEl.innerText.trim());
+	                    }
+	                }
+	            });
 
-            if (avatarTrigger && avatarFileInput) {
-                avatarTrigger.addEventListener('click', function() {
-                    let choice = prompt("Chọn cách đổi ảnh đại diện:\n1. Nhập URL hình ảnh mới\n2. Tải ảnh lên từ máy tính (Nhập 'file' hoặc bấm Cancel)", "");
-                    if (choice === 'file' || choice === null) {
-                        avatarFileInput.click();
-                    } else if (choice && choice.trim() !== '') {
-                        updateAvatarImages(choice.trim());
-                    }
-                });
+	            let earnedPointsFromTickets = Math.floor(totalSpentMoney / 10000);
+	            const statTicketsEl = document.getElementById('statTicketsCount');
+	            const statMoviesEl = document.getElementById('statMoviesCount');
+	            const statPointsEl = document.getElementById('statPointsValue');
 
-                avatarFileInput.addEventListener('change', function(e) {
-                    const file = e.target.files[0];
-                    if (file) {
-                        const reader = new FileReader();
-                        reader.onload = function(event) { updateAvatarImages(event.target.result); };
-                        reader.readAsDataURL(file);
-                    }
-                });
-            }
+	            if (statTicketsEl) statTicketsEl.innerText = totalTickets;
+	            if (statMoviesEl) statMoviesEl.innerText = uniqueMovies.size;
+	            if (statPointsEl) statPointsEl.innerText = earnedPointsFromTickets.toLocaleString('en-US');
 
-            function updateAvatarImages(imgUrl) {
-                document.getElementById('mainProfileAvatar').src = imgUrl;
-                document.getElementById('headerUserAvatar').src = imgUrl;
-                localStorage.setItem(AVATAR_KEY, imgUrl);
-                showToast('Cập nhật ảnh đại diện thành công!', '#10B981');
-            }
+	            const maxRankPoints = 4000;
+	            let percent = Math.min(Math.round((earnedPointsFromTickets / maxRankPoints) * 100), 100);
+	            const progressBarFill = document.getElementById('rankProgressBarFill');
+	            const pointsFraction = document.getElementById('rankPointsFraction');
+	            const progressText = document.getElementById('rankProgressText');
 
-            // 3. Phim yêu thích
-            function getFavorites() {
-                try { return JSON.parse(localStorage.getItem(FAVORITES_KEY)) || []; } catch(e) { return []; }
-            }
-            function saveFavorites(favs) { localStorage.setItem(FAVORITES_KEY, JSON.stringify(favs)); }
+	            if (progressBarFill) progressBarFill.style.width = percent + '%';
+	            if (pointsFraction) pointsFraction.innerText = earnedPointsFromTickets.toLocaleString('en-US') + ' / ' + maxRankPoints.toLocaleString('en-US') + ' điểm';
+	            if (progressText) {
+	                let remaining = maxRankPoints - earnedPointsFromTickets;
+	                if (remaining > 0) {
+	                    progressText.innerText = 'Bạn còn ' + remaining.toLocaleString('en-US') + ' điểm để lên hạng Vàng';
+	                } else {
+	                    progressText.innerText = 'Bạn đã đạt hạng thành viên cao nhất!';
+	                }
+	            }
 
-            async function renderFavorites() {
-                const favIds = getFavorites();
-                const overviewRow = document.getElementById('overviewFavoritesRow');
-                const favoritesTab = document.getElementById('favoritesTabGrid');
+	            const savedAvatar = localStorage.getItem(AVATAR_KEY);
+	            if (savedAvatar) {
+	                const mainAvatar = document.getElementById('mainProfileAvatar');
+	                const headerAvatar = document.getElementById('headerUserAvatar');
+	                if (mainAvatar) mainAvatar.src = savedAvatar;
+	                if (headerAvatar) headerAvatar.src = savedAvatar;
+	            }
 
-                if (favIds.length === 0) {
-                    const emptyMsg = '<div style="grid-column: 1 / -1; color: var(--text-gray); font-size: 12px; text-align: center; padding: 25px;"><i class="fa-regular fa-heart" style="font-size: 24px; color: var(--pink-accent); display: block; margin-bottom: 6px;"></i>Chưa có phim yêu thích nào.</div>';
-                    if (overviewRow) overviewRow.innerHTML = emptyMsg;
-                    if (favoritesTab) favoritesTab.innerHTML = emptyMsg;
-                    return;
-                }
+	            const avatarTrigger = document.getElementById('avatarUploadTrigger');
+	            const avatarFileInput = document.getElementById('avatarFileInput');
 
-                try {
-                    const res = await fetch('/api/movies');
-                    if (!res.ok) return;
-                    const allMovies = await res.json();
-                    const favMovies = allMovies.filter(m => favIds.includes(m.id));
+	            if (avatarTrigger && avatarFileInput) {
+	                avatarTrigger.addEventListener('click', function() {
+	                    let choice = prompt("Chọn cách đổi ảnh đại diện:\n1. Nhập URL hình ảnh mới\n2. Tải ảnh lên từ máy tính (Nhập 'file' hoặc bấm Cancel)", "");
+	                    if (choice === 'file' || choice === null) {
+	                        avatarFileInput.click();
+	                    } else if (choice && choice.trim() !== '') {
+	                        updateAvatarImages(choice.trim());
+	                    }
+	                });
 
-                    if (overviewRow) {
-                        const overviewMovies = favMovies.slice(0, 4);
-                        overviewRow.innerHTML = overviewMovies.map(movie => {
-                            let poster = movie.posterUrl || movie.poster_url || 'https://via.placeholder.com/150x200?text=No+Poster';
-                            return `
-                                <div class="fav-movie-item">
-                                    <div class="fav-poster">
-                                        <img src="${poster}" alt="${movie.title}" onerror="this.src='https://via.placeholder.com/150x200?text=Error'">
-                                        <i class="fa-solid fa-heart fav-heart" data-id="${movie.id}" title="Bỏ yêu thích"></i>
-                                    </div>
-                                    <span class="fav-title">${movie.title}</span>
-                                    <div class="fav-rating">
-                                        <span>${movie.genre || 'Phim rạp'}</span>
-                                        <span>${movie.rating || 8.0} ★</span>
-                                    </div>
-                                    <a href="/chi-tiet-phim?movieId=${movie.id}" style="display: block; text-align: center; background: var(--pink-accent); color: #fff; padding: 5px 0; border-radius: 6px; font-size: 11px; font-weight: 700; text-decoration: none; margin-top: 4px;">Đặt vé</a>
-                                </div>
-                            `;
-                        }).join('');
-                    }
+	                avatarFileInput.addEventListener('change', function(e) {
+	                    const file = e.target.files[0];
+	                    if (file) {
+	                        const reader = new FileReader();
+	                        reader.onload = function(event) { updateAvatarImages(event.target.result); };
+	                        reader.readAsDataURL(file);
+	                    }
+	                });
+	            }
 
-                    if (favoritesTab) {
-                        favoritesTab.innerHTML = favMovies.map(movie => {
-                            let poster = movie.posterUrl || movie.poster_url || 'https://via.placeholder.com/150x200?text=No+Poster';
-                            return `
-                                <div class="fav-movie-item">
-                                    <div class="fav-poster" style="height: 180px;">
-                                        <img src="${poster}" alt="${movie.title}" onerror="this.src='https://via.placeholder.com/150x200?text=Error'">
-                                        <i class="fa-solid fa-heart fav-heart" data-id="${movie.id}" title="Bỏ yêu thích"></i>
-                                    </div>
-                                    <span class="fav-title" style="font-size: 13px;">${movie.title}</span>
-                                    <div class="fav-rating">
-                                        <span>${movie.genre || 'Phim rạp'}</span>
-                                        <span>${movie.rating || 8.0} ★</span>
-                                    </div>
-                                    <a href="/chi-tiet-phim?movieId=${movie.id}" style="display: block; text-align: center; background: var(--pink-accent); color: #fff; padding: 6px 0; border-radius: 6px; font-size: 12px; font-weight: 700; text-decoration: none; margin-top: 6px;">Đặt vé ngay</a>
-                                </div>
-                            `;
-                        }).join('');
-                    }
-                } catch (err) {
-                    console.error("Lỗi khi tải danh sách phim yêu thích từ API:", err);
-                }
-            }
+	            function updateAvatarImages(imgUrl) {
+	                document.getElementById('mainProfileAvatar').src = imgUrl;
+	                const headerAvatar = document.getElementById('headerUserAvatar');
+	                if (headerAvatar) headerAvatar.src = imgUrl;
+	                localStorage.setItem(AVATAR_KEY, imgUrl);
+	                showToast('Cập nhật ảnh đại diện thành công!', '#10B981');
+	            }
 
-            document.addEventListener('click', function(e) {
-                if (e.target.classList.contains('fav-heart')) {
-                    let movieId = e.target.getAttribute('data-id');
-                    if (movieId) {
-                        let favs = getFavorites();
-                        let index = favs.indexOf(movieId);
-                        if (index > -1) {
-                            favs.splice(index, 1);
-                            saveFavorites(favs);
-                            renderFavorites();
-                            showToast('Đã xóa khỏi danh sách yêu thích!', '#10B981');
-                        }
-                    }
-                }
-            });
+	            function getFavorites() {
+	                try { return JSON.parse(localStorage.getItem(FAVORITES_KEY)) || []; } catch(e) { return []; }
+	            }
+	            function saveFavorites(favs) { localStorage.setItem(FAVORITES_KEY, JSON.stringify(favs)); }
 
-            renderFavorites();
-        });
+	            async function renderFavorites() {
+	                const favIds = getFavorites();
+	                const overviewRow = document.getElementById('overviewFavoritesRow');
+	                const favoritesTab = document.getElementById('favoritesTabGrid');
 
-        document.addEventListener("DOMContentLoaded", function() {
-            const successMsg = localStorage.getItem("toast_success");
-            const errorMsg = localStorage.getItem("toast_error");
+	                if (favIds.length === 0) {
+	                    const emptyMsg = '<div style="grid-column: 1 / -1; color: var(--text-gray); font-size: 12px; text-align: center; padding: 25px;"><i class="fa-regular fa-heart" style="font-size: 24px; color: var(--pink-accent); display: block; margin-bottom: 6px;"></i>Chưa có phim yêu thích nào.</div>';
+	                    if (overviewRow) overviewRow.innerHTML = emptyMsg;
+	                    if (favoritesTab) favoritesTab.innerHTML = emptyMsg;
+	                    return;
+	                }
 
-            if (successMsg) {
-                showToast(successMsg, '#10B981');
-                localStorage.removeItem("toast_success");
-            }
-            if (errorMsg) {
-                showToast(errorMsg, '#EF4444');
-                localStorage.removeItem("toast_error");
-            }
-        });
-    </script>
+	                try {
+	                    const res = await fetch('/api/movies');
+	                    if (!res.ok) return;
+	                    const allMovies = await res.json();
+	                    const favMovies = allMovies.filter(m => favIds.includes(m.id));
+
+	                    if (overviewRow) {
+	                        const overviewMovies = favMovies.slice(0, 4);
+	                        overviewRow.innerHTML = overviewMovies.map(movie => {
+	                            let poster = movie.posterUrl || movie.poster_url || 'https://via.placeholder.com/150x200?text=No+Poster';
+	                            return `
+	                                <div class="fav-movie-item">
+	                                    <div class="fav-poster">
+	                                        <img src="${poster}" alt="${movie.title}" onerror="this.src='https://via.placeholder.com/150x200?text=Error'">
+	                                        <i class="fa-solid fa-heart fav-heart" data-id="${movie.id}" title="Bỏ yêu thích"></i>
+	                                    </div>
+	                                    <span class="fav-title">${movie.title}</span>
+	                                    <div class="fav-rating">
+	                                        <span>${movie.genre || 'Phim rạp'}</span>
+	                                        <span>${movie.rating || 8.0} ★</span>
+	                                    </div>
+	                                    <a href="/chi-tiet-phim?movieId=${movie.id}" style="display: block; text-align: center; background: var(--pink-accent); color: #fff; padding: 5px 0; border-radius: 6px; font-size: 11px; font-weight: 700; text-decoration: none; margin-top: 4px;">Đặt vé</a>
+	                                </div>
+	                            `;
+	                        }).join('');
+	                    }
+
+	                    if (favoritesTab) {
+	                        favoritesTab.innerHTML = favMovies.map(movie => {
+	                            let poster = movie.posterUrl || movie.poster_url || 'https://via.placeholder.com/150x200?text=No+Poster';
+	                            return `
+	                                <div class="fav-movie-item">
+	                                    <div class="fav-poster" style="height: 180px;">
+	                                        <img src="${poster}" alt="${movie.title}" onerror="this.src='https://via.placeholder.com/150x200?text=Error'">
+	                                        <i class="fa-solid fa-heart fav-heart" data-id="${movie.id}" title="Bỏ yêu thích"></i>
+	                                    </div>
+	                                    <span class="fav-title" style="font-size: 13px;">${movie.title}</span>
+	                                    <div class="fav-rating">
+	                                        <span>${movie.genre || 'Phim rạp'}</span>
+	                                        <span>${movie.rating || 8.0} ★</span>
+	                                    </div>
+	                                    <a href="/chi-tiet-phim?movieId=${movie.id}" style="display: block; text-align: center; background: var(--pink-accent); color: #fff; padding: 6px 0; border-radius: 6px; font-size: 12px; font-weight: 700; text-decoration: none; margin-top: 6px;">Đặt vé ngay</a>
+	                                </div>
+	                            `;
+	                        }).join('');
+	                    }
+	                } catch (err) {
+	                    console.error("Lỗi khi tải danh sách phim yêu thích từ API:", err);
+	                }
+	            }
+
+	            document.addEventListener('click', function(e) {
+	                if (e.target.classList.contains('fav-heart')) {
+	                    let movieId = e.target.getAttribute('data-id');
+	                    if (movieId) {
+	                        let favs = getFavorites();
+	                        let index = favs.indexOf(movieId);
+	                        if (index > -1) {
+	                            favs.splice(index, 1);
+	                            saveFavorites(favs);
+	                            renderFavorites();
+	                            showToast('Đã xóa khỏi danh sách yêu thích!', '#10B981');
+	                        }
+	                    }
+	                }
+	            });
+
+	            renderFavorites();
+	        });
+
+	        document.addEventListener("DOMContentLoaded", function() {
+	            const successMsg = localStorage.getItem("toast_success");
+	            const errorMsg = localStorage.getItem("toast_error");
+
+	            if (successMsg) {
+	                showToast(successMsg, '#10B981');
+	                localStorage.removeItem("toast_success");
+	            }
+	            if (errorMsg) {
+	                showToast(errorMsg, '#EF4444');
+	                localStorage.removeItem("toast_error");
+	            }
+	        });
+	    </script>
 </body>
 </html>
