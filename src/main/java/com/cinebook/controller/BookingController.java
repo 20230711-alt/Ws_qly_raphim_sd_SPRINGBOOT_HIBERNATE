@@ -46,7 +46,11 @@ public class BookingController {
             ticket.setBookingDate(LocalDateTime.now());
             ticket.setCinemaName(request.getCinema());
             
-            // THÊM: Thiết lập trạng thái ban đầu khi vừa bấm đặt vé là "Chờ thanh toán"
+            // BỔ SUNG: Lưu thông tin combo bắp nước và mã ưu đãi vào Database
+            ticket.setCombos(request.getCombos());
+            ticket.setVoucher(request.getVoucher());
+
+            // Thiết lập trạng thái ban đầu khi vừa bấm đặt vé là "Chờ thanh toán"
             ticket.setStatus("Chờ thanh toán");
 
             // Lưu vé
@@ -71,7 +75,7 @@ public class BookingController {
         }
     }
 
-    // THÊM: API chuyển trạng thái sang "Đã thanh toán"
+    // API chuyển trạng thái sang "Đã thanh toán"
     @PostMapping("/api/tickets/{id}/pay")
     @ResponseBody
     public ResponseEntity<?> payTicket(@PathVariable("id") Long id) {
@@ -84,7 +88,7 @@ public class BookingController {
         return ResponseEntity.badRequest().body("Không tìm thấy vé");
     }
 
-    // THÊM: API chuyển trạng thái sang "Đã hủy"
+    // API chuyển trạng thái sang "Đã hủy"
     @PostMapping("/api/tickets/{id}/cancel")
     @ResponseBody
     public ResponseEntity<?> cancelTicket(@PathVariable("id") Long id) {
@@ -106,6 +110,10 @@ class BookingRequest {
     private String room;
     private List<String> seats;
     private double totalPrice;
+    
+    // BỔ SUNG: Thuộc tính nhận dữ liệu combos và voucher từ trang chọn ghế gửi lên
+    private String combos;
+    private String voucher;
 
     public String getMovieTitle() { return movieTitle; }
     public void setMovieTitle(String movieTitle) { this.movieTitle = movieTitle; }
@@ -121,4 +129,10 @@ class BookingRequest {
     public void setSeats(List<String> seats) { this.seats = seats; }
     public double getTotalPrice() { return totalPrice; }
     public void setTotalPrice(double totalPrice) { this.totalPrice = totalPrice; }
+
+    // BỔ SUNG: Getter và Setter cho combos và voucher
+    public String getCombos() { return combos; }
+    public void setCombos(String combos) { this.combos = combos; }
+    public String getVoucher() { return voucher; }
+    public void setVoucher(String voucher) { this.voucher = voucher; }
 }

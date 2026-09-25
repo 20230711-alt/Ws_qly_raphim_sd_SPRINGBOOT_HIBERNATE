@@ -30,9 +30,13 @@ public class Ticket {
     @Column(name = "status")
     private String status = "Đã thanh toán";
 
-    // Bổ sung thuộc tính lưu combo bắp nước
+    // Thuộc tính lưu combo bắp nước
     @Column(name = "combos")
     private String combos;
+
+    // Bổ sung thuộc tính lưu mã ưu đãi (voucher)
+    @Column(name = "voucher")
+    private String voucher;
 
     // Khai báo liên kết với bảng User (để truy xuất tên, sdt, email khách hàng)
     @ManyToOne(fetch = FetchType.LAZY)
@@ -70,6 +74,9 @@ public class Ticket {
 
     public String getCombos() { return combos; }
     public void setCombos(String combos) { this.combos = combos; }
+
+    public String getVoucher() { return voucher; }
+    public void setVoucher(String voucher) { this.voucher = voucher; }
 
     public User getUser() { return user; }
     public void setUser(User user) { this.user = user; }

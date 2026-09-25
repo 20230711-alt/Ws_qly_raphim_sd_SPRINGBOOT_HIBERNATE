@@ -39,7 +39,7 @@ public class AuthController {
         }
     }
 
- // ----- ĐĂNG NHẬP -----
+    // ----- ĐĂNG NHẬP -----
     @GetMapping("/dang-nhap")
     public String showLoginPage() {
         return "dang-nhap";
@@ -70,5 +70,14 @@ public class AuthController {
         }
 
         return "redirect:/"; // Chuyển hướng sang trang chủ cho user thường
+    }
+
+    // ----- ĐĂNG XUẤT -----
+    @GetMapping("/dang-xuat")
+    public String handleLogout(HttpSession session) {
+        // Xóa thông tin phiên làm việc hiện tại
+        session.invalidate();
+        // Chuyển hướng về trang đăng nhập
+        return "redirect:/dang-nhap";
     }
 }

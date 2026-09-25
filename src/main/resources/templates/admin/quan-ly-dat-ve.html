@@ -361,6 +361,11 @@
 				    <span class="ticket-info-label">Combo bắp nước:</span>
 				    <span class="ticket-info-val" id="mCombos" style="color: #FACC15;">Không có</span>
 				</div>
+                <!-- BỔ SUNG: Dòng hiển thị mã ưu đãi (Voucher) trên Modal Admin -->
+                <div class="ticket-info-row">
+                    <span class="ticket-info-label">Mã ưu đãi:</span>
+                    <span class="ticket-info-val" id="mVoucher" style="color: #10B981;">Không có</span>
+                </div>
                 <div class="ticket-info-row" style="margin-top: 8px; border-top: 1px solid rgba(255, 255, 255, 0.05); padding-top: 8px;">
                     <span class="ticket-info-label">Tổng tiền:</span>
                     <span class="ticket-info-val price-highlight" id="mTotalPrice">225,000 đ</span>
@@ -390,6 +395,10 @@
                     document.getElementById('mSeats').innerText = data.seats;
                     document.getElementById('mTotalPrice').innerText = data.totalPrice.toLocaleString('vi-VN') + ' đ';
 					document.getElementById('mCombos').innerText = data.combos || 'Không có';
+                    
+                    // BỔ SUNG: Gán dữ liệu voucher trả về từ API vào giao diện
+                    document.getElementById('mVoucher').innerText = data.voucher ? data.voucher : 'Không có';
+
                     document.getElementById('ticketModalOverlay').classList.add('show');
                 })
                 .catch(err => {

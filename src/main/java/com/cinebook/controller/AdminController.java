@@ -10,6 +10,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -42,6 +45,40 @@ public class AdminController {
 
         // 3. Lấy dữ liệu danh sách giao dịch vé gần đây & danh sách phim
         List<Ticket> recentTickets = ticketRepository.findTop5ByOrderByIdDesc();
+        List<Ticket> allTickets = ticketRepository.findAll();
+
+        // --- TÍNH TOÁN DOANH THU 7 NGÀY QUA ---
+        LocalDate today = LocalDate.now();
+        List<String> chartLabels = new ArrayList<>();
+        List<Double> chartData = new ArrayList<>();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM");
+
+        for (int i = 6; i >= 0; i--) {
+            LocalDate date = today.minusDays(i);
+            chartLabels.add(date.format(formatter));
+
+            double dailySum = allTickets.stream()
+                .filter(t -> t.getBookingDate() != null && t.getBookingDate().toLocalDate().equals(date))
+                .mapToDouble(t -> t.getTotalPrice() != null ? t.getTotalPrice() : 0.0)
+                .sum();
+            
+            chartData.add(dailySum);
+        }
+
+        // --- TÍNH TOÁN DOANH THU THÁNG NÀY ---
+        List<String> monthLabels = new ArrayList<>();
+        List<Double> monthData = new ArrayList<>();
+        int daysInMonth = today.lengthOfMonth();
+        for (int day = 1; day <= daysInMonth; day++) {
+            LocalDate d = LocalDate.of(today.getYear(), today.getMonth(), day);
+            monthLabels.add(String.valueOf(day));
+
+            double daySum = allTickets.stream()
+                .filter(t -> t.getBookingDate() != null && t.getBookingDate().toLocalDate().equals(d))
+                .mapToDouble(t -> t.getTotalPrice() != null ? t.getTotalPrice() : 0.0)
+                .sum();
+            monthData.add(daySum);
+        }
 
         // 4. Truyền dữ liệu sang Thymeleaf View
         model.addAttribute("totalRevenue", totalRevenue != null ? totalRevenue : 0.0);
@@ -55,6 +92,12 @@ public class AdminController {
 
         model.addAttribute("recentTickets", recentTickets);
         model.addAttribute("movies", movieRepository.findAll());
+
+        // Đưa dữ liệu biểu đồ ra giao diện
+        model.addAttribute("chartLabels", chartLabels);
+        model.addAttribute("chartData", chartData);
+        model.addAttribute("monthLabels", monthLabels);
+        model.addAttribute("monthData", monthData);
 
         return "admin"; // Trả về file admin.html
     }

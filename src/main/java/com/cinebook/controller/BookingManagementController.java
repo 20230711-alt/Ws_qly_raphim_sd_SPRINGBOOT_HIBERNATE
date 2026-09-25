@@ -92,6 +92,10 @@ public class BookingManagementController {
             response.put("bookingDate", ticket.getBookingDate() != null ? ticket.getBookingDate().toString().replace("T", " ") : "N/A");
             response.put("status", ticket.getStatus() != null ? ticket.getStatus() : "Đã thanh toán");
 
+            // BỔ SUNG: Truyền dữ liệu combo và voucher ra JSON để modal hiển thị chính xác
+            response.put("combos", ticket.getCombos() != null ? ticket.getCombos() : "Không có");
+            response.put("voucher", ticket.getVoucher() != null ? ticket.getVoucher() : "Không có");
+
             if (ticket.getUser() != null) {
                 response.put("customerName", ticket.getUser().getFullName());
                 response.put("customerContact", ticket.getUser().getPhone() + " - " + ticket.getUser().getEmail());

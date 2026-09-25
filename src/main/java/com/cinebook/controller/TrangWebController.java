@@ -38,7 +38,7 @@ public class TrangWebController {
     private TransactionRepository transactionRepository;
     
     @Autowired
-    private VoucherRepository voucherRepository;	
+    private VoucherRepository voucherRepository;    
 
     @GetMapping({"/", "/trang-chu"})
     public String trangChu(HttpSession session, Model model) {
@@ -59,8 +59,8 @@ public class TrangWebController {
 
     @GetMapping("/chi-tiet-phim")
     public String chiTietPhim(@RequestParam(name = "movieId", required = false) String movieId, 
-                               HttpSession session, 
-                               Model model) {
+                              HttpSession session, 
+                              Model model) {
         User user = (User) session.getAttribute("loggedInUser");
         if (user != null) { 
             model.addAttribute("user", user); 
@@ -84,11 +84,13 @@ public class TrangWebController {
         if (user != null) { model.addAttribute("user", user); }
         return "thanh-toan";
     }
+    
     @GetMapping("/chon-suat-chieu")
     public String chonSuatChieuPage(@RequestParam(name = "movieId", required = false, defaultValue = "P01") String movieId, Model model) {
         model.addAttribute("movieId", movieId);
         return "chon-suat-chieu";
     }
+    
     @GetMapping("/khuyen-mai")
     public String khuyenMai(HttpSession session, Model model) {
         User user = (User) session.getAttribute("loggedInUser");
@@ -100,21 +102,20 @@ public class TrangWebController {
     public String member(HttpSession session, Model model) {
         User user = (User) session.getAttribute("loggedInUser");
         if (user == null) {
-            return "redirect:/login"; // Chưa đăng nhập thì đá về trang login
+            return "redirect:/dang-nhap"; // Chưa đăng nhập thì đá về trang đăng nhập
         }
         
         // Truy vấn danh sách vé và giao dịch của đúng user đang đăng nhập
         List<Ticket> tickets = ticketRepository.findByUserId(user.getId());
         List<Transaction> transactions = transactionRepository.findByUserId(user.getId());
         
-        // --- THÊM PHẦN LẤY VOUCHER VÀO ĐÂY (GIỮ NGUYÊN HOÀN TOÀN CODE CŨ) ---
         List<Voucher> userVouchers = voucherRepository.findByUser(user);
 
         // Đẩy toàn bộ dữ liệu ra Thymeleaf
         model.addAttribute("user", user);
         model.addAttribute("tickets", tickets);
         model.addAttribute("transactions", transactions);
-        model.addAttribute("userVouchers", userVouchers); // Thêm dòng này để đẩy voucher ra giao diện
+        model.addAttribute("userVouchers", userVouchers);
 
         return "thanh-vien";
     }
@@ -133,7 +134,6 @@ public class TrangWebController {
 
         Map<String, Object> response = new HashMap<>();
 
-        // Kiểm tra xem người dùng đã đăng nhập chưa thông qua Session
         User user = (User) session.getAttribute("loggedInUser");
         if (user == null) {
             response.put("success", false);
@@ -141,7 +141,6 @@ public class TrangWebController {
             return ResponseEntity.status(401).body(response);
         }
 
-        // Kiểm tra xem voucher này đã được user lưu trước đó chưa
         boolean exists = voucherRepository.existsByUserAndCode(user, code);
         if (exists) {
             response.put("success", false);
@@ -149,7 +148,6 @@ public class TrangWebController {
             return ResponseEntity.ok(response);
         }
 
-        // Tạo mới voucher và liên kết với user hiện tại
         Voucher voucher = new Voucher();
         voucher.setCode(code);
         voucher.setTitle(title);
@@ -175,23 +173,17 @@ public class TrangWebController {
                                 RedirectAttributes redirectAttributes) {
         User currentUser = (User) session.getAttribute("loggedInUser");
         if (currentUser == null) {
-            return "redirect:/login";
+            return "redirect:/dang-nhap";
         }
 
-        // Cập nhật thông tin vào đối tượng user
         currentUser.setFullName(fullName);
         currentUser.setBirthday(birthday);
         currentUser.setPhone(phone);
 
-        // Lưu xuống Database
         userRepository.save(currentUser);
-        
-        // Cập nhật lại Session
         session.setAttribute("loggedInUser", currentUser);
         
         redirectAttributes.addFlashAttribute("message", "Cập nhật thông tin thành công!");
-        
-        // Điều hướng về trang chủ kèm tham số mở sẵn tab profile
         return "redirect:/?tab=profile-tab";
     }
 
@@ -204,36 +196,31 @@ public class TrangWebController {
                                  RedirectAttributes redirectAttributes) {
         User currentUser = (User) session.getAttribute("loggedInUser");
         if (currentUser == null) {
-            return "redirect:/login";
+            return "redirect:/dang-nhap";
         }
 
-        // Kiểm tra mật khẩu hiện tại có đúng không
         if (!currentUser.getPassword().equals(currentPassword)) {
             redirectAttributes.addFlashAttribute("error", "Mật khẩu hiện tại không chính xác!");
             return "redirect:/?tab=password-tab";
         }
 
-        // Kiểm tra mật khẩu mới và xác nhận có khớp nhau không
         if (!newPassword.equals(confirmPassword)) {
             redirectAttributes.addFlashAttribute("error", "Xác nhận mật khẩu mới không khớp!");
             return "redirect:/?tab=password-tab";
         }
 
-        // Cập nhật mật khẩu mới
         currentUser.setPassword(newPassword);
         userRepository.save(currentUser);
-        
-        // Cập nhật lại session
         session.setAttribute("loggedInUser", currentUser);
 
         redirectAttributes.addFlashAttribute("success", "Đổi mật khẩu thành công!");
-        return "redirect:/?tab=password-tab"; // Hoặc đường dẫn trả về trang thành viên của bạn
+        return "redirect:/?tab=password-tab";
     }
 
     // ----- ĐĂNG XUẤT -----
     @GetMapping("/logout")
     public String dangXuat(HttpSession session) {
         session.invalidate(); // Xóa sạch dữ liệu user trong Session
-        return "redirect:/login"; // Chuyển về lại trang đăng nhập
+        return "redirect:/dang-nhap"; // Sửa từ "/login" thành "/dang-nhap" để khớp với hệ thống
     }
 }

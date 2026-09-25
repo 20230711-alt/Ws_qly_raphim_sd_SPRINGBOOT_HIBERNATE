@@ -2,25 +2,254 @@
 <html lang="vi" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CineBook - Cài Đặt Hệ Thống</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style th:replace="~{admin :: admin-css}"></style>
+    <style>
+        .settings-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+        }
+        @media (max-width: 1024px) {
+            .settings-container {
+                grid-template-columns: 1fr;
+            }
+        }
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+        .settings-panel {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .settings-panel h3 {
+            font-size: 15px;
+            font-weight: 700;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 12px;
+        }
+        .settings-panel h3 i {
+            color: var(--pink-accent);
+        }
+        .form-group label {
+            font-size: 11px;
+            color: var(--text-gray);
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .form-group input, .form-group select, .form-group textarea {
+            background: var(--bg-main);
+            border: 1px solid var(--border-color);
+            padding: 10px 14px;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 13px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            border-color: var(--pink-accent);
+        }
+        .toggle-switch {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--bg-main);
+            border: 1px solid var(--border-color);
+            padding: 12px 16px;
+            border-radius: 8px;
+        }
+        .toggle-switch span {
+            font-size: 13px;
+            color: #fff;
+            font-weight: 500;
+        }
+        /* Custom Checkbox Switch */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 44px;
+            height: 22px;
+        }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider {
+            position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #27272a; transition: .3s; border-radius: 22px;
+        }
+        .slider:before {
+            position: absolute; content: ""; height: 16px; width: 16px; left: 3px; bottom: 3px;
+            background-color: white; transition: .3s; border-radius: 50%;
+        }
+        input:checked + .slider { background-color: var(--pink-accent); }
+        input:checked + .slider:before { transform: translateX(22px); }
+        
+        .settings-actions {
+            grid-column: span 2;
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 10px;
+        }
+        @media (max-width: 1024px) {
+            .settings-actions { grid-column: span 1; }
+        }
+        .btn-save {
+            background: var(--pink-accent);
+            color: #fff;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: opacity 0.2s;
+        }
+        .btn-save:hover { opacity: 0.9; }
+        .btn-reset {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-gray);
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .btn-reset:hover { color: #fff; border-color: #fff; }
+    </style>
 </head>
 <body>
+
     <div th:replace="~{fragments/sidebar :: sidebar('cai-dat')}"></div>
 
     <div class="main-content">
         <div th:replace="~{fragments/header :: header('Cài đặt hệ thống')}"></div>
 
         <div class="content-section active">
-            <div class="panel">
-                <div class="panel-header"><h4>Cấu Hình Thông Số Hệ Thống</h4></div>
-                <div style="display: flex; flex-direction: column; gap: 14px; max-width: 400px; margin-top: 10px;">
-                    <div class="form-group"><label>Tên hệ thống rạp</label><input type="text" value="CineBook Cinema Management"></div>
-                    <div class="form-group"><label>Email nhận báo cáo tự động</label><input type="email" value="admin@cinebook.vn"></div>
-                    <button class="btn-action" style="width: fit-content;" onclick="alert('Lưu cấu hình thành công!')">Lưu thay đổi</button>
+            <form onsubmit="event.preventDefault(); alert('Đã lưu cấu hình hệ thống thành công!');" class="settings-container">
+                
+                <!-- PANEL 1: THÔNG TIN CHUNG -->
+                <div class="settings-panel">
+                    <h3><i class="fa-solid fa-building-shield"></i> Thông Tin Chung Rạp Chiếu</h3>
+                    <div class="form-group">
+                        <label>Tên hệ thống rạp</label>
+                        <input type="text" value="CineBook Cinema Management" required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Hotline Hỗ Trợ</label>
+                            <input type="text" value="1900 1234">
+                        </div>
+                        <div class="form-group">
+                            <label>Mã Số Thuế</label>
+                            <input type="text" value="0109876543">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Địa Chỉ Trụ Sở Chính</label>
+                        <input type="text" value="Tòa nhà Cổ Giới, Đường Hồ Tùng Mậu, Hà Nội">
+                    </div>
                 </div>
-            </div>
+
+                <!-- PANEL 2: CẤU HÌNH THANH TOÁN & THUẾ -->
+                <div class="settings-panel">
+                    <h3><i class="fa-solid fa-wallet"></i> Tài Chính & Giao Dịch</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Thuế VAT (%)</label>
+                            <input type="number" value="10" min="0" max="100">
+                        </div>
+                        <div class="form-group">
+                            <label>Đơn Vị Tiền Tệ</label>
+                            <select>
+                                <option selected>VNĐ (₫)</option>
+                                <option>USD ($)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Phí Dịch Vụ Đặt Vé Online (₫)</label>
+                        <input type="number" value="5000">
+                    </div>
+                    <div class="form-group">
+                        <label>Cổng Thanh Toán Mặc Định</label>
+                        <select>
+                            <option selected>VNPAY / MOMO / QR Code</option>
+                            <option>Thẻ Ngân Hàng Quốc Tế (Visa/Master)</option>
+                            <option>Thanh toán tại quầy</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- PANEL 3: QUY ĐỊNH ĐẶT VÉ & GHẾ -->
+                <div class="settings-panel">
+                    <h3><i class="fa-solid fa-ticket-simple"></i> Quy Định Đặt Vé & Ghế Ngồi</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Thời gian giữ ghế chờ thanh toán (Phút)</label>
+                            <input type="number" value="10" min="1" max="30">
+                        </div>
+                        <div class="form-group">
+                            <label>Số ghế tối đa / 1 lần đặt</label>
+                            <input type="number" value="8" min="1" max="20">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Chính sách hủy vé</label>
+                        <select>
+                            <option selected>Cho phép hủy trước giờ chiếu 2 tiếng</option>
+                            <option>Không cho phép hủy vé sau khi thanh toán</option>
+                            <option>Cho phép hủy bất kỳ lúc nào trước suất chiếu</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- PANEL 4: THÔNG BÁO & BÁO CÁO TỰ ĐỘNG -->
+                <div class="settings-panel">
+                    <h3><i class="fa-solid fa-envelope-circle-check"></i> Thông Báo & Báo Cáo Tự Động</h3>
+                    <div class="form-group">
+                        <label>Email nhận báo cáo doanh thu tự động</label>
+                        <input type="email" value="admin@cinebook.vn" required>
+                    </div>
+                    <div class="toggle-switch">
+                        <span>Gửi email xác nhận vé cho khách hàng</span>
+                        <label class="switch">
+                            <input type="checkbox" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="toggle-switch">
+                        <span>Báo cáo doanh thu cuối ngày tự động</span>
+                        <label class="switch">
+                            <input type="checkbox" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- NÚT LƯU THAY ĐỔI -->
+                <div class="settings-actions">
+                    <button type="reset" class="btn-reset">Hủy thay đổi</button>
+                    <button type="submit" class="btn-save"><i class="fa-solid fa-floppy-disk"></i> Lưu Tất Cả Cài Đặt</button>
+                </div>
+
+            </form>
         </div>
     </div>
 </body>

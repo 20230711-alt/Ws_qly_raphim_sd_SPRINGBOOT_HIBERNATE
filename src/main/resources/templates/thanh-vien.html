@@ -857,6 +857,10 @@
                     <span class="ticket-info-label">Combo bắp nước:</span>
                     <span class="ticket-info-val" id="mCombos" style="color: #FACC15;">Không có</span>
                 </div>
+                <div class="ticket-info-row">
+                    <span class="ticket-info-label">Mã ưu đãi:</span>
+                    <span class="ticket-info-val" id="mVoucher" style="color: #10B981;">Không có</span>
+                </div>
                 <div class="ticket-info-row" style="margin-top: 8px; border-top: 1px solid rgba(255, 255, 255, 0.05); padding-top: 8px;">
                     <span class="ticket-info-label">Tổng tiền:</span>
                     <span class="ticket-info-val price-highlight" id="mTotalPrice">0 đ</span>
@@ -914,7 +918,6 @@
                     <li class="sidebar-item" id="menu-favorites" onclick="switchTab('tab-favorites', this)">
                         <a href="#"><i class="fa-solid fa-heart"></i> Danh sách yêu thích</a>
                     </li>
-                    <!-- ĐÃ XÓA MỤC BÌNH LUẬN CỦA TÔI KHỎI SIDEBAR -->
                     <li class="sidebar-item" id="menu-notifications" onclick="switchTab('tab-notifications', this)">
                         <a href="#"><i class="fa-solid fa-bell"></i> Thông báo</a>
                     </li>
@@ -1172,13 +1175,11 @@
 				            <h3>Hệ thống thông báo & Ưu đãi</h3>
 				        </div>
 				        <div class="list-group">
-				            <!-- Nếu chưa có vé nào -->
 				            <div th:if="${tickets == null or tickets.empty}" style="text-align: center; padding: 25px; color: var(--text-gray);">
 				                <i class="fa-regular fa-bell-slash" style="font-size: 30px; margin-bottom: 8px; color: var(--border-color);"></i>
 				                <p>Chưa có thông báo đặt vé nào.</p>
 				            </div>
 
-				            <!-- Vòng lặp hiển thị thông báo thật cho từng vé đã đặt -->
 				            <div class="notification-card" th:each="ticket : ${tickets}">
 				                <div class="notification-icon-box">
 				                    <i class="fa-solid fa-ticket"></i>
@@ -1214,6 +1215,7 @@
 	                    document.getElementById('mShowTime').innerText = data.showTime;
 	                    document.getElementById('mSeats').innerText = data.seats;
 	                    document.getElementById('mCombos').innerText = data.combos || 'Không có';
+	                    document.getElementById('mVoucher').innerText = data.voucher ? data.voucher : 'Không có';
 	                    document.getElementById('mTotalPrice').innerText = (data.totalPrice || 0).toLocaleString('vi-VN') + ' đ';
 
 	                    document.getElementById('ticketModalOverlay').classList.add('show');
@@ -1280,7 +1282,6 @@
 	                    showToast(type === 'profile' ? 'Cập nhật thông tin thành công!' : 'Đổi mật khẩu thành công!', '#10B981');
 	                    
 	                    if (type === 'profile') {
-	                        // Cập nhật ngay tên mới lên giao diện banner tổng quan
 	                        const newFullNameInput = formElement.querySelector('input[name="fullName"]');
 	                        if (newFullNameInput) {
 	                            const updatedName = newFullNameInput.value;
@@ -1348,7 +1349,6 @@
 	                const movieNameEl = row.querySelector('.ticket-movie-name');
 	                const statusBadge = row.querySelector('.status-badge');
 
-	                // Chỉ tính điểm và thống kê cho các vé đã thanh toán
 	                const statusText = statusBadge ? statusBadge.innerText.trim() : '';
 	                const isPaid = statusText.includes('Đã thanh toán') || (!statusText.includes('Chờ') && !statusText.includes('hủy'));
 

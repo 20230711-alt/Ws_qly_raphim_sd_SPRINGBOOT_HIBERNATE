@@ -90,64 +90,6 @@
             gap: 18px;
         }
 
-        .search-icon, .notification-icon {
-            color: var(--text-light);
-            font-size: 15px;
-            cursor: pointer;
-            position: relative;
-        }
-
-        .notification-icon .badge {
-            position: absolute;
-            top: -5px;
-            right: -6px;
-            background: var(--pink-accent);
-            color: white;
-            font-size: 9px;
-            font-weight: bold;
-            width: 14px;
-            height: 14px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .user-greeting {
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--text-light);
-        }
-
-        .btn-logout-header {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            background: rgba(255, 42, 95, 0.08);
-            border: 1px solid var(--pink-accent);
-            color: var(--text-light);
-            padding: 6px 14px;
-            border-radius: 6px;
-            text-decoration: none;
-            font-size: 12px;
-            font-weight: 600;
-            transition: all 0.2s ease;
-        }
-
-        .btn-logout-header i {
-            color: var(--pink-accent);
-            font-size: 11px;
-        }
-
-        .btn-logout-header:hover {
-            background: var(--pink-accent);
-            color: white;
-        }
-
-        .btn-logout-header:hover i {
-            color: white;
-        }
-
         /* CONTAINER CHÍNH */
         .main-container {
             max-width: 1300px;
@@ -335,15 +277,7 @@
         </nav>
 
         <div class="header-right">
-            <i class="fa-solid fa-magnifying-glass search-icon" title="Tìm kiếm"></i>
-            <div class="notification-icon" title="Thông báo">
-                <i class="fa-solid fa-bell"></i>
-                <span class="badge">3</span>
-            </div>
-            <span class="user-greeting" th:text="'Xin chào, ' + (${user != null ? user.fullName : 'Linh Xinh Gái'})">Xin chào, Linh Xinh Gái</span>
-            <a th:href="@{/dang-nhap}" class="btn-logout-header" onclick="return confirm('Bạn có chắc chắn muốn đăng xuất không?');">
-                <i class="fa-solid fa-right-from-bracket"></i> Đăng xuất
-            </a>
+            <!-- Đã xóa hoàn toàn icon tìm kiếm, thông báo, lời chào và nút đăng xuất -->
         </div>
     </header>
 

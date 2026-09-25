@@ -27,11 +27,6 @@
         .sidebar-menu a { display: flex; align-items: center; gap: 12px; padding: 12px 16px; color: var(--text-gray); text-decoration: none; font-size: 13px; font-weight: 500; border-radius: 8px; transition: all 0.2s ease; cursor: pointer; }
         .sidebar-menu a:hover, .sidebar-menu li.active a { background-color: var(--pink-accent); color: #fff; box-shadow: 0 4px 15px rgba(255, 42, 95, 0.3); }
         .sidebar-menu a i { width: 18px; text-align: center; font-size: 14px; }
-        .admin-user-box { padding: 16px 20px; border-top: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; background: rgba(0,0,0,0.2); }
-        .admin-user-info { display: flex; align-items: center; gap: 10px; }
-        .admin-user-info img { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; border: 1px solid var(--pink-accent); }
-        .admin-user-info .name { font-size: 13px; font-weight: 600; }
-        .admin-user-info .role { font-size: 11px; color: var(--text-gray); }
         .main-content { margin-left: 260px; flex: 1; display: flex; flex-direction: column; }
         header { height: 70px; background-color: var(--bg-sidebar); border-bottom: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; padding: 0 30px; position: sticky; top: 0; z-index: 100; }
         .header-title h2 { font-size: 18px; font-weight: 700; letter-spacing: 0.5px; }
@@ -66,25 +61,10 @@
         table { width: 100%; border-collapse: collapse; text-align: left; font-size: 12px; }
         th { color: var(--text-gray); font-weight: 600; padding-bottom: 12px; border-bottom: 1px solid var(--border-color); font-size: 11px; text-transform: uppercase; }
         td { padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.03); vertical-align: middle; }
-        .badge { padding: 4px 10px; border-radius: 20px; font-size: 10px; font-weight: 600; display: inline-block; }
-        .badge.success { background: rgba(16, 185, 129, 0.15); color: #10b981; }
-        .badge.pending { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }
-        .btn-action { background: var(--pink-accent); color: #fff; border: none; padding: 6px 12px; border-radius: 6px; font-size: 11px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; }
-        .btn-sm { padding: 4px 8px; font-size: 10px; border-radius: 4px; border: none; cursor: pointer; font-weight: 600; }
-        .btn-edit { background: rgba(59, 130, 246, 0.2); color: #3b82f6; }
-        .btn-del { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
         .activity-list { display: flex; flex-direction: column; gap: 14px; }
         .activity-item { display: flex; align-items: center; justify-content: space-between; font-size: 12px; }
         .activity-left { display: flex; align-items: center; gap: 10px; color: #d1d5db; }
         .activity-time { font-size: 11px; color: var(--text-gray); }
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: none; align-items: center; justify-content: center; z-index: 1000; }
-        .modal-box { background: var(--bg-card); border: 1px solid var(--border-color); width: 450px; border-radius: 12px; padding: 24px; display: flex; flex-direction: column; gap: 16px; }
-        .modal-box h3 { font-size: 16px; }
-        .form-group { display: flex; flex-direction: column; gap: 6px; }
-        .form-group label { font-size: 11px; color: var(--text-gray); }
-        .form-group input, .form-group select { background: var(--bg-main); border: 1px solid var(--border-color); padding: 8px 12px; border-radius: 6px; color: #fff; font-size: 12px; outline: none; }
-        .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 10px; }
-        .btn-close-modal { background: transparent; border: 1px solid var(--border-color); color: var(--text-gray); padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 11px; }
     </style>
 </head>
 <body>
@@ -95,29 +75,29 @@
         <div th:replace="~{fragments/header :: header('Dashboard')}"></div>
 
         <div class="content-section active">
-            <!-- 4 CARD THỐNG KÊ (HIỂN THỊ DỮ LIỆU THẬT DÙNG TH:TEXT) -->
+            <!-- 4 CARD THỐNG KÊ -->
             <div class="stats-grid">
                 <div class="stat-card">
                     <span>Tổng doanh thu</span>
-                    <h3 th:text="${#numbers.formatDecimal(totalRevenue, 0, 'COMMA', 0, 'POINT') + ' đ'}">1.245.800.000 đ</h3>
+                    <h3 th:text="${#numbers.formatDecimal(totalRevenue, 0, 'COMMA', 0, 'POINT') + ' đ'}">0 đ</h3>
                     <div class="trend"><i class="fa-solid fa-arrow-up"></i> Số liệu thực tế CSDL</div>
                     <div class="icon-box"><i class="fa-solid fa-sack-dollar"></i></div>
                 </div>
                 <div class="stat-card">
                     <span>Vé đã bán</span>
-                    <h3 th:text="${totalTickets + ' vé'}">3.248 vé</h3>
+                    <h3 th:text="${totalTickets + ' vé'}">0 vé</h3>
                     <div class="trend"><i class="fa-solid fa-arrow-up"></i> Tổng đơn đặt thành công</div>
                     <div class="icon-box"><i class="fa-solid fa-ticket"></i></div>
                 </div>
                 <div class="stat-card">
                     <span>Suất chiếu hôm nay</span>
-                    <h3 th:text="${totalShowtimes + ' suất'}">156 suất</h3>
+                    <h3 th:text="${totalShowtimes + ' suất'}">0 suất</h3>
                     <div class="trend"><i class="fa-solid fa-arrow-up"></i> Lịch chiếu rạp</div>
                     <div class="icon-box"><i class="fa-solid fa-video"></i></div>
                 </div>
                 <div class="stat-card">
                     <span>Khách hàng mới</span>
-                    <h3 th:text="${totalUsers + ' khách'}">482 khách</h3>
+                    <h3 th:text="${totalUsers + ' khách'}">0 khách</h3>
                     <div class="trend"><i class="fa-solid fa-arrow-up"></i> Tài khoản thành viên</div>
                     <div class="icon-box"><i class="fa-solid fa-user-plus"></i></div>
                 </div>
@@ -126,10 +106,10 @@
             <div class="grid-2col">
                 <div class="panel">
                     <div class="panel-header">
-                        <h4>Doanh thu 7 ngày qua</h4>
-                        <select onchange="alert('Đã thay đổi bộ lọc biểu đồ thành: ' + this.value)">
-                            <option>7 ngày qua</option>
-                            <option>Tháng này</option>
+                        <h4 id="chartTitle">Doanh thu 7 ngày qua</h4>
+                        <select id="chartFilter" onchange="updateChartData()">
+                            <option value="7days">7 ngày qua</option>
+                            <option value="month">Tháng này</option>
                         </select>
                     </div>
                     <div style="height: 230px;"><canvas id="revenueChart"></canvas></div>
@@ -145,7 +125,7 @@
             </div>
 
             <div class="grid-2col">
-                <!-- DANH SÁCH PHIM THẬT TỪ DATABASE -->
+                <!-- DANH SÁCH PHIM -->
                 <div class="panel">
                     <div class="panel-header">
                         <h4>Top phim doanh thu cao nhất</h4>
@@ -159,7 +139,7 @@
                                      th:text="${iter.index + 1}">1</div>
                                 <img th:src="${m.posterUrl != null ? m.posterUrl : 'https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=100'}" alt="Movie">
                                 <div>
-                                    <div class="movie-name" th:text="${m.title}">Avengers: Đế chế Ultron</div>
+                                    <div class="movie-name" th:text="${m.title}">Phim</div>
                                     <div class="movie-rev" th:text="${m.genre}">Thể loại</div>
                                 </div>
                             </div>
@@ -169,7 +149,7 @@
                     </div>
                 </div>
 
-                <!-- DANH SÁCH GIAO DỊCH VÉ GẦN ĐÂY THẬT -->
+                <!-- HOẠT ĐỘNG GẦN ĐÂY -->
                 <div class="panel">
                     <div class="panel-header">
                         <h4>Hoạt động gần đây</h4>
@@ -179,11 +159,11 @@
                             <div class="activity-left">
                                 <i class="fa-solid fa-circle-dot" style="color:var(--pink-accent); font-size:8px;"></i> 
                                 <span>
-                                    <b th:text="${t.user != null ? t.user.fullName : 'Khách vãng lai'}">Nguyễn Văn A</b> 
-                                    đặt đơn hàng <span th:text="${'#CB000' + t.id}" style="color: var(--pink-accent);">#CB0001256</span>
+                                    <b th:text="${t.user != null ? t.user.fullName : 'Khách vãng lai'}">Khách</b> 
+                                    đặt đơn hàng <span th:text="${'#CB000' + t.id}" style="color: var(--pink-accent);">#ID</span>
                                 </span>
                             </div>
-                            <span class="activity-time" th:text="${#numbers.formatDecimal(t.totalPrice, 0, 'COMMA', 0, 'POINT') + ' đ'}" style="color: #10b981; font-weight: 600;">225.000 đ</span>
+                            <span class="activity-time" th:text="${#numbers.formatDecimal(t.totalPrice, 0, 'COMMA', 0, 'POINT') + ' đ'}" style="color: #10b981; font-weight: 600;">0 đ</span>
                         </div>
                         <div th:if="${recentTickets == null || recentTickets.isEmpty()}" style="color: var(--text-gray); font-size: 12px; text-align: center; padding: 10px;">Chưa có hoạt động gần đây.</div>
                     </div>
@@ -192,23 +172,27 @@
         </div>
     </div>
 
-    <!-- SCRIPT VẼ BIỂU ĐỒ KẾT NỐI BIẾN ĐỘNG TỪ SPRING BOOT -->
+    <!-- SCRIPT VẼ BIỂU ĐỒ ĐỘNG -->
     <script th:inline="javascript">
-        // Lấy các giá trị thực tế từ Controller truyền qua Model
-        const totalRevenueVal = [[${totalRevenue}]];
+        const labels7Days = /*[[${chartLabels}]]*/ [];
+        const data7Days = /*[[${chartData}]]*/ [];
+
+        const labelsMonth = /*[[${monthLabels}]]*/ [];
+        const dataMonth = /*[[${monthData}]]*/ [];
+
         const countPaid = [[${countPaid}]];
         const countPending = [[${countPending}]];
         const countCancelled = [[${countCancelled}]];
 
         // 1. Biểu đồ đường Doanh thu
         const ctxRev = document.getElementById('revenueChart').getContext('2d');
-        new Chart(ctxRev, {
+        const revenueChart = new Chart(ctxRev, {
             type: 'line',
             data: {
-                labels: ['02/05', '03/05', '04/05', '05/05', '06/05', '07/05', 'Hôm nay'],
+                labels: labels7Days,
                 datasets: [{
                     label: 'Doanh thu (VNĐ)',
-                    data: [800000000, 950000000, 1100000000, 980000000, 1150000000, 1200000000, totalRevenueVal],
+                    data: data7Days,
                     borderColor: '#FF2A5F',
                     backgroundColor: 'rgba(255, 42, 95, 0.1)',
                     borderWidth: 2,
@@ -221,12 +205,28 @@
                 plugins: { legend: { display: false } },
                 scales: {
                     x: { grid: { color: 'rgba(255,255,255,0.03)' }, ticks: { color: '#8F95B2', font: {size: 10} } },
-                    y: { grid: { color: 'rgba(255,255,255,0.03)' }, ticks: { color: '#8F95B2', font: {size: 10}, callback: (v) => v/1000000 + 'M' } }
+                    y: { grid: { color: 'rgba(255,255,255,0.03)' }, ticks: { color: '#8F95B2', font: {size: 10}, callback: (v) => v >= 1000000 ? (v/1000000 + 'M') : v } }
                 }
             }
         });
 
-        // 2. Biểu đồ tròn Tỷ lệ vé theo trạng thái từ CSDL
+        // Hàm thay đổi dữ liệu biểu đồ khi chọn Select Box
+        function updateChartData() {
+            const filterVal = document.getElementById('chartFilter').value;
+            const titleEl = document.getElementById('chartTitle');
+            if (filterVal === 'month') {
+                revenueChart.data.labels = labelsMonth;
+                revenueChart.data.datasets[0].data = dataMonth;
+                titleEl.innerText = 'Doanh thu Tháng này';
+            } else {
+                revenueChart.data.labels = labels7Days;
+                revenueChart.data.datasets[0].data = data7Days;
+                titleEl.innerText = 'Doanh thu 7 ngày qua';
+            }
+            revenueChart.update();
+        }
+
+        // 2. Biểu đồ tròn Tỷ lệ vé theo trạng thái
         const ctxStatus = document.getElementById('statusChart').getContext('2d');
         new Chart(ctxStatus, {
             type: 'doughnut',
